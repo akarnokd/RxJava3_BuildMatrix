@@ -5,9 +5,9 @@
 
 This repository is used for building [RxJava 3](https://github.com/ReactiveX/RxJava) with JDK 8 through 14 in a CI environment. 
 
-It **does not use the JDK 9 `Flow` API** nor does this repo create maven jars.
+It **does not use the JDK 9 `Flow` API** nor does this repository create maven jars.
 
-This repo doesn't produce maven artifacts of the builds as the only purpose is to cross test RxJava **and** the mainstream/upcoming JDKs.
+This repository doesn't produce maven artifacts of the builds as the only purpose is to cross test RxJava **and** the mainstream/upcoming JDKs.
 
 ### Build matrix
 
