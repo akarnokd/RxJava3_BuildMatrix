@@ -1,0 +1,101 @@
+language: java
+
+sudo: required
+dist: trusty
+group: edge
+
+before_install:
+  - chmod +x gradlew
+  - mkdir -p ~/.gradle && echo "org.gradle.daemon=false" >> ~/.gradle/gradle.properties
+  - export GRADLE_OPTS=-Xmx1024m
+  - wget https://github.com/sormuras/bach/raw/master/install-jdk.sh
+
+matrix:
+  include:
+    - env: JDK='Oracle JDK 8 target 6' RXJAVA_TARGET=1.6
+      jdk: oraclejdk8
+    - env: JDK='Oracle JDK 8 target 8' RXJAVA_TARGET=1.8
+      jdk: oraclejdk8
+    - env: JDK='Oracle JDK 9 target 6' RXJAVA_TARGET=1.6
+      jdk: oraclejdk9
+    - env: JDK='Oracle JDK 9 target 8' RXJAVA_TARGET=1.8
+      jdk: oraclejdk9
+    - env: JDK='Oracle JDK 9 target 9' RXJAVA_TARGET=1.9
+      jdk: oraclejdk9
+    - env: JDK='Oracle JDK 10 target 6' RXJAVA_TARGET=1.6
+      jdk: openjdk10
+#      install: . ./install-jdk.sh -F 10 -L BCL
+    - env: JDK='Oracle JDK 10 target 8' RXJAVA_TARGET=1.8
+      jdk: openjdk10
+#      install: . ./install-jdk.sh -F 10 -L BCL
+    - env: JDK='Oracle JDK 10 target 9' RXJAVA_TARGET=1.9
+#      install: . ./install-jdk.sh -F 10 -L BCL
+      jdk: openjdk10
+    - env: JDK='Oracle JDK 10 target 10' RXJAVA_TARGET=10
+#      install: . ./install-jdk.sh -F 10 -L BCL
+      jdk: openjdk10
+    - env: JDK='Oracle JDK 11 target 6' RXJAVA_TARGET=1.6
+      install: . ./install-jdk.sh -F 11 -L BCL
+    - env: JDK='Oracle JDK 11 target 8' RXJAVA_TARGET=1.8
+      install: . ./install-jdk.sh -F 11 -L BCL
+    - env: JDK='Oracle JDK 11 target 9' RXJAVA_TARGET=1.9
+      install: . ./install-jdk.sh -F 11 -L BCL
+    - env: JDK='Oracle JDK 11 target 10' RXJAVA_TARGET=10
+      install: . ./install-jdk.sh -F 11 -L BCL
+    - env: JDK='Oracle JDK 11 target 11' RXJAVA_TARGET=11
+      install: . ./install-jdk.sh -F 11 -L BCL
+# ------------------------------------------------------------
+    - env: JDK='Oracle JDK 12 target 8' RXJAVA_TARGET=1.8
+      install: . ./install-jdk.sh -F 12 -L GPL
+    - env: JDK='Oracle JDK 12 target 9' RXJAVA_TARGET=1.9
+      install: . ./install-jdk.sh -F 12 -L GPL
+    - env: JDK='Oracle JDK 12 target 10' RXJAVA_TARGET=10
+      install: . ./install-jdk.sh -F 12 -L GPL
+    - env: JDK='Oracle JDK 12 target 11' RXJAVA_TARGET=11
+      install: . ./install-jdk.sh -F 12 -L GPL
+    - env: JDK='Oracle JDK 12 target 12' RXJAVA_TARGET=12
+      install: . ./install-jdk.sh -F 12 -L GPL
+# ------------------------------------------------------------
+    - env: JDK='Oracle JDK 13 target 8' RXJAVA_TARGET=1.8
+      install: . ./install-jdk.sh -F 13 -L GPL
+    - env: JDK='Oracle JDK 13 target 9' RXJAVA_TARGET=1.9
+      install: . ./install-jdk.sh -F 13 -L GPL
+    - env: JDK='Oracle JDK 13 target 10' RXJAVA_TARGET=10
+      install: . ./install-jdk.sh -F 13 -L GPL
+    - env: JDK='Oracle JDK 13 target 11' RXJAVA_TARGET=11
+      install: . ./install-jdk.sh -F 13 -L GPL
+    - env: JDK='Oracle JDK 13 target 12' RXJAVA_TARGET=12
+      install: . ./install-jdk.sh -F 13 -L GPL
+    - env: JDK='Oracle JDK 13 target 13' RXJAVA_TARGET=13
+      install: . ./install-jdk.sh -F 13 -L GPL
+    # ------------------------------------------------------------
+    - env: JDK='Oracle JDK 14 target 9' RXJAVA_TARGET=1.9
+      install: . ./install-jdk.sh -F 14 -L GPL
+    - env: JDK='Oracle JDK 14 target 10' RXJAVA_TARGET=10
+      install: . ./install-jdk.sh -F 14 -L GPL
+    - env: JDK='Oracle JDK 14 target 11' RXJAVA_TARGET=11
+      install: . ./install-jdk.sh -F 14 -L GPL
+    - env: JDK='Oracle JDK 14 target 12' RXJAVA_TARGET=12
+      install: . ./install-jdk.sh -F 14 -L GPL
+    - env: JDK='Oracle JDK 14 target 13' RXJAVA_TARGET=13
+      install: . ./install-jdk.sh -F 14 -L GPL
+    - env: JDK='Oracle JDK 14 target 14' RXJAVA_TARGET=14
+      install: . ./install-jdk.sh -F 14 -L GPL
+
+after_success:
+  - bash <(curl -s https://codecov.io/bash)
+
+# prevent travis running gradle assemble; let the build script do it anyway
+install: true
+
+script:
+  - echo PATH = ${PATH}
+  - echo JAVA_HOME = ${JAVA_HOME}
+  - java -version
+  - ./gradlew build --stacktrace
+
+ # cache between builds
+cache:
+  directories:
+  - $HOME/.m2
+  - $HOME/.gradle
