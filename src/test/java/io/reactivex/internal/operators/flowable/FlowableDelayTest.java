@@ -14,7 +14,6 @@
 package io.reactivex.internal.operators.flowable;
 
 import static org.junit.Assert.*;
-import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
 import java.util.*;
@@ -929,7 +928,7 @@ public class FlowableDelayTest {
                         latch.countDown();
                     }
                 })
-                .onErrorResumeNext(Flowable.<String>empty())
+                .onErrorResumeWith(Flowable.<String>empty())
                 .subscribe();
 
         latch.await();

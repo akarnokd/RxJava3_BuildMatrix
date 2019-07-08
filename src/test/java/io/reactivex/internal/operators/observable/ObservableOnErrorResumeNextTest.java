@@ -14,7 +14,6 @@
 package io.reactivex.internal.operators.observable;
 
 import static org.junit.Assert.*;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 import java.io.IOException;
@@ -33,7 +32,7 @@ import io.reactivex.observers.TestObserver;
 import io.reactivex.schedulers.Schedulers;
 import io.reactivex.testsupport.*;
 
-public class ObservableOnErrorResumeNextViaFunctionTest {
+public class ObservableOnErrorResumeNextTest {
 
     @Test
     public void resumeNextWithSynchronousExecution() {

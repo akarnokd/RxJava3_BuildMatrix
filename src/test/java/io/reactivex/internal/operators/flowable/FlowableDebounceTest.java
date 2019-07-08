@@ -14,7 +14,6 @@
 package io.reactivex.internal.operators.flowable;
 
 import static org.junit.Assert.*;
-import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
 import java.util.List;
@@ -547,5 +546,15 @@ public class FlowableDebounceTest {
         .debounce(1, TimeUnit.SECONDS)
         .test()
         .assertFailure(TestException.class);
+    }
+
+    @Test
+    public void debounceOnEmpty() {
+        Flowable.empty().debounce(new Function<Object, Publisher<Object>>() {
+            @Override
+            public Publisher<Object> apply(Object o) {
+                return Flowable.just(new Object());
+            }
+        }).subscribe();
     }
 }

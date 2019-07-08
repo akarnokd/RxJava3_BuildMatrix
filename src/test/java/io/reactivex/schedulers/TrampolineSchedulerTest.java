@@ -31,7 +31,6 @@ import org.reactivestreams.Publisher;
 import org.reactivestreams.Subscriber;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 
 public class TrampolineSchedulerTest extends AbstractSchedulerTests {
 
@@ -51,7 +50,7 @@ public class TrampolineSchedulerTest extends AbstractSchedulerTests {
 
             @Override
             public String apply(Integer t) {
-                assertTrue(Thread.currentThread().getName().equals(currentThreadName));
+                assertEquals(Thread.currentThread().getName(), currentThreadName);
                 return "Value_" + t + "_Thread_" + Thread.currentThread().getName();
             }
         });

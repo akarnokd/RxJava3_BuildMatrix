@@ -14,7 +14,6 @@
 package io.reactivex.internal.operators.observable;
 
 import static org.junit.Assert.fail;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 import java.util.concurrent.TimeUnit;
@@ -29,7 +28,7 @@ import io.reactivex.observers.TestObserver;
 import io.reactivex.schedulers.Schedulers;
 import io.reactivex.testsupport.TestHelper;
 
-public class ObservableOnErrorResumeNextViaObservableTest {
+public class ObservableOnErrorResumeWithTest {
 
     @Test
     public void resumeNext() {
@@ -38,7 +37,7 @@ public class ObservableOnErrorResumeNextViaObservableTest {
         TestObservable f = new TestObservable(upstream, "one", "fail", "two", "three");
         Observable<String> w = Observable.unsafeCreate(f);
         Observable<String> resume = Observable.just("twoResume", "threeResume");
-        Observable<String> observable = w.onErrorResumeNext(resume);
+        Observable<String> observable = w.onErrorResumeWith(resume);
 
         Observer<String> observer = TestHelper.mockObserver();
         observable.subscribe(observer);
@@ -80,7 +79,7 @@ public class ObservableOnErrorResumeNextViaObservableTest {
             }
         });
 
-        Observable<String> observable = w.onErrorResumeNext(resume);
+        Observable<String> observable = w.onErrorResumeWith(resume);
 
         Observer<String> observer = TestHelper.mockObserver();
 
@@ -113,7 +112,7 @@ public class ObservableOnErrorResumeNextViaObservableTest {
 
         });
         Observable<String> resume = Observable.just("resume");
-        Observable<String> observable = testObservable.onErrorResumeNext(resume);
+        Observable<String> observable = testObservable.onErrorResumeWith(resume);
 
         Observer<String> observer = TestHelper.mockObserver();
         observable.subscribe(observer);
@@ -135,7 +134,7 @@ public class ObservableOnErrorResumeNextViaObservableTest {
 
         });
         Observable<String> resume = Observable.just("resume");
-        Observable<String> observable = testObservable.subscribeOn(Schedulers.io()).onErrorResumeNext(resume);
+        Observable<String> observable = testObservable.subscribeOn(Schedulers.io()).onErrorResumeWith(resume);
 
         Observer<String> observer = TestHelper.mockObserver();
         TestObserver<String> to = new TestObserver<String>(observer);
@@ -195,7 +194,7 @@ public class ObservableOnErrorResumeNextViaObservableTest {
     public void backpressure() {
         TestObserver<Integer> to = new TestObserver<Integer>();
         Observable.range(0, 100000)
-                .onErrorResumeNext(Observable.just(1))
+                .onErrorResumeWith(Observable.just(1))
                 .observeOn(Schedulers.computation())
                 .map(new Function<Integer, Integer>() {
                     int c;

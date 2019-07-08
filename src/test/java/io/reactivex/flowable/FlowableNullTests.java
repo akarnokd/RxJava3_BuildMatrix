@@ -861,46 +861,6 @@ public class FlowableNullTests {
     }
 
     @Test(expected = NullPointerException.class)
-    public void bufferBoundarySupplier2Null() {
-        just1.buffer((Supplier<Publisher<Integer>>)null);
-    }
-
-    @Test(expected = NullPointerException.class)
-    public void bufferBoundarySupplier2ReturnsNull() {
-        just1.buffer(new Supplier<Publisher<Object>>() {
-            @Override
-            public Publisher<Object> get() {
-                return null;
-            }
-        }).blockingSubscribe();
-    }
-
-    @Test(expected = NullPointerException.class)
-    public void bufferBoundarySupplier2SupplierNull() {
-        just1.buffer(new Supplier<Flowable<Integer>>() {
-            @Override
-            public Flowable<Integer> get() {
-                return just1;
-            }
-        }, null);
-    }
-
-    @Test(expected = NullPointerException.class)
-    public void bufferBoundarySupplier2SupplierReturnsNull() {
-        just1.buffer(new Supplier<Flowable<Integer>>() {
-            @Override
-            public Flowable<Integer> get() {
-                return just1;
-            }
-        }, new Supplier<Collection<Integer>>() {
-            @Override
-            public Collection<Integer> get() {
-                return null;
-            }
-        }).blockingSubscribe();
-    }
-
-    @Test(expected = NullPointerException.class)
     public void castNull() {
         just1.cast(null);
     }
@@ -1646,8 +1606,8 @@ public class FlowableNullTests {
     }
 
     @Test(expected = NullPointerException.class)
-    public void onErrorResumeNextFunctionNull() {
-        just1.onErrorResumeNext((Function<Throwable, Publisher<Integer>>)null);
+    public void onErrorResumeNextNull() {
+        just1.onErrorResumeNext(null);
     }
 
     @Test
@@ -1669,8 +1629,8 @@ public class FlowableNullTests {
     }
 
     @Test(expected = NullPointerException.class)
-    public void onErrorResumeNextPublisherNull() {
-        just1.onErrorResumeNext((Publisher<Integer>)null);
+    public void onErrorResumeWithNull() {
+        just1.onErrorResumeWith(null);
     }
 
     @Test(expected = NullPointerException.class)
@@ -1699,11 +1659,6 @@ public class FlowableNullTests {
             TestHelper.assertError(errors, 0, TestException.class);
             TestHelper.assertError(errors, 1, NullPointerException.class, "The valueSupplier returned a null value");
         }
-    }
-
-    @Test(expected = NullPointerException.class)
-    public void onExceptionResumeNext() {
-        just1.onExceptionResumeNext(null);
     }
 
     @Test(expected = NullPointerException.class)
@@ -2607,21 +2562,6 @@ public class FlowableNullTests {
     }
 
     @Test(expected = NullPointerException.class)
-    public void windowBoundarySupplierNull() {
-        just1.window((Supplier<Publisher<Integer>>)null);
-    }
-
-    @Test(expected = NullPointerException.class)
-    public void windowBoundarySupplierReturnsNull() {
-        just1.window(new Supplier<Publisher<Object>>() {
-            @Override
-            public Publisher<Object> get() {
-                return null;
-            }
-        }).blockingSubscribe();
-    }
-
-    @Test(expected = NullPointerException.class)
     public void withLatestFromOtherNull() {
         just1.withLatestFrom(null, new BiFunction<Integer, Object, Object>() {
             @Override
@@ -2956,11 +2896,6 @@ public class FlowableNullTests {
     @Test(expected = NullPointerException.class)
     public void sampleFlowableNull() {
         just1.sample(null);
-    }
-
-    @Test(expected = NullPointerException.class)
-    public void onErrorResumeNextFlowableNull() {
-        just1.onErrorResumeNext((Flowable<Integer>)null);
     }
 
     @SuppressWarnings("unchecked")

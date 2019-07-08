@@ -948,46 +948,6 @@ public class ObservableNullTests {
     }
 
     @Test(expected = NullPointerException.class)
-    public void bufferBoundarySupplier2Null() {
-        just1.buffer((Supplier<Observable<Integer>>)null);
-    }
-
-    @Test(expected = NullPointerException.class)
-    public void bufferBoundarySupplier2ReturnsNull() {
-        just1.buffer(new Supplier<Observable<Object>>() {
-            @Override
-            public Observable<Object> get() {
-                return null;
-            }
-        }).blockingSubscribe();
-    }
-
-    @Test(expected = NullPointerException.class)
-    public void bufferBoundarySupplier2SupplierNull() {
-        just1.buffer(new Supplier<Observable<Integer>>() {
-            @Override
-            public Observable<Integer> get() {
-                return just1;
-            }
-        }, null);
-    }
-
-    @Test(expected = NullPointerException.class)
-    public void bufferBoundarySupplier2SupplierReturnsNull() {
-        just1.buffer(new Supplier<Observable<Integer>>() {
-            @Override
-            public Observable<Integer> get() {
-                return just1;
-            }
-        }, new Supplier<Collection<Integer>>() {
-            @Override
-            public Collection<Integer> get() {
-                return null;
-            }
-        }).blockingSubscribe();
-    }
-
-    @Test(expected = NullPointerException.class)
     public void castNull() {
         just1.cast(null);
     }
@@ -1700,7 +1660,7 @@ public class ObservableNullTests {
 
     @Test(expected = NullPointerException.class)
     public void onErrorResumeNextFunctionNull() {
-        just1.onErrorResumeNext((Function<Throwable, Observable<Integer>>)null);
+        just1.onErrorResumeNext(null);
     }
 
     @Test(expected = NullPointerException.class)
@@ -1715,7 +1675,7 @@ public class ObservableNullTests {
 
     @Test(expected = NullPointerException.class)
     public void onErrorResumeNextObservableNull() {
-        just1.onErrorResumeNext((Observable<Integer>)null);
+        just1.onErrorResumeWith(null);
     }
 
     @Test(expected = NullPointerException.class)
@@ -1736,11 +1696,6 @@ public class ObservableNullTests {
                 return null;
             }
         }).blockingSubscribe();
-    }
-
-    @Test(expected = NullPointerException.class)
-    public void onExceptionResumeNext() {
-        just1.onExceptionResumeNext(null);
     }
 
     @Test(expected = NullPointerException.class)
@@ -2637,21 +2592,6 @@ public class ObservableNullTests {
         Observable.never().window(just1, new Function<Integer, Observable<Object>>() {
             @Override
             public Observable<Object> apply(Integer v) {
-                return null;
-            }
-        }).blockingSubscribe();
-    }
-
-    @Test(expected = NullPointerException.class)
-    public void windowBoundarySupplierNull() {
-        just1.window((Supplier<Observable<Integer>>)null);
-    }
-
-    @Test(expected = NullPointerException.class)
-    public void windowBoundarySupplierReturnsNull() {
-        just1.window(new Supplier<Observable<Object>>() {
-            @Override
-            public Observable<Object> get() {
                 return null;
             }
         }).blockingSubscribe();

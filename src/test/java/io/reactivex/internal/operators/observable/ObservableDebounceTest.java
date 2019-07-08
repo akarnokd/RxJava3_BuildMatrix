@@ -14,7 +14,6 @@
 package io.reactivex.internal.operators.observable;
 
 import static org.junit.Assert.*;
-import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
 import java.util.List;
@@ -506,5 +505,15 @@ public class ObservableDebounceTest {
         .debounce(1, TimeUnit.SECONDS)
         .test()
         .assertFailure(TestException.class);
+    }
+
+    @Test
+    public void debounceOnEmpty() {
+        Observable.empty().debounce(new Function<Object, ObservableSource<Object>>() {
+            @Override
+            public ObservableSource<Object> apply(Object o) {
+                return Observable.just(new Object());
+            }
+        }).subscribe();
     }
 }

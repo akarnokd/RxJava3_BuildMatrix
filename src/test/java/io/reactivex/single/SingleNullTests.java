@@ -22,7 +22,6 @@ import org.junit.*;
 import org.reactivestreams.*;
 
 import io.reactivex.*;
-import io.reactivex.SingleOperator;
 import io.reactivex.exceptions.*;
 import io.reactivex.functions.*;
 import io.reactivex.internal.functions.Functions;
@@ -710,13 +709,13 @@ public class SingleNullTests {
     }
 
     @Test(expected = NullPointerException.class)
-    public void onErrorResumeNextSingleNull() {
-        error.onErrorResumeNext((Single<Integer>)null);
+    public void onErrorResumeWithSingleNull() {
+        error.onErrorResumeWith(null);
     }
 
     @Test(expected = NullPointerException.class)
-    public void onErrorResumeNextFunctionNull() {
-        error.onErrorResumeNext((Function<Throwable, Single<Integer>>)null);
+    public void onErrorResumeNextNull() {
+        error.onErrorResumeNext(null);
     }
 
     @Test

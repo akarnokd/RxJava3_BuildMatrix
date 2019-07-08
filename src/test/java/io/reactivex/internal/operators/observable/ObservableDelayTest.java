@@ -14,7 +14,6 @@
 package io.reactivex.internal.operators.observable;
 
 import static org.junit.Assert.*;
-import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
 import java.util.*;
@@ -877,7 +876,7 @@ public class ObservableDelayTest {
                         latch.countDown();
                     }
                 })
-                .onErrorResumeNext(Observable.<String>empty())
+                .onErrorResumeWith(Observable.<String>empty())
                 .subscribe();
 
         latch.await();
