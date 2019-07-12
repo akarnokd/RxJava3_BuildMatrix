@@ -38,7 +38,7 @@ apply plugin: "java-library"
 
 String targetStr = System.getenv("RXJAVA_TARGET")
 if (targetStr == null || targetStr.isEmpty()) {
-    targetStr = '1.6'
+    targetStr = '14'
     System.out.println("RXJAVA_TARGET env not found, using default " + targetStr)
 } else {
     System.out.println("Source compatibility: " + targetStr)
@@ -58,7 +58,7 @@ def runJacoco = false
 
 // Jacoco doesn't support Java 11+ and prevents testing
 def jvmVer = System.getProperty("java.version");
-if (!jvmVer.startsWith("11") && !jvmVer.startsWith("12")) {
+if (!jvmVer.startsWith("11") && !jvmVer.startsWith("12") && !jvmVer.startsWith("13") && !jvmVer.startsWith("14")) {
     runJacoco = true;
     println("Jacoco enabled for runtime version " + jvmVer)
 } else {
