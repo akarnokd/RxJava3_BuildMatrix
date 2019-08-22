@@ -1,4 +1,4 @@
-buildscript {
+﻿buildscript {
   repositories { 
     jcenter()
     mavenCentral()
@@ -38,7 +38,7 @@ apply plugin: "java-library"
 
 String targetStr = System.getenv("RXJAVA_TARGET")
 if (targetStr == null || targetStr.isEmpty()) {
-    targetStr = '14'
+    targetStr = '8'
     System.out.println("RXJAVA_TARGET env not found, using default " + targetStr)
 } else {
     System.out.println("Source compatibility: " + targetStr)
