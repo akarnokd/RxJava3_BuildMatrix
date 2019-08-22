@@ -64,6 +64,7 @@ if (!jvmVer.startsWith("11") && !jvmVer.startsWith("12") && !jvmVer.startsWith("
 } else {
     println("Jacoco disabled for runtime version " + jvmVer)
 }
+runJacoco = false // Gradle 6.0 issues
 
 apply plugin: "checkstyle"
 if (runJacoco) {
