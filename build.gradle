@@ -12,7 +12,7 @@ buildscript {
     classpath "me.champeau.gradle:jmh-gradle-plugin:0.4.7"
     classpath "com.jfrog.bintray.gradle:gradle-bintray-plugin:1.7.3"
     classpath "org.jfrog.buildinfo:build-info-extractor-gradle:4.5.2"
-    classpath "biz.aQute.bnd:biz.aQute.bnd.gradle:4.1.0"
+    classpath "biz.aQute.bnd:biz.aQute.bnd.gradle:4.2.0"
   }
 }
 
@@ -70,7 +70,6 @@ if (runJacoco) {
     apply plugin: "jacoco"
 }
 apply plugin: "maven"
-apply plugin: "osgi" //"biz.aQute.bnd.builder"
 apply plugin: "me.champeau.gradle.jmh"
 apply plugin: "com.github.hierynomus.license"
 apply plugin: "com.jfrog.bintray"
@@ -158,15 +157,19 @@ artifacts {
     archives javadocJar
 }
 
+apply plugin: 'maven'
+
+apply plugin: 'biz.aQute.bnd.builder'
+
 jar {
-    manifest {
-        name = "rxjava"
-        instruction "Bundle-Vendor", "RxJava Contributors"
-        instruction "Bundle-DocURL", "https://github.com/ReactiveX/RxJava"
-        instruction "Import-Package", "!org.junit,!junit.framework,!org.mockito.*,!org.testng.*,*"
-        instruction "Eclipse-ExtensibleAPI", "true"
-        instruction "Automatic-Module-Name", "io.reactivex.rxjava3"
-    }
+    bnd ('Bundle-Name': 'rxjava',
+            'Bundle-Vendor': 'RxJava Contributors',
+            'Bundle-Description': 'Bridge library between RxJava 2 and RxJava 3',
+            'Import-Package': '!org.junit,!junit.framework,!org.mockito.*,!org.testng.*,*',
+            'Bundle-DocURL': 'https://github.com/ReactiveX/RxJava',
+            'Eclipse-ExtensibleAPI': 'true',
+            'Automatic-Module-Name': 'io.reactivex.rxjava'
+    )
 }
 
 license {
