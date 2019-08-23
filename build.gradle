@@ -2,7 +2,7 @@ buildscript {
   // Dependency versions
   // ---------------------------------------
   
-  ext.reactiveStreamsVersion = "1.0.3-RC1"
+  ext.reactiveStreamsVersion = "1.0.3"
   ext.junitVersion = "4.12"
   ext.testNgVersion = "7.0.0"
   ext.mockitoVersion = "3.0.0"
