@@ -75,27 +75,6 @@ public class ObservableNullTests extends RxJavaTest {
     }
 
     @Test(expected = NullPointerException.class)
-    public void combineLatestVarargsNull() {
-        Observable.combineLatest(new Function<Object[], Object>() {
-            @Override
-            public Object apply(Object[] v) {
-                return 1;
-            }
-        }, 128, (Observable<Object>[])null);
-    }
-
-    @SuppressWarnings("unchecked")
-    @Test(expected = NullPointerException.class)
-    public void combineLatestVarargsOneIsNull() {
-        Observable.combineLatest(new Function<Object[], Object>() {
-            @Override
-            public Object apply(Object[] v) {
-                return 1;
-            }
-        }, 128, Observable.never(), null).blockingLast();
-    }
-
-    @Test(expected = NullPointerException.class)
     public void combineLatestIterableNull() {
         Observable.combineLatest((Iterable<Observable<Object>>)null, new Function<Object[], Object>() {
             @Override
@@ -133,23 +112,6 @@ public class ObservableNullTests extends RxJavaTest {
 
     @SuppressWarnings("unchecked")
     @Test(expected = NullPointerException.class)
-    public void combineLatestVarargsFunctionNull() {
-        Observable.combineLatest(null, 128, Observable.never());
-    }
-
-    @SuppressWarnings("unchecked")
-    @Test(expected = NullPointerException.class)
-    public void combineLatestVarargsFunctionReturnsNull() {
-        Observable.combineLatest(new Function<Object[], Object>() {
-            @Override
-            public Object apply(Object[] v) {
-                return null;
-            }
-        }, 128, just1).blockingLast();
-    }
-
-    @SuppressWarnings("unchecked")
-    @Test(expected = NullPointerException.class)
     public void combineLatestIterableFunctionNull() {
         Observable.combineLatest(Arrays.asList(just1), null, 128);
     }
@@ -163,27 +125,6 @@ public class ObservableNullTests extends RxJavaTest {
                 return null;
             }
         }, 128).blockingLast();
-    }
-
-    @Test(expected = NullPointerException.class)
-    public void combineLatestDelayErrorVarargsNull() {
-        Observable.combineLatestDelayError(new Function<Object[], Object>() {
-            @Override
-            public Object apply(Object[] v) {
-                return 1;
-            }
-        }, 128, (Observable<Object>[])null);
-    }
-
-    @SuppressWarnings("unchecked")
-    @Test(expected = NullPointerException.class)
-    public void combineLatestDelayErrorVarargsOneIsNull() {
-        Observable.combineLatestDelayError(new Function<Object[], Object>() {
-            @Override
-            public Object apply(Object[] v) {
-                return 1;
-            }
-        }, 128, Observable.never(), null).blockingLast();
     }
 
     @Test(expected = NullPointerException.class)
@@ -220,23 +161,6 @@ public class ObservableNullTests extends RxJavaTest {
                 return 1;
             }
         }, 128).blockingLast();
-    }
-
-    @SuppressWarnings("unchecked")
-    @Test(expected = NullPointerException.class)
-    public void combineLatestDelayErrorVarargsFunctionNull() {
-        Observable.combineLatestDelayError(null, 128, Observable.never());
-    }
-
-    @SuppressWarnings("unchecked")
-    @Test(expected = NullPointerException.class)
-    public void combineLatestDelayErrorVarargsFunctionReturnsNull() {
-        Observable.combineLatestDelayError(new Function<Object[], Object>() {
-            @Override
-            public Object apply(Object[] v) {
-                return null;
-            }
-        }, 128, just1).blockingLast();
     }
 
     @SuppressWarnings("unchecked")
@@ -777,33 +701,8 @@ public class ObservableNullTests extends RxJavaTest {
     }
 
     @Test(expected = NullPointerException.class)
-    public void zipObservableNull() {
-        Observable.zip((Observable<Observable<Object>>)null, new Function<Object[], Object>() {
-            @Override
-            public Object apply(Object[] a) {
-                return 1;
-            }
-        });
-    }
-
-    @Test(expected = NullPointerException.class)
-    public void zipObservableFunctionNull() {
-        Observable.zip((Observable.just(just1)), null);
-    }
-
-    @Test(expected = NullPointerException.class)
-    public void zipObservableFunctionReturnsNull() {
-        Observable.zip((Observable.just(just1)), new Function<Object[], Object>() {
-            @Override
-            public Object apply(Object[] a) {
-                return null;
-            }
-        }).blockingLast();
-    }
-
-    @Test(expected = NullPointerException.class)
     public void zipIterable2Null() {
-        Observable.zipIterable((Iterable<Observable<Object>>)null, new Function<Object[], Object>() {
+        Observable.zip((Iterable<Observable<Object>>)null, new Function<Object[], Object>() {
             @Override
             public Object apply(Object[] a) {
                 return 1;
@@ -813,7 +712,7 @@ public class ObservableNullTests extends RxJavaTest {
 
     @Test(expected = NullPointerException.class)
     public void zipIterable2IteratorNull() {
-        Observable.zipIterable(new Iterable<Observable<Object>>() {
+        Observable.zip(new Iterable<Observable<Object>>() {
             @Override
             public Iterator<Observable<Object>> iterator() {
                 return null;
@@ -829,13 +728,13 @@ public class ObservableNullTests extends RxJavaTest {
     @SuppressWarnings("unchecked")
     @Test(expected = NullPointerException.class)
     public void zipIterable2FunctionNull() {
-        Observable.zipIterable(Arrays.asList(just1, just1), null, true, 128);
+        Observable.zip(Arrays.asList(just1, just1), null, true, 128);
     }
 
     @SuppressWarnings("unchecked")
     @Test(expected = NullPointerException.class)
     public void zipIterable2FunctionReturnsNull() {
-        Observable.zipIterable(Arrays.asList(just1, just1), new Function<Object[], Object>() {
+        Observable.zip(Arrays.asList(just1, just1), new Function<Object[], Object>() {
             @Override
             public Object apply(Object[] a) {
                 return null;

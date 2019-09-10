@@ -43,7 +43,7 @@ import io.reactivex.rxjava3.schedulers.*;
  * for such non-backpressured flows, which {@code Observable} itself implements as well.
  * <p>
  * The Observable's operators, by default, run with a buffer size of 128 elements (see {@link Flowable#bufferSize()}),
- * that can be overridden globally via the system parameter {@code rx2.buffer-size}. Most operators, however, have
+ * that can be overridden globally via the system parameter {@code rx3.buffer-size}. Most operators, however, have
  * overloads that allow setting their internal buffer size explicitly.
  * <p>
  * The documentation for this class makes use of marble diagrams. The following legend explains these diagrams:
@@ -160,55 +160,12 @@ public abstract class Observable<T> implements ObservableSource<T> {
     /**
      * Returns the default 'island' size or capacity-increment hint for unbounded buffers.
      * <p>Delegates to {@link Flowable#bufferSize} but is public for convenience.
-     * <p>The value can be overridden via system parameter {@code rx2.buffer-size}
+     * <p>The value can be overridden via system parameter {@code rx3.buffer-size}
      * <em>before</em> the {@link Flowable} class is loaded.
      * @return the default 'island' size or capacity-increment hint
      */
     public static int bufferSize() {
         return Flowable.bufferSize();
-    }
-
-    /**
-     * Combines a collection of source ObservableSources by emitting an item that aggregates the latest values of each of
-     * the source ObservableSources each time an item is received from any of the source ObservableSources, where this
-     * aggregation is defined by a specified function.
-     * <p>
-     * Note on method signature: since Java doesn't allow creating a generic array with {@code new T[]}, the
-     * implementation of this operator has to create an {@code Object[]} instead. Unfortunately, a
-     * {@code Function<Integer[], R>} passed to the method would trigger a {@code ClassCastException}.
-     * <p>
-     * If any of the sources never produces an item but only terminates (normally or with an error), the
-     * resulting sequence terminates immediately (normally or with all the errors accumulated till that point).
-     * If that input source is also synchronous, other sources after it will not be subscribed to.
-     * <p>
-     * If there are no ObservableSources provided, the resulting sequence completes immediately without emitting
-     * any items and without any calls to the combiner function.
-     *
-     * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/combineLatest.png" alt="">
-     * <dl>
-     *  <dt><b>Scheduler:</b></dt>
-     *  <dd>{@code combineLatest} does not operate by default on a particular {@link Scheduler}.</dd>
-     * </dl>
-     *
-     * @param <T>
-     *            the common base type of source values
-     * @param <R>
-     *            the result type
-     * @param sources
-     *            the collection of source ObservableSources
-     * @param combiner
-     *            the aggregation function used to combine the items emitted by the source ObservableSources
-     * @param bufferSize
-     *            the internal buffer size and prefetch amount applied to every source Observable
-     * @return an Observable that emits items that are the result of combining the items emitted by the source
-     *         ObservableSources by means of the given aggregation function
-     * @see <a href="http://reactivex.io/documentation/operators/combinelatest.html">ReactiveX operators documentation: CombineLatest</a>
-     */
-    @CheckReturnValue
-    @SchedulerSupport(SchedulerSupport.NONE)
-    public static <T, R> Observable<R> combineLatest(Function<? super Object[], ? extends R> combiner, int bufferSize, ObservableSource<? extends T>... sources) {
-        return combineLatest(sources, combiner, bufferSize);
     }
 
     /**
@@ -324,7 +281,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/combineLatest.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
-     *  <dd>{@code combineLatest} does not operate by default on a particular {@link Scheduler}.</dd>
+     *  <dd>{@code combineLatestArray} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      *
      * @param <T>
@@ -341,9 +298,9 @@ public abstract class Observable<T> implements ObservableSource<T> {
      */
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
-    public static <T, R> Observable<R> combineLatest(ObservableSource<? extends T>[] sources,
+    public static <T, R> Observable<R> combineLatestArray(ObservableSource<? extends T>[] sources,
             Function<? super Object[], ? extends R> combiner) {
-        return combineLatest(sources, combiner, bufferSize());
+        return combineLatestArray(sources, combiner, bufferSize());
     }
 
     /**
@@ -366,7 +323,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/combineLatest.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
-     *  <dd>{@code combineLatest} does not operate by default on a particular {@link Scheduler}.</dd>
+     *  <dd>{@code combineLatestArray} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      *
      * @param <T>
@@ -386,7 +343,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
     @CheckReturnValue
     @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
-    public static <T, R> Observable<R> combineLatest(ObservableSource<? extends T>[] sources,
+    public static <T, R> Observable<R> combineLatestArray(ObservableSource<? extends T>[] sources,
             Function<? super Object[], ? extends R> combiner, int bufferSize) {
         ObjectHelper.requireNonNull(sources, "sources is null");
         if (sources.length == 0) {
@@ -437,7 +394,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
             BiFunction<? super T1, ? super T2, ? extends R> combiner) {
         ObjectHelper.requireNonNull(source1, "source1 is null");
         ObjectHelper.requireNonNull(source2, "source2 is null");
-        return combineLatest(Functions.toFunction(combiner), bufferSize(), source1, source2);
+        return combineLatestArray(new ObservableSource[] { source1, source2 }, Functions.toFunction(combiner), bufferSize());
     }
 
     /**
@@ -482,7 +439,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
         ObjectHelper.requireNonNull(source1, "source1 is null");
         ObjectHelper.requireNonNull(source2, "source2 is null");
         ObjectHelper.requireNonNull(source3, "source3 is null");
-        return combineLatest(Functions.toFunction(combiner), bufferSize(), source1, source2, source3);
+        return combineLatestArray(new ObservableSource[] { source1, source2, source3 }, Functions.toFunction(combiner), bufferSize());
     }
 
     /**
@@ -531,7 +488,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
         ObjectHelper.requireNonNull(source2, "source2 is null");
         ObjectHelper.requireNonNull(source3, "source3 is null");
         ObjectHelper.requireNonNull(source4, "source4 is null");
-        return combineLatest(Functions.toFunction(combiner), bufferSize(), source1, source2, source3, source4);
+        return combineLatestArray(new ObservableSource[] { source1, source2, source3, source4 }, Functions.toFunction(combiner), bufferSize());
     }
 
     /**
@@ -585,7 +542,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
         ObjectHelper.requireNonNull(source3, "source3 is null");
         ObjectHelper.requireNonNull(source4, "source4 is null");
         ObjectHelper.requireNonNull(source5, "source5 is null");
-        return combineLatest(Functions.toFunction(combiner), bufferSize(), source1, source2, source3, source4, source5);
+        return combineLatestArray(new ObservableSource[] { source1, source2, source3, source4, source5 }, Functions.toFunction(combiner), bufferSize());
     }
 
     /**
@@ -643,7 +600,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
         ObjectHelper.requireNonNull(source4, "source4 is null");
         ObjectHelper.requireNonNull(source5, "source5 is null");
         ObjectHelper.requireNonNull(source6, "source6 is null");
-        return combineLatest(Functions.toFunction(combiner), bufferSize(), source1, source2, source3, source4, source5, source6);
+        return combineLatestArray(new ObservableSource[] { source1, source2, source3, source4, source5, source6 }, Functions.toFunction(combiner), bufferSize());
     }
 
     /**
@@ -706,7 +663,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
         ObjectHelper.requireNonNull(source5, "source5 is null");
         ObjectHelper.requireNonNull(source6, "source6 is null");
         ObjectHelper.requireNonNull(source7, "source7 is null");
-        return combineLatest(Functions.toFunction(combiner), bufferSize(), source1, source2, source3, source4, source5, source6, source7);
+        return combineLatestArray(new ObservableSource[] { source1, source2, source3, source4, source5, source6, source7 }, Functions.toFunction(combiner), bufferSize());
     }
 
     /**
@@ -773,7 +730,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
         ObjectHelper.requireNonNull(source6, "source6 is null");
         ObjectHelper.requireNonNull(source7, "source7 is null");
         ObjectHelper.requireNonNull(source8, "source8 is null");
-        return combineLatest(Functions.toFunction(combiner), bufferSize(), source1, source2, source3, source4, source5, source6, source7, source8);
+        return combineLatestArray(new ObservableSource[] { source1, source2, source3, source4, source5, source6, source7, source8 }, Functions.toFunction(combiner), bufferSize());
     }
 
     /**
@@ -845,7 +802,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
         ObjectHelper.requireNonNull(source7, "source7 is null");
         ObjectHelper.requireNonNull(source8, "source8 is null");
         ObjectHelper.requireNonNull(source9, "source9 is null");
-        return combineLatest(Functions.toFunction(combiner), bufferSize(), source1, source2, source3, source4, source5, source6, source7, source8, source9);
+        return combineLatestArray(new ObservableSource[] { source1, source2, source3, source4, source5, source6, source7, source8, source9 }, Functions.toFunction(combiner), bufferSize());
     }
 
     /**
@@ -888,51 +845,6 @@ public abstract class Observable<T> implements ObservableSource<T> {
     public static <T, R> Observable<R> combineLatestDelayError(ObservableSource<? extends T>[] sources,
             Function<? super Object[], ? extends R> combiner) {
         return combineLatestDelayError(sources, combiner, bufferSize());
-    }
-
-    /**
-     * Combines a collection of source ObservableSources by emitting an item that aggregates the latest values of each of
-     * the source ObservableSources each time an item is received from any of the source ObservableSources, where this
-     * aggregation is defined by a specified function and delays any error from the sources until
-     * all source ObservableSources terminate.
-     * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/combineLatestDelayError.png" alt="">
-     * <p>
-     * Note on method signature: since Java doesn't allow creating a generic array with {@code new T[]}, the
-     * implementation of this operator has to create an {@code Object[]} instead. Unfortunately, a
-     * {@code Function<Integer[], R>} passed to the method would trigger a {@code ClassCastException}.
-     * <p>
-     * If any of the sources never produces an item but only terminates (normally or with an error), the
-     * resulting sequence terminates immediately (normally or with all the errors accumulated till that point).
-     * If that input source is also synchronous, other sources after it will not be subscribed to.
-     * <p>
-     * If there are no ObservableSources provided, the resulting sequence completes immediately without emitting
-     * any items and without any calls to the combiner function.
-     *
-     * <dl>
-     *  <dt><b>Scheduler:</b></dt>
-     *  <dd>{@code combineLatestDelayError} does not operate by default on a particular {@link Scheduler}.</dd>
-     * </dl>
-     *
-     * @param <T>
-     *            the common base type of source values
-     * @param <R>
-     *            the result type
-     * @param sources
-     *            the collection of source ObservableSources
-     * @param combiner
-     *            the aggregation function used to combine the items emitted by the source ObservableSources
-     * @param bufferSize
-     *            the internal buffer size and prefetch amount applied to every source Observable
-     * @return an Observable that emits items that are the result of combining the items emitted by the source
-     *         ObservableSources by means of the given aggregation function
-     * @see <a href="http://reactivex.io/documentation/operators/combinelatest.html">ReactiveX operators documentation: CombineLatest</a>
-     */
-    @CheckReturnValue
-    @SchedulerSupport(SchedulerSupport.NONE)
-    public static <T, R> Observable<R> combineLatestDelayError(Function<? super Object[], ? extends R> combiner,
-            int bufferSize, ObservableSource<? extends T>... sources) {
-        return combineLatestDelayError(sources, combiner, bufferSize);
     }
 
     /**
@@ -1102,7 +1014,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Observable<T> concat(Iterable<? extends ObservableSource<? extends T>> sources) {
         ObjectHelper.requireNonNull(sources, "sources is null");
-        return fromIterable(sources).concatMapDelayError((Function)Functions.identity(), bufferSize(), false);
+        return fromIterable(sources).concatMapDelayError((Function)Functions.identity(), false, bufferSize());
     }
 
     /**
@@ -1359,7 +1271,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Observable<T> concatArrayEager(int maxConcurrency, int prefetch, ObservableSource<? extends T>... sources) {
-        return fromArray(sources).concatMapEagerDelayError((Function)Functions.identity(), maxConcurrency, prefetch, false);
+        return fromArray(sources).concatMapEagerDelayError((Function)Functions.identity(), false, maxConcurrency, prefetch);
     }
 
     /**
@@ -1411,7 +1323,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Observable<T> concatArrayEagerDelayError(int maxConcurrency, int prefetch, ObservableSource<? extends T>... sources) {
-        return fromArray(sources).concatMapEagerDelayError((Function)Functions.identity(), maxConcurrency, prefetch, true);
+        return fromArray(sources).concatMapEagerDelayError((Function)Functions.identity(), true, maxConcurrency, prefetch);
     }
 
     /**
@@ -1580,7 +1492,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Observable<T> concatEager(Iterable<? extends ObservableSource<? extends T>> sources, int maxConcurrency, int prefetch) {
-        return fromIterable(sources).concatMapEagerDelayError((Function)Functions.identity(), maxConcurrency, prefetch, false);
+        return fromIterable(sources).concatMapEagerDelayError((Function)Functions.identity(), false, maxConcurrency, prefetch);
     }
 
     /**
@@ -4190,12 +4102,12 @@ public abstract class Observable<T> implements ObservableSource<T> {
 
     /**
      * Returns an Observable that emits the results of a specified combiner function applied to combinations of
-     * <i>n</i> items emitted, in sequence, by the <i>n</i> ObservableSources emitted by a specified ObservableSource.
+     * items emitted, in sequence, by an Iterable of other ObservableSources.
      * <p>
      * {@code zip} applies this function in strict sequence, so the first item emitted by the new ObservableSource
-     * will be the result of the function applied to the first item emitted by each of the ObservableSources emitted
-     * by the source ObservableSource; the second item emitted by the new ObservableSource will be the result of the
-     * function applied to the second item emitted by each of those ObservableSources; and so forth.
+     * will be the result of the function applied to the first item emitted by each of the source ObservableSources;
+     * the second item emitted by the new ObservableSource will be the result of the function applied to the second
+     * item emitted by each of those ObservableSources; and so forth.
      * <p>
      * The resulting {@code ObservableSource<R>} returned from {@code zip} will invoke {@code onNext} as many times as
      * the number of {@code onNext} invocations of the source ObservableSource that emits the fewest items.
@@ -4206,7 +4118,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * {@code doOnComplete()}). This can also happen if the sources are exactly the same length; if
      * source A completes and B has been consumed and is about to complete, the operator detects A won't
      * be sending further values and it will dispose B immediately. For example:
-     * <pre><code>zip(just(range(1, 5).doOnComplete(action1), range(6, 5).doOnComplete(action2)), (a) -&gt; a)</code></pre>
+     * <pre><code>zip(Arrays.asList(range(1, 5).doOnComplete(action1), range(6, 5).doOnComplete(action2)), (a) -&gt; a)</code></pre>
      * {@code action1} will be called but {@code action2} won't.
      * <br>To work around this termination property,
      * use {@link #doOnDispose(Action)} as well or use {@code using()} to do cleanup in case of completion
@@ -4217,30 +4129,36 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * {@code Function<Integer[], R>} passed to the method would trigger a {@code ClassCastException}.
      *
      * <p>
-     * <img width="640" height="370" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/zip.o.png" alt="">
+     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/zipIterable.o.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code zip} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      *
-     * @param <T> the value type of the inner ObservableSources
-     * @param <R> the zipped result type
+     *
      * @param sources
-     *            an ObservableSource of source ObservableSources
+     *            an Iterable of source ObservableSources
      * @param zipper
-     *            a function that, when applied to an item emitted by each of the ObservableSources emitted by
-     *            {@code ws}, results in an item that will be emitted by the resulting ObservableSource
+     *            a function that, when applied to an item emitted by each of the source ObservableSources, results in
+     *            an item that will be emitted by the resulting ObservableSource
+     * @param delayError
+     *            delay errors signalled by any of the source ObservableSource until all ObservableSources terminate
+     * @param bufferSize
+     *            the number of elements to prefetch from each source ObservableSource
+     * @param <T> the common source value type
+     * @param <R> the zipped result type
      * @return an Observable that emits the zipped results
      * @see <a href="http://reactivex.io/documentation/operators/zip.html">ReactiveX operators documentation: Zip</a>
      */
-    @SuppressWarnings({ "rawtypes", "unchecked" })
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
-    public static <T, R> Observable<R> zip(ObservableSource<? extends ObservableSource<? extends T>> sources, final Function<? super Object[], ? extends R> zipper) {
+    public static <T, R> Observable<R> zip(Iterable<? extends ObservableSource<? extends T>> sources,
+            Function<? super Object[], ? extends R> zipper, boolean delayError,
+            int bufferSize) {
         ObjectHelper.requireNonNull(zipper, "zipper is null");
         ObjectHelper.requireNonNull(sources, "sources is null");
-        return RxJavaPlugins.onAssembly(new ObservableToList(sources, 16)
-                .flatMap(ObservableInternalHelper.zipIterable(zipper)));
+        ObjectHelper.verifyPositive(bufferSize, "bufferSize");
+        return RxJavaPlugins.onAssembly(new ObservableZip<T, R>(null, sources, zipper, bufferSize, delayError));
     }
 
     /**
@@ -4980,67 +4898,6 @@ public abstract class Observable<T> implements ObservableSource<T> {
         ObjectHelper.requireNonNull(zipper, "zipper is null");
         ObjectHelper.verifyPositive(bufferSize, "bufferSize");
         return RxJavaPlugins.onAssembly(new ObservableZip<T, R>(sources, null, zipper, bufferSize, delayError));
-    }
-
-    /**
-     * Returns an Observable that emits the results of a specified combiner function applied to combinations of
-     * items emitted, in sequence, by an Iterable of other ObservableSources.
-     * <p>
-     * {@code zip} applies this function in strict sequence, so the first item emitted by the new ObservableSource
-     * will be the result of the function applied to the first item emitted by each of the source ObservableSources;
-     * the second item emitted by the new ObservableSource will be the result of the function applied to the second
-     * item emitted by each of those ObservableSources; and so forth.
-     * <p>
-     * The resulting {@code ObservableSource<R>} returned from {@code zip} will invoke {@code onNext} as many times as
-     * the number of {@code onNext} invocations of the source ObservableSource that emits the fewest items.
-     * <p>
-     * The operator subscribes to its sources in order they are specified and completes eagerly if
-     * one of the sources is shorter than the rest while disposing the other sources. Therefore, it
-     * is possible those other sources will never be able to run to completion (and thus not calling
-     * {@code doOnComplete()}). This can also happen if the sources are exactly the same length; if
-     * source A completes and B has been consumed and is about to complete, the operator detects A won't
-     * be sending further values and it will dispose B immediately. For example:
-     * <pre><code>zip(Arrays.asList(range(1, 5).doOnComplete(action1), range(6, 5).doOnComplete(action2)), (a) -&gt; a)</code></pre>
-     * {@code action1} will be called but {@code action2} won't.
-     * <br>To work around this termination property,
-     * use {@link #doOnDispose(Action)} as well or use {@code using()} to do cleanup in case of completion
-     * or a dispose() call.
-     * <p>
-     * Note on method signature: since Java doesn't allow creating a generic array with {@code new T[]}, the
-     * implementation of this operator has to create an {@code Object[]} instead. Unfortunately, a
-     * {@code Function<Integer[], R>} passed to the method would trigger a {@code ClassCastException}.
-     *
-     * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/zipIterable.o.png" alt="">
-     * <dl>
-     *  <dt><b>Scheduler:</b></dt>
-     *  <dd>{@code zipIterable} does not operate by default on a particular {@link Scheduler}.</dd>
-     * </dl>
-     *
-     *
-     * @param sources
-     *            an Iterable of source ObservableSources
-     * @param zipper
-     *            a function that, when applied to an item emitted by each of the source ObservableSources, results in
-     *            an item that will be emitted by the resulting ObservableSource
-     * @param delayError
-     *            delay errors signalled by any of the source ObservableSource until all ObservableSources terminate
-     * @param bufferSize
-     *            the number of elements to prefetch from each source ObservableSource
-     * @param <T> the common source value type
-     * @param <R> the zipped result type
-     * @return an Observable that emits the zipped results
-     * @see <a href="http://reactivex.io/documentation/operators/zip.html">ReactiveX operators documentation: Zip</a>
-     */
-    @CheckReturnValue
-    @SchedulerSupport(SchedulerSupport.NONE)
-    public static <T, R> Observable<R> zipIterable(Iterable<? extends ObservableSource<? extends T>> sources,
-            Function<? super Object[], ? extends R> zipper, boolean delayError,
-            int bufferSize) {
-        ObjectHelper.requireNonNull(zipper, "zipper is null");
-        ObjectHelper.requireNonNull(sources, "sources is null");
-        ObjectHelper.verifyPositive(bufferSize, "bufferSize");
-        return RxJavaPlugins.onAssembly(new ObservableZip<T, R>(null, sources, zipper, bufferSize, delayError));
     }
 
     // ***************************************************************************************************
@@ -6495,7 +6352,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * <p>
      * Note that there is no guarantee where the given {@code mapper} function will be executed; it could be on the subscribing thread,
      * on the upstream thread signaling the new item to be mapped or on the thread where the inner source terminates. To ensure
-     * the {@code mapper} function is confined to a known thread, use the {@link #concatMapDelayError(Function, int, boolean, Scheduler)} overload.
+     * the {@code mapper} function is confined to a known thread, use the {@link #concatMapDelayError(Function, boolean, int, Scheduler)} overload.
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code concatMapDelayError} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -6504,12 +6361,12 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * @param <R> the result value type
      * @param mapper the function that maps the items of this ObservableSource into the inner ObservableSources.
      * @return the new ObservableSource instance with the concatenation behavior
-     * @see #concatMapDelayError(Function, int, boolean, Scheduler)
+     * @see #concatMapDelayError(Function, boolean, int, Scheduler)
      */
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <R> Observable<R> concatMapDelayError(Function<? super T, ? extends ObservableSource<? extends R>> mapper) {
-        return concatMapDelayError(mapper, bufferSize(), true);
+        return concatMapDelayError(mapper, true, bufferSize());
     }
 
     /**
@@ -6522,7 +6379,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * <p>
      * Note that there is no guarantee where the given {@code mapper} function will be executed; it could be on the subscribing thread,
      * on the upstream thread signaling the new item to be mapped or on the thread where the inner source terminates. To ensure
-     * the {@code mapper} function is confined to a known thread, use the {@link #concatMapDelayError(Function, int, boolean, Scheduler)} overload.
+     * the {@code mapper} function is confined to a known thread, use the {@link #concatMapDelayError(Function, boolean, int, Scheduler)} overload.
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code concatMapDelayError} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -6530,18 +6387,18 @@ public abstract class Observable<T> implements ObservableSource<T> {
      *
      * @param <R> the result value type
      * @param mapper the function that maps the items of this ObservableSource into the inner ObservableSources.
-     * @param prefetch
-     *            the number of elements to prefetch from the current Observable
      * @param tillTheEnd
      *            if true, all errors from the outer and inner ObservableSource sources are delayed until the end,
      *            if false, an error from the main source is signalled when the current ObservableSource source terminates
+     * @param prefetch
+     *            the number of elements to prefetch from the current Observable
      * @return the new ObservableSource instance with the concatenation behavior
-     * @see #concatMapDelayError(Function, int, boolean, Scheduler)
+     * @see #concatMapDelayError(Function, boolean, int, Scheduler)
      */
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <R> Observable<R> concatMapDelayError(Function<? super T, ? extends ObservableSource<? extends R>> mapper,
-            int prefetch, boolean tillTheEnd) {
+            boolean tillTheEnd, int prefetch) {
         ObjectHelper.requireNonNull(mapper, "mapper is null");
         ObjectHelper.verifyPositive(prefetch, "prefetch");
         if (this instanceof ScalarSupplier) {
@@ -6569,21 +6426,21 @@ public abstract class Observable<T> implements ObservableSource<T> {
      *
      * @param <R> the result value type
      * @param mapper the function that maps the items of this ObservableSource into the inner ObservableSources.
-     * @param prefetch
-     *            the number of elements to prefetch from the current Observable
      * @param tillTheEnd
      *            if true, all errors from the outer and inner ObservableSource sources are delayed until the end,
      *            if false, an error from the main source is signalled when the current ObservableSource source terminates
+     * @param prefetch
+     *            the number of elements to prefetch from the current Observable
      * @param scheduler
      *            the scheduler where the {@code mapper} function will be executed
      * @return the new ObservableSource instance with the concatenation behavior
-     * @see #concatMapDelayError(Function, int, boolean)
+     * @see #concatMapDelayError(Function, boolean, int)
      * @since 3.0.0
      */
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.CUSTOM)
     public final <R> Observable<R> concatMapDelayError(Function<? super T, ? extends ObservableSource<? extends R>> mapper,
-            int prefetch, boolean tillTheEnd, Scheduler scheduler) {
+            boolean tillTheEnd, int prefetch, Scheduler scheduler) {
         ObjectHelper.requireNonNull(mapper, "mapper is null");
         ObjectHelper.verifyPositive(prefetch, "prefetch");
         ObjectHelper.requireNonNull(scheduler, "scheduler is null");
@@ -6672,7 +6529,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <R> Observable<R> concatMapEagerDelayError(Function<? super T, ? extends ObservableSource<? extends R>> mapper,
             boolean tillTheEnd) {
-        return concatMapEagerDelayError(mapper, Integer.MAX_VALUE, bufferSize(), tillTheEnd);
+        return concatMapEagerDelayError(mapper, tillTheEnd, Integer.MAX_VALUE, bufferSize());
     }
 
     /**
@@ -6691,20 +6548,20 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * @param <R> the value type
      * @param mapper the function that maps a sequence of values into a sequence of ObservableSources that will be
      *               eagerly concatenated
-     * @param maxConcurrency the maximum number of concurrent subscribed ObservableSources
-     * @param prefetch
-     *               the number of elements to prefetch from each source ObservableSource
      * @param tillTheEnd
      *               if true, exceptions from the current Observable and all the inner ObservableSources are delayed until
      *               all of them terminate, if false, exception from the current Observable is delayed until the
      *               currently running ObservableSource terminates
+     * @param maxConcurrency the maximum number of concurrent subscribed ObservableSources
+     * @param prefetch
+     *               the number of elements to prefetch from each source ObservableSource
      * @return the new ObservableSource instance with the specified concatenation behavior
      * @since 2.0
      */
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <R> Observable<R> concatMapEagerDelayError(Function<? super T, ? extends ObservableSource<? extends R>> mapper,
-            int maxConcurrency, int prefetch, boolean tillTheEnd) {
+            boolean tillTheEnd, int maxConcurrency, int prefetch) {
         ObjectHelper.requireNonNull(mapper, "mapper is null");
         ObjectHelper.verifyPositive(maxConcurrency, "maxConcurrency");
         ObjectHelper.verifyPositive(prefetch, "prefetch");
@@ -9210,6 +9067,12 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * is subscribed to. For this reason, in order to avoid memory leaks, you should not simply ignore those
      * {@code GroupedObservableSource}s that do not concern you. Instead, you can signal to them that they may
      * discard their buffers by applying an operator like {@link #ignoreElements} to them.
+     * <p>
+     * Note also that ignoring groups or subscribing later (i.e., on another thread) will result in
+     * so-called group abandonment where a group will only contain one element and the group will be
+     * re-created over and over as new upstream items trigger a new group. The behavior is
+     * a tradeoff between no-dataloss, upstream cancellation and excessive group creation.
+     *
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code groupBy} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -9244,6 +9107,12 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * is subscribed to. For this reason, in order to avoid memory leaks, you should not simply ignore those
      * {@code GroupedObservableSource}s that do not concern you. Instead, you can signal to them that they may
      * discard their buffers by applying an operator like {@link #ignoreElements} to them.
+     * <p>
+     * Note also that ignoring groups or subscribing later (i.e., on another thread) will result in
+     * so-called group abandonment where a group will only contain one element and the group will be
+     * re-created over and over as new upstream items trigger a new group. The behavior is
+     * a tradeoff between no-dataloss, upstream cancellation and excessive group creation.
+     *
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code groupBy} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -9281,6 +9150,12 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * is subscribed to. For this reason, in order to avoid memory leaks, you should not simply ignore those
      * {@code GroupedObservableSource}s that do not concern you. Instead, you can signal to them that they may
      * discard their buffers by applying an operator like {@link #ignoreElements} to them.
+     * <p>
+     * Note also that ignoring groups or subscribing later (i.e., on another thread) will result in
+     * so-called group abandonment where a group will only contain one element and the group will be
+     * re-created over and over as new upstream items trigger a new group. The behavior is
+     * a tradeoff between no-dataloss, upstream cancellation and excessive group creation.
+     *
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code groupBy} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -9319,6 +9194,12 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * is subscribed to. For this reason, in order to avoid memory leaks, you should not simply ignore those
      * {@code GroupedObservableSource}s that do not concern you. Instead, you can signal to them that they may
      * discard their buffers by applying an operator like {@link #ignoreElements} to them.
+     * <p>
+     * Note also that ignoring groups or subscribing later (i.e., on another thread) will result in
+     * so-called group abandonment where a group will only contain one element and the group will be
+     * re-created over and over as new upstream items trigger a new group. The behavior is
+     * a tradeoff between no-dataloss, upstream cancellation and excessive group creation.
+     *
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code groupBy} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -9360,6 +9241,12 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * is subscribed to. For this reason, in order to avoid memory leaks, you should not simply ignore those
      * {@code GroupedObservableSource}s that do not concern you. Instead, you can signal to them that they may
      * discard their buffers by applying an operator like {@link #ignoreElements} to them.
+     * <p>
+     * Note also that ignoring groups or subscribing later (i.e., on another thread) will result in
+     * so-called group abandonment where a group will only contain one element and the group will be
+     * re-created over and over as new upstream items trigger a new group. The behavior is
+     * a tradeoff between no-dataloss, upstream cancellation and excessive group creation.
+     *
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code groupBy} does not operate by default on a particular {@link Scheduler}.</dd>

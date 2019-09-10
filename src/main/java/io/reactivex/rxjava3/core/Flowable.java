@@ -44,7 +44,7 @@ import io.reactivex.rxjava3.subscribers.*;
  * Reactive Streams implementations.
  * <p>
  * The Flowable hosts the default buffer size of 128 elements for operators, accessible via {@link #bufferSize()},
- * that can be overridden globally via the system parameter {@code rx2.buffer-size}. Most operators, however, have
+ * that can be overridden globally via the system parameter {@code rx3.buffer-size}. Most operators, however, have
  * overloads that allow setting their internal buffer size explicitly.
  * <p>
  * The documentation for this class makes use of marble diagrams. The following legend explains these diagrams:
@@ -129,9 +129,9 @@ import io.reactivex.rxjava3.subscribers.*;
  * }, BackpressureStrategy.BUFFER);
  *
  * System.out.println("Subscribe!");
- * 
+ *
  * source.subscribe(System.out::println);
- * 
+ *
  * System.out.println("Done!");
  * </code></pre>
  * <p>
@@ -153,7 +153,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     /** The default buffer size. */
     static final int BUFFER_SIZE;
     static {
-        BUFFER_SIZE = Math.max(1, Integer.getInteger("rx2.buffer-size", 128));
+        BUFFER_SIZE = Math.max(1, Integer.getInteger("rx3.buffer-size", 128));
     }
 
     /**
@@ -225,7 +225,7 @@ public abstract class Flowable<T> implements Publisher<T> {
 
     /**
      * Returns the default internal buffer size used by most async operators.
-     * <p>The value can be overridden via system parameter {@code rx2.buffer-size}
+     * <p>The value can be overridden via system parameter {@code rx3.buffer-size}
      * <em>before</em> the Flowable class is loaded.
      * @return the default internal buffer size.
      */
@@ -255,7 +255,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      *   are requested in a bounded manner, however, their backpressure is not enforced (the operator won't signal
      *   {@code MissingBackpressureException}) and may lead to {@code OutOfMemoryError} due to internal buffer bloat.</dd>
      *  <dt><b>Scheduler:</b></dt>
-     *  <dd>{@code combineLatest} does not operate by default on a particular {@link Scheduler}.</dd>
+     *  <dd>{@code combineLatestArray} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      *
      * @param <T>
@@ -273,52 +273,8 @@ public abstract class Flowable<T> implements Publisher<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     @CheckReturnValue
     @BackpressureSupport(BackpressureKind.FULL)
-    public static <T, R> Flowable<R> combineLatest(Publisher<? extends T>[] sources, Function<? super Object[], ? extends R> combiner) {
-        return combineLatest(sources, combiner, bufferSize());
-    }
-
-    /**
-     * Combines a collection of source Publishers by emitting an item that aggregates the latest values of each of
-     * the source Publishers each time an item is received from any of the source Publishers, where this
-     * aggregation is defined by a specified function.
-     * <p>
-     * Note on method signature: since Java doesn't allow creating a generic array with {@code new T[]}, the
-     * implementation of this operator has to create an {@code Object[]} instead. Unfortunately, a
-     * {@code Function<Integer[], R>} passed to the method would trigger a {@code ClassCastException}.
-     * <p>
-     * If any of the sources never produces an item but only terminates (normally or with an error), the
-     * resulting sequence terminates immediately (normally or with all the errors accumulated until that point).
-     * If that input source is also synchronous, other sources after it will not be subscribed to.
-     * <p>
-     * If there are no source Publishers provided, the resulting sequence completes immediately without emitting
-     * any items and without any calls to the combiner function.
-     *
-     * <dl>
-     *  <dt><b>Backpressure:</b></dt>
-     *  <dd>The returned {@code Publisher} honors backpressure from downstream. The source {@code Publisher}s
-     *   are requested in a bounded manner, however, their backpressure is not enforced (the operator won't signal
-     *   {@code MissingBackpressureException}) and may lead to {@code OutOfMemoryError} due to internal buffer bloat.</dd>
-     *  <dt><b>Scheduler:</b></dt>
-     *  <dd>{@code combineLatest} does not operate by default on a particular {@link Scheduler}.</dd>
-     * </dl>
-     *
-     * @param <T>
-     *            the common base type of source values
-     * @param <R>
-     *            the result type
-     * @param sources
-     *            the collection of source Publishers
-     * @param combiner
-     *            the aggregation function used to combine the items emitted by the source Publishers
-     * @return a Flowable that emits items that are the result of combining the items emitted by the source
-     *         Publishers by means of the given aggregation function
-     * @see <a href="http://reactivex.io/documentation/operators/combinelatest.html">ReactiveX operators documentation: CombineLatest</a>
-     */
-    @SchedulerSupport(SchedulerSupport.NONE)
-    @CheckReturnValue
-    @BackpressureSupport(BackpressureKind.FULL)
-    public static <T, R> Flowable<R> combineLatest(Function<? super Object[], ? extends R> combiner, Publisher<? extends T>... sources) {
-        return combineLatest(sources, combiner, bufferSize());
+    public static <T, R> Flowable<R> combineLatestArray(Publisher<? extends T>[] sources, Function<? super Object[], ? extends R> combiner) {
+        return combineLatestArray(sources, combiner, bufferSize());
     }
 
     /**
@@ -343,7 +299,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      *   are requested in a bounded manner, however, their backpressure is not enforced (the operator won't signal
      *   {@code MissingBackpressureException}) and may lead to {@code OutOfMemoryError} due to internal buffer bloat.</dd>
      *  <dt><b>Scheduler:</b></dt>
-     *  <dd>{@code combineLatest} does not operate by default on a particular {@link Scheduler}.</dd>
+     *  <dd>{@code combineLatestArray} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      *
      * @param <T>
@@ -364,7 +320,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @CheckReturnValue
     @NonNull
     @BackpressureSupport(BackpressureKind.FULL)
-    public static <T, R> Flowable<R> combineLatest(Publisher<? extends T>[] sources, Function<? super Object[], ? extends R> combiner, int bufferSize) {
+    public static <T, R> Flowable<R> combineLatestArray(Publisher<? extends T>[] sources, Function<? super Object[], ? extends R> combiner, int bufferSize) {
         ObjectHelper.requireNonNull(sources, "sources is null");
         if (sources.length == 0) {
             return empty();
@@ -513,100 +469,6 @@ public abstract class Flowable<T> implements Publisher<T> {
     public static <T, R> Flowable<R> combineLatestDelayError(Publisher<? extends T>[] sources,
             Function<? super Object[], ? extends R> combiner) {
         return combineLatestDelayError(sources, combiner, bufferSize());
-    }
-
-    /**
-     * Combines a collection of source Publishers by emitting an item that aggregates the latest values of each of
-     * the source Publishers each time an item is received from any of the source Publishers, where this
-     * aggregation is defined by a specified function and delays any error from the sources until
-     * all source Publishers terminate.
-     * <p>
-     * Note on method signature: since Java doesn't allow creating a generic array with {@code new T[]}, the
-     * implementation of this operator has to create an {@code Object[]} instead. Unfortunately, a
-     * {@code Function<Integer[], R>} passed to the method would trigger a {@code ClassCastException}.
-     * <p>
-     * If any of the sources never produces an item but only terminates (normally or with an error), the
-     * resulting sequence terminates immediately (normally or with all the errors accumulated until that point).
-     * If that input source is also synchronous, other sources after it will not be subscribed to.
-     * <p>
-     * If there are no source Publishers provided, the resulting sequence completes immediately without emitting
-     * any items and without any calls to the combiner function.
-     *
-     * <dl>
-     *  <dt><b>Backpressure:</b></dt>
-     *  <dd>The returned {@code Publisher} honors backpressure from downstream. The source {@code Publisher}s
-     *   are requested in a bounded manner, however, their backpressure is not enforced (the operator won't signal
-     *   {@code MissingBackpressureException}) and may lead to {@code OutOfMemoryError} due to internal buffer bloat.</dd>
-     *  <dt><b>Scheduler:</b></dt>
-     *  <dd>{@code combineLatestDelayError} does not operate by default on a particular {@link Scheduler}.</dd>
-     * </dl>
-     *
-     * @param <T>
-     *            the common base type of source values
-     * @param <R>
-     *            the result type
-     * @param sources
-     *            the collection of source Publishers
-     * @param combiner
-     *            the aggregation function used to combine the items emitted by the source Publishers
-     * @return a Flowable that emits items that are the result of combining the items emitted by the source
-     *         Publishers by means of the given aggregation function
-     * @see <a href="http://reactivex.io/documentation/operators/combinelatest.html">ReactiveX operators documentation: CombineLatest</a>
-     */
-    @SchedulerSupport(SchedulerSupport.NONE)
-    @CheckReturnValue
-    @BackpressureSupport(BackpressureKind.FULL)
-    public static <T, R> Flowable<R> combineLatestDelayError(Function<? super Object[], ? extends R> combiner,
-            Publisher<? extends T>... sources) {
-        return combineLatestDelayError(sources, combiner, bufferSize());
-    }
-
-    /**
-     * Combines a collection of source Publishers by emitting an item that aggregates the latest values of each of
-     * the source Publishers each time an item is received from any of the source Publisher, where this
-     * aggregation is defined by a specified function and delays any error from the sources until
-     * all source Publishers terminate.
-     * <p>
-     * Note on method signature: since Java doesn't allow creating a generic array with {@code new T[]}, the
-     * implementation of this operator has to create an {@code Object[]} instead. Unfortunately, a
-     * {@code Function<Integer[], R>} passed to the method would trigger a {@code ClassCastException}.
-     * <p>
-     * If any of the sources never produces an item but only terminates (normally or with an error), the
-     * resulting sequence terminates immediately (normally or with all the errors accumulated until that point).
-     * If that input source is also synchronous, other sources after it will not be subscribed to.
-     * <p>
-     * If there are no source Publishers provided, the resulting sequence completes immediately without emitting
-     * any items and without any calls to the combiner function.
-     *
-     * <dl>
-     *  <dt><b>Backpressure:</b></dt>
-     *  <dd>The returned {@code Publisher} honors backpressure from downstream. The source {@code Publisher}s
-     *   are requested in a bounded manner, however, their backpressure is not enforced (the operator won't signal
-     *   {@code MissingBackpressureException}) and may lead to {@code OutOfMemoryError} due to internal buffer bloat.</dd>
-     *  <dt><b>Scheduler:</b></dt>
-     *  <dd>{@code combineLatestDelayError} does not operate by default on a particular {@link Scheduler}.</dd>
-     * </dl>
-     *
-     * @param <T>
-     *            the common base type of source values
-     * @param <R>
-     *            the result type
-     * @param sources
-     *            the collection of source Publishers
-     * @param combiner
-     *            the aggregation function used to combine the items emitted by the source Publishers
-     * @param bufferSize
-     *            the internal buffer size and prefetch amount applied to every source Publisher
-     * @return a Flowable that emits items that are the result of combining the items emitted by the source
-     *         Publishers by means of the given aggregation function
-     * @see <a href="http://reactivex.io/documentation/operators/combinelatest.html">ReactiveX operators documentation: CombineLatest</a>
-     */
-    @SchedulerSupport(SchedulerSupport.NONE)
-    @CheckReturnValue
-    @BackpressureSupport(BackpressureKind.FULL)
-    public static <T, R> Flowable<R> combineLatestDelayError(Function<? super Object[], ? extends R> combiner,
-            int bufferSize, Publisher<? extends T>... sources) {
-        return combineLatestDelayError(sources, combiner, bufferSize);
     }
 
     /**
@@ -802,8 +664,7 @@ public abstract class Flowable<T> implements Publisher<T> {
             BiFunction<? super T1, ? super T2, ? extends R> combiner) {
         ObjectHelper.requireNonNull(source1, "source1 is null");
         ObjectHelper.requireNonNull(source2, "source2 is null");
-        Function<Object[], R> f = Functions.toFunction(combiner);
-        return combineLatest(f, source1, source2);
+        return combineLatestArray(new Publisher[] { source1, source2 }, Functions.toFunction(combiner), bufferSize());
     }
 
     /**
@@ -853,7 +714,7 @@ public abstract class Flowable<T> implements Publisher<T> {
         ObjectHelper.requireNonNull(source1, "source1 is null");
         ObjectHelper.requireNonNull(source2, "source2 is null");
         ObjectHelper.requireNonNull(source3, "source3 is null");
-        return combineLatest(Functions.toFunction(combiner), source1, source2, source3);
+        return combineLatestArray(new Publisher[] { source1, source2, source3 }, Functions.toFunction(combiner), bufferSize());
     }
 
     /**
@@ -907,7 +768,7 @@ public abstract class Flowable<T> implements Publisher<T> {
         ObjectHelper.requireNonNull(source2, "source2 is null");
         ObjectHelper.requireNonNull(source3, "source3 is null");
         ObjectHelper.requireNonNull(source4, "source4 is null");
-        return combineLatest(Functions.toFunction(combiner), source1, source2, source3, source4);
+        return combineLatestArray(new Publisher[] { source1, source2, source3, source4 }, Functions.toFunction(combiner), bufferSize());
     }
 
     /**
@@ -966,7 +827,7 @@ public abstract class Flowable<T> implements Publisher<T> {
         ObjectHelper.requireNonNull(source3, "source3 is null");
         ObjectHelper.requireNonNull(source4, "source4 is null");
         ObjectHelper.requireNonNull(source5, "source5 is null");
-        return combineLatest(Functions.toFunction(combiner), source1, source2, source3, source4, source5);
+        return combineLatestArray(new Publisher[] { source1, source2, source3, source4, source5 }, Functions.toFunction(combiner), bufferSize());
     }
 
     /**
@@ -1029,7 +890,7 @@ public abstract class Flowable<T> implements Publisher<T> {
         ObjectHelper.requireNonNull(source4, "source4 is null");
         ObjectHelper.requireNonNull(source5, "source5 is null");
         ObjectHelper.requireNonNull(source6, "source6 is null");
-        return combineLatest(Functions.toFunction(combiner), source1, source2, source3, source4, source5, source6);
+        return combineLatestArray(new Publisher[] { source1, source2, source3, source4, source5, source6 }, Functions.toFunction(combiner), bufferSize());
     }
 
     /**
@@ -1097,7 +958,7 @@ public abstract class Flowable<T> implements Publisher<T> {
         ObjectHelper.requireNonNull(source5, "source5 is null");
         ObjectHelper.requireNonNull(source6, "source6 is null");
         ObjectHelper.requireNonNull(source7, "source7 is null");
-        return combineLatest(Functions.toFunction(combiner), source1, source2, source3, source4, source5, source6, source7);
+        return combineLatestArray(new Publisher[] { source1, source2, source3, source4, source5, source6, source7 }, Functions.toFunction(combiner), bufferSize());
     }
 
     /**
@@ -1169,7 +1030,7 @@ public abstract class Flowable<T> implements Publisher<T> {
         ObjectHelper.requireNonNull(source6, "source6 is null");
         ObjectHelper.requireNonNull(source7, "source7 is null");
         ObjectHelper.requireNonNull(source8, "source8 is null");
-        return combineLatest(Functions.toFunction(combiner), source1, source2, source3, source4, source5, source6, source7, source8);
+        return combineLatestArray(new Publisher[] { source1, source2, source3, source4, source5, source6, source7, source8 }, Functions.toFunction(combiner), bufferSize());
     }
 
     /**
@@ -1246,7 +1107,7 @@ public abstract class Flowable<T> implements Publisher<T> {
         ObjectHelper.requireNonNull(source7, "source7 is null");
         ObjectHelper.requireNonNull(source8, "source8 is null");
         ObjectHelper.requireNonNull(source9, "source9 is null");
-        return combineLatest(Functions.toFunction(combiner), source1, source2, source3, source4, source5, source6, source7, source8, source9);
+        return combineLatestArray(new Publisher[] { source1, source2, source3, source4, source5, source6, source7, source8, source9 }, Functions.toFunction(combiner), bufferSize());
     }
 
     /**
@@ -1275,7 +1136,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     public static <T> Flowable<T> concat(Iterable<? extends Publisher<? extends T>> sources) {
         ObjectHelper.requireNonNull(sources, "sources is null");
         // unlike general sources, fromIterable can only throw on a boundary because it is consumed only there
-        return fromIterable(sources).concatMapDelayError((Function)Functions.identity(), 2, false);
+        return fromIterable(sources).concatMapDelayError((Function)Functions.identity(), false, 2);
     }
 
     /**
@@ -1649,7 +1510,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     @BackpressureSupport(BackpressureKind.FULL)
     public static <T> Flowable<T> concatArrayEagerDelayError(int maxConcurrency, int prefetch, Publisher<? extends T>... sources) {
-        return fromArray(sources).concatMapEagerDelayError((Function)Functions.identity(), maxConcurrency, prefetch, true);
+        return fromArray(sources).concatMapEagerDelayError((Function)Functions.identity(), true, maxConcurrency, prefetch);
     }
 
     /**
@@ -1725,7 +1586,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Flowable<T> concatDelayError(Publisher<? extends Publisher<? extends T>> sources, int prefetch, boolean tillTheEnd) {
-        return fromPublisher(sources).concatMapDelayError((Function)Functions.identity(), prefetch, tillTheEnd);
+        return fromPublisher(sources).concatMapDelayError((Function)Functions.identity(), tillTheEnd, prefetch);
     }
 
     /**
@@ -4686,29 +4547,29 @@ public abstract class Flowable<T> implements Publisher<T> {
 
     /**
      * Returns a Flowable that emits the results of a specified combiner function applied to combinations of
-     * <i>n</i> items emitted, in sequence, by the <i>n</i> Publishers emitted by a specified Publisher.
+     * items emitted, in sequence, by an Iterable of other Publishers.
      * <p>
      * {@code zip} applies this function in strict sequence, so the first item emitted by the new Publisher
-     * will be the result of the function applied to the first item emitted by each of the Publishers emitted
-     * by the source Publisher; the second item emitted by the new Publisher will be the result of the
-     * function applied to the second item emitted by each of those Publishers; and so forth.
+     * will be the result of the function applied to the first item emitted by each of the source Publishers;
+     * the second item emitted by the new Publisher will be the result of the function applied to the second
+     * item emitted by each of those Publishers; and so forth.
      * <p>
      * The resulting {@code Publisher<R>} returned from {@code zip} will invoke {@code onNext} as many times as
      * the number of {@code onNext} invocations of the source Publisher that emits the fewest items.
      * <p>
      * The operator subscribes to its sources in the order they are specified and completes eagerly if
-     * one of the sources is shorter than the rest while cancel the other sources. Therefore, it
+     * one of the sources is shorter than the rest while canceling the other sources. Therefore, it
      * is possible those other sources will never be able to run to completion (and thus not calling
      * {@code doOnComplete()}). This can also happen if the sources are exactly the same length; if
      * source A completes and B has been consumed and is about to complete, the operator detects A won't
      * be sending further values and it will cancel B immediately. For example:
-     * <pre><code>zip(just(range(1, 5).doOnComplete(action1), range(6, 5).doOnComplete(action2)), (a) -&gt; a)</code></pre>
+     * <pre><code>zip(Arrays.asList(range(1, 5).doOnComplete(action1), range(6, 5).doOnComplete(action2)), (a) -&gt; a)</code></pre>
      * {@code action1} will be called but {@code action2} won't.
      * <br>To work around this termination property,
      * use {@link #doOnCancel(Action)} as well or use {@code using()} to do cleanup in case of completion
      * or cancellation.
      * <p>
-     * <img width="640" height="370" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/zip.o.png" alt="">
+     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/zip.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator expects backpressure from the sources and honors backpressure from the downstream.
@@ -4718,25 +4579,32 @@ public abstract class Flowable<T> implements Publisher<T> {
      *  <dd>{@code zip} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      *
-     * @param <T> the value type of the inner Publishers
-     * @param <R> the zipped result type
+     *
      * @param sources
-     *            a Publisher of source Publishers
+     *            an Iterable of source Publishers
      * @param zipper
-     *            a function that, when applied to an item emitted by each of the Publishers emitted by
-     *            {@code ws}, results in an item that will be emitted by the resulting Publisher
+     *            a function that, when applied to an item emitted by each of the source Publishers, results in
+     *            an item that will be emitted by the resulting Publisher
+     * @param delayError
+     *            delay errors signaled by any of the source Publisher until all Publishers terminate
+     * @param bufferSize
+     *            the number of elements to prefetch from each source Publisher
+     * @param <T> the common source value type
+     * @param <R> the zipped result type
      * @return a Flowable that emits the zipped results
      * @see <a href="http://reactivex.io/documentation/operators/zip.html">ReactiveX operators documentation: Zip</a>
      */
-    @SuppressWarnings({ "rawtypes", "unchecked", "cast" })
     @CheckReturnValue
     @NonNull
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
-    public static <T, R> Flowable<R> zip(Publisher<? extends Publisher<? extends T>> sources,
-            final Function<? super Object[], ? extends R> zipper) {
+    public static <T, R> Flowable<R> zip(Iterable<? extends Publisher<? extends T>> sources,
+            Function<? super Object[], ? extends R> zipper, boolean delayError,
+            int bufferSize) {
         ObjectHelper.requireNonNull(zipper, "zipper is null");
-        return fromPublisher(sources).toList().flatMapPublisher((Function)FlowableInternalHelper.<T, R>zipIterable(zipper));
+        ObjectHelper.requireNonNull(sources, "sources is null");
+        ObjectHelper.verifyPositive(bufferSize, "bufferSize");
+        return RxJavaPlugins.onAssembly(new FlowableZip<T, R>(null, sources, zipper, bufferSize, delayError));
     }
 
     /**
@@ -5538,68 +5406,6 @@ public abstract class Flowable<T> implements Publisher<T> {
         ObjectHelper.requireNonNull(zipper, "zipper is null");
         ObjectHelper.verifyPositive(bufferSize, "bufferSize");
         return RxJavaPlugins.onAssembly(new FlowableZip<T, R>(sources, null, zipper, bufferSize, delayError));
-    }
-
-    /**
-     * Returns a Flowable that emits the results of a specified combiner function applied to combinations of
-     * items emitted, in sequence, by an Iterable of other Publishers.
-     * <p>
-     * {@code zip} applies this function in strict sequence, so the first item emitted by the new Publisher
-     * will be the result of the function applied to the first item emitted by each of the source Publishers;
-     * the second item emitted by the new Publisher will be the result of the function applied to the second
-     * item emitted by each of those Publishers; and so forth.
-     * <p>
-     * The resulting {@code Publisher<R>} returned from {@code zip} will invoke {@code onNext} as many times as
-     * the number of {@code onNext} invocations of the source Publisher that emits the fewest items.
-     * <p>
-     * The operator subscribes to its sources in the order they are specified and completes eagerly if
-     * one of the sources is shorter than the rest while canceling the other sources. Therefore, it
-     * is possible those other sources will never be able to run to completion (and thus not calling
-     * {@code doOnComplete()}). This can also happen if the sources are exactly the same length; if
-     * source A completes and B has been consumed and is about to complete, the operator detects A won't
-     * be sending further values and it will cancel B immediately. For example:
-     * <pre><code>zip(Arrays.asList(range(1, 5).doOnComplete(action1), range(6, 5).doOnComplete(action2)), (a) -&gt; a)</code></pre>
-     * {@code action1} will be called but {@code action2} won't.
-     * <br>To work around this termination property,
-     * use {@link #doOnCancel(Action)} as well or use {@code using()} to do cleanup in case of completion
-     * or cancellation.
-     * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/zip.png" alt="">
-     * <dl>
-     *  <dt><b>Backpressure:</b></dt>
-     *  <dd>The operator expects backpressure from the sources and honors backpressure from the downstream.
-     *  (I.e., zipping with {@link #interval(long, TimeUnit)} may result in MissingBackpressureException, use
-     *  one of the {@code onBackpressureX} to handle similar, backpressure-ignoring sources.</dd>
-     *  <dt><b>Scheduler:</b></dt>
-     *  <dd>{@code zipIterable} does not operate by default on a particular {@link Scheduler}.</dd>
-     * </dl>
-     *
-     *
-     * @param sources
-     *            an Iterable of source Publishers
-     * @param zipper
-     *            a function that, when applied to an item emitted by each of the source Publishers, results in
-     *            an item that will be emitted by the resulting Publisher
-     * @param delayError
-     *            delay errors signaled by any of the source Publisher until all Publishers terminate
-     * @param bufferSize
-     *            the number of elements to prefetch from each source Publisher
-     * @param <T> the common source value type
-     * @param <R> the zipped result type
-     * @return a Flowable that emits the zipped results
-     * @see <a href="http://reactivex.io/documentation/operators/zip.html">ReactiveX operators documentation: Zip</a>
-     */
-    @CheckReturnValue
-    @NonNull
-    @BackpressureSupport(BackpressureKind.FULL)
-    @SchedulerSupport(SchedulerSupport.NONE)
-    public static <T, R> Flowable<R> zipIterable(Iterable<? extends Publisher<? extends T>> sources,
-            Function<? super Object[], ? extends R> zipper, boolean delayError,
-            int bufferSize) {
-        ObjectHelper.requireNonNull(zipper, "zipper is null");
-        ObjectHelper.requireNonNull(sources, "sources is null");
-        ObjectHelper.verifyPositive(bufferSize, "bufferSize");
-        return RxJavaPlugins.onAssembly(new FlowableZip<T, R>(null, sources, zipper, bufferSize, delayError));
     }
 
     // ***************************************************************************************************
@@ -7320,7 +7126,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @see <a href="http://reactivex.io/documentation/operators/flatmap.html">ReactiveX operators documentation: FlatMap</a>
      * @since 3.0.0
      * @see #concatMap(Function, int)
-     * @see #concatMapDelayError(Function, int, boolean, Scheduler)
+     * @see #concatMapDelayError(Function, boolean, int, Scheduler)
      */
     @CheckReturnValue
     @NonNull
@@ -7505,7 +7311,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * <p>
      * Note that there is no guarantee where the given {@code mapper} function will be executed; it could be on the subscribing thread,
      * on the upstream thread signaling the new item to be mapped or on the thread where the inner source terminates. To ensure
-     * the {@code mapper} function is confined to a known thread, use the {@link #concatMapDelayError(Function, int, boolean, Scheduler)} overload.
+     * the {@code mapper} function is confined to a known thread, use the {@link #concatMapDelayError(Function, boolean, int, Scheduler)} overload.
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator honors backpressure from downstream. Both this and the inner {@code Publisher}s are
@@ -7520,13 +7326,13 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @param <R> the result value type
      * @param mapper the function that maps the items of this Publisher into the inner Publishers.
      * @return the new Publisher instance with the concatenation behavior
-     * @see #concatMapDelayError(Function, int, boolean, Scheduler)
+     * @see #concatMapDelayError(Function, boolean, int, Scheduler)
      */
     @CheckReturnValue
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <R> Flowable<R> concatMapDelayError(Function<? super T, ? extends Publisher<? extends R>> mapper) {
-        return concatMapDelayError(mapper, 2, true);
+        return concatMapDelayError(mapper, true, 2);
     }
 
     /**
@@ -7537,7 +7343,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * <p>
      * Note that there is no guarantee where the given {@code mapper} function will be executed; it could be on the subscribing thread,
      * on the upstream thread signaling the new item to be mapped or on the thread where the inner source terminates. To ensure
-     * the {@code mapper} function is confined to a known thread, use the {@link #concatMapDelayError(Function, int, boolean, Scheduler)} overload.
+     * the {@code mapper} function is confined to a known thread, use the {@link #concatMapDelayError(Function, boolean, int, Scheduler)} overload.
      *
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
@@ -7552,20 +7358,20 @@ public abstract class Flowable<T> implements Publisher<T> {
      *
      * @param <R> the result value type
      * @param mapper the function that maps the items of this Publisher into the inner Publishers.
-     * @param prefetch
-     *            the number of elements to prefetch from the current Flowable
      * @param tillTheEnd
      *            if true, all errors from the outer and inner Publisher sources are delayed until the end,
      *            if false, an error from the main source is signaled when the current Publisher source terminates
+     * @param prefetch
+     *            the number of elements to prefetch from the current Flowable
      * @return the new Publisher instance with the concatenation behavior
-     * @see #concatMapDelayError(Function, int, boolean, Scheduler)
+     * @see #concatMapDelayError(Function, boolean, int, Scheduler)
      */
     @CheckReturnValue
     @NonNull
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <R> Flowable<R> concatMapDelayError(Function<? super T, ? extends Publisher<? extends R>> mapper,
-            int prefetch, boolean tillTheEnd) {
+            boolean tillTheEnd, int prefetch) {
         ObjectHelper.requireNonNull(mapper, "mapper is null");
         ObjectHelper.verifyPositive(prefetch, "prefetch");
         if (this instanceof ScalarSupplier) {
@@ -7585,7 +7391,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * while executing the mapper function on the designated scheduler, delaying any error from either this or any of the
      * inner Publishers till all of them terminate.
      * <p>
-     * The difference between {@link #concatMapDelayError(Function, int, boolean)} and this operator is that this operator guarantees the {@code mapper}
+     * The difference between {@link #concatMapDelayError(Function, boolean, int)} and this operator is that this operator guarantees the {@code mapper}
      * function is executed on the specified scheduler.
      *
      * <dl>
@@ -7601,15 +7407,15 @@ public abstract class Flowable<T> implements Publisher<T> {
      *
      * @param <R> the result value type
      * @param mapper the function that maps the items of this Publisher into the inner Publishers.
-     * @param prefetch
-     *            the number of elements to prefetch from the current Flowable
      * @param tillTheEnd
      *            if true, all errors from the outer and inner Publisher sources are delayed until the end,
      *            if false, an error from the main source is signaled when the current Publisher source terminates
+     * @param prefetch
+     *            the number of elements to prefetch from the current Flowable
      * @param scheduler
      *            the scheduler where the {@code mapper} function will be executed
      * @return the new Publisher instance with the concatenation behavior
-     * @see #concatMapDelayError(Function, int, boolean)
+     * @see #concatMapDelayError(Function, boolean, int)
      * @since 3.0.0
      */
     @CheckReturnValue
@@ -7617,7 +7423,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.CUSTOM)
     public final <R> Flowable<R> concatMapDelayError(Function<? super T, ? extends Publisher<? extends R>> mapper,
-            int prefetch, boolean tillTheEnd, Scheduler scheduler) {
+            boolean tillTheEnd, int prefetch, Scheduler scheduler) {
         ObjectHelper.requireNonNull(mapper, "mapper is null");
         ObjectHelper.verifyPositive(prefetch, "prefetch");
         ObjectHelper.requireNonNull(scheduler, "scheduler is null");
@@ -7713,7 +7519,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <R> Flowable<R> concatMapEagerDelayError(Function<? super T, ? extends Publisher<? extends R>> mapper,
             boolean tillTheEnd) {
-        return concatMapEagerDelayError(mapper, bufferSize(), bufferSize(), tillTheEnd);
+        return concatMapEagerDelayError(mapper, tillTheEnd, bufferSize(), bufferSize());
     }
 
     /**
@@ -7733,13 +7539,13 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @param <R> the value type
      * @param mapper the function that maps a sequence of values into a sequence of Publishers that will be
      *               eagerly concatenated
-     * @param maxConcurrency the maximum number of concurrent subscribed Publishers
-     * @param prefetch
-     *               the number of elements to prefetch from each source Publisher
      * @param tillTheEnd
      *               if true, exceptions from the current Flowable and all the inner Publishers are delayed until
      *               all of them terminate, if false, exception from the current Flowable is delayed until the
      *               currently running Publisher terminates
+     * @param maxConcurrency the maximum number of concurrent subscribed Publishers
+     * @param prefetch
+     *               the number of elements to prefetch from each source Publisher
      * @return the new Publisher instance with the specified concatenation behavior
      * @since 2.0
      */
@@ -7748,7 +7554,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <R> Flowable<R> concatMapEagerDelayError(Function<? super T, ? extends Publisher<? extends R>> mapper,
-            int maxConcurrency, int prefetch, boolean tillTheEnd) {
+            boolean tillTheEnd, int maxConcurrency, int prefetch) {
         ObjectHelper.requireNonNull(mapper, "mapper is null");
         ObjectHelper.verifyPositive(maxConcurrency, "maxConcurrency");
         ObjectHelper.verifyPositive(prefetch, "prefetch");
@@ -10608,6 +10414,11 @@ public abstract class Flowable<T> implements Publisher<T> {
      * {@link #flatMap(Function, int)} or {@link #concatMapEager(Function, int, int)} and overriding the default maximum concurrency
      * value to be greater or equal to the expected number of groups, possibly using
      * {@code Integer.MAX_VALUE} if the number of expected groups is unknown.
+     * <p>
+     * Note also that ignoring groups or subscribing later (i.e., on another thread) will result in
+     * so-called group abandonment where a group will only contain one element and the group will be
+     * re-created over and over as new upstream items trigger a new group. The behavior is
+     * a tradeoff between no-dataloss, upstream cancellation and excessive group creation.
      *
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
@@ -10656,6 +10467,12 @@ public abstract class Flowable<T> implements Publisher<T> {
      * {@link #flatMap(Function, int)} or {@link #concatMapEager(Function, int, int)} and overriding the default maximum concurrency
      * value to be greater or equal to the expected number of groups, possibly using
      * {@code Integer.MAX_VALUE} if the number of expected groups is unknown.
+     * <p>
+     * Note also that ignoring groups or subscribing later (i.e., on another thread) will result in
+     * so-called group abandonment where a group will only contain one element and the group will be
+     * re-created over and over as new upstream items trigger a new group. The behavior is
+     * a tradeoff between no-dataloss, upstream cancellation and excessive group creation.
+     *
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>Both the returned and its inner {@code Publisher}s honor backpressure and the source {@code Publisher}
@@ -10706,6 +10523,11 @@ public abstract class Flowable<T> implements Publisher<T> {
      * {@link #flatMap(Function, int)} or {@link #concatMapEager(Function, int, int)} and overriding the default maximum concurrency
      * value to be greater or equal to the expected number of groups, possibly using
      * {@code Integer.MAX_VALUE} if the number of expected groups is unknown.
+     * <p>
+     * Note also that ignoring groups or subscribing later (i.e., on another thread) will result in
+     * so-called group abandonment where a group will only contain one element and the group will be
+     * re-created over and over as new upstream items trigger a new group. The behavior is
+     * a tradeoff between no-dataloss, upstream cancellation and excessive group creation.
      *
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
@@ -10759,6 +10581,11 @@ public abstract class Flowable<T> implements Publisher<T> {
      * {@link #flatMap(Function, int)} or {@link #concatMapEager(Function, int, int)} and overriding the default maximum concurrency
      * value to be greater or equal to the expected number of groups, possibly using
      * {@code Integer.MAX_VALUE} if the number of expected groups is unknown.
+     * <p>
+     * Note also that ignoring groups or subscribing later (i.e., on another thread) will result in
+     * so-called group abandonment where a group will only contain one element and the group will be
+     * re-created over and over as new upstream items trigger a new group. The behavior is
+     * a tradeoff between no-dataloss, upstream cancellation and excessive group creation.
      *
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
@@ -10815,6 +10642,11 @@ public abstract class Flowable<T> implements Publisher<T> {
      * {@link #flatMap(Function, int)} or {@link #concatMapEager(Function, int, int)} and overriding the default maximum concurrency
      * value to be greater or equal to the expected number of groups, possibly using
      * {@code Integer.MAX_VALUE} if the number of expected groups is unknown.
+     * <p>
+     * Note also that ignoring groups or subscribing later (i.e., on another thread) will result in
+     * so-called group abandonment where a group will only contain one element and the group will be
+     * re-created over and over as new upstream items trigger a new group. The behavior is
+     * a tradeoff between no-dataloss, upstream cancellation and excessive group creation.
      *
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
@@ -10870,15 +10702,15 @@ public abstract class Flowable<T> implements Publisher<T> {
      * map has been evicted. The next source emission will bring about the completion of the evicted
      * {@link GroupedFlowable}s and the arrival of an item with the same key as a completed {@link GroupedFlowable}
      * will prompt the creation and emission of a new {@link GroupedFlowable} with that key.
-     * 
+     *
      * <p>A use case for specifying an {@code evictingMapFactory} is where the source is infinite and fast and
      * over time the number of keys grows enough to be a concern in terms of the memory footprint of the
      * internal hash map containing the {@link GroupedFlowable}s.
-     * 
+     *
      * <p>The map created by an {@code evictingMapFactory} must be thread-safe.
-     * 
+     *
      * <p>An example of an {@code evictingMapFactory} using <a href="https://google.github.io/guava/releases/24.0-jre/api/docs/com/google/common/cache/CacheBuilder.html">CacheBuilder</a> from the Guava library is below:
-     * 
+     *
      * <pre><code>
      * Function&lt;Consumer&lt;Object&gt;, Map&lt;Integer, Object&gt;&gt; evictingMapFactory =
      *   notify -&gt;
@@ -10905,7 +10737,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      *   .flatMap(g -&gt; g)
      *   .forEach(System.out::println);
      * </code></pre>
-     * 
+     *
      * <p>
      * <img width="640" height="360" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/groupBy.png" alt="">
      * <p>
@@ -10920,6 +10752,11 @@ public abstract class Flowable<T> implements Publisher<T> {
      * {@link #flatMap(Function, int)} or {@link #concatMapEager(Function, int, int)} and overriding the default maximum concurrency
      * value to be greater or equal to the expected number of groups, possibly using
      * {@code Integer.MAX_VALUE} if the number of expected groups is unknown.
+     * <p>
+     * Note also that ignoring groups or subscribing later (i.e., on another thread) will result in
+     * so-called group abandonment where a group will only contain one element and the group will be
+     * re-created over and over as new upstream items trigger a new group. The behavior is
+     * a tradeoff between no-dataloss, upstream cancellation and excessive group creation.
      *
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
@@ -11238,7 +11075,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * Example:
      * <pre><code>
      * // Step 1: Create the consumer type that will be returned by the FlowableOperator.apply():
-     * 
+     *
      * public final class CustomSubscriber&lt;T&gt; implements FlowableSubscriber&lt;T&gt;, Subscription {
      *
      *     // The downstream's Subscriber that will receive the onXXX events

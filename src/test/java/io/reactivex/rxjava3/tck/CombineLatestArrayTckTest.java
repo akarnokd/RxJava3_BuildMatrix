@@ -26,15 +26,14 @@ public class CombineLatestArrayTckTest extends BaseTck<Long> {
     @Override
     public Publisher<Long> createPublisher(long elements) {
         return
-            Flowable.combineLatest(
+            Flowable.combineLatestArray(
+                new Publisher[] { Flowable.just(1L), Flowable.fromIterable(iterate(elements)) },
                 new Function<Object[], Long>() {
                     @Override
                     public Long apply(Object[] a) throws Exception {
                         return (Long)a[0];
                     }
-                },
-                Flowable.just(1L),
-                Flowable.fromIterable(iterate(elements))
+                }
             )
         ;
     }
