@@ -14,7 +14,7 @@ before_install:
 
 matrix:
   include:
-    - env: JDK='Oracle JDK 14 target 14' RXJAVA_TARGET=14
+    - env: JDK='Oracle JDK 14 target 14' RXJAVA_TARGET=11
       jdk: openjdk11
       install: . ./usejdk14.sh
 
