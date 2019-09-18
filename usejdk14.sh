@@ -1,2 +1,3 @@
 #!/bin/bash
-JDK14=$(./install-jdk.sh --silent --emit-java-home -F 14 -L GPL)
+export JDK14=$(./install-jdk.sh --silent --emit-java-home -F 14 -L GPL)
+echo JDK14: $JDK14
