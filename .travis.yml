@@ -10,6 +10,7 @@ before_install:
   - export GRADLE_OPTS=-Xmx1024m
   - wget https://github.com/sormuras/bach/raw/master/install-jdk.sh
   - chmod +x usejdk14.sh
+  - chmod +x install-jdk.sh
 
 matrix:
   include:
