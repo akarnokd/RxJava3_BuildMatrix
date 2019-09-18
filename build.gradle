@@ -67,6 +67,15 @@ if (targetStr == null || targetStr.isEmpty()) {
 sourceCompatibility = targetStr
 targetCompatibility = targetStr
 
+def jdk14dir = Systemg.getenv("JDK14")
+if (jdk14dir != null) {
+    println("JDK 14 override: " + jdk14dir);
+    compileJava.options.forkOptions.executable = jdk14dir + "/bin/javac"
+    javadoc.executable = jdk14dir + "/bin/javadoc"
+    test.executable = jdk14dir + "/bin/java"
+    compileTestJava.options.forkOptions.executable = compileJava.options.forkOptions.executable
+}
+
 // use animal sniffer only with target 6 or 7
 // javac 9+ may generate Java 7+ API calls on its own
 def sniff = "1.6".equals(targetStr) || "1.7".equals(targetStr)
@@ -288,8 +297,11 @@ test {
 }
 
 task testng(type: Test) { 
-     useTestNG()
-     testLogging  {
+    useTestNG()
+    if (jdk14dir != null) {
+        executable = test.executable
+    }
+    testLogging  {
         events=["skipped", "failed"]
         exceptionFormat="full"
 
