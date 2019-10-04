@@ -67,6 +67,7 @@ if (targetStr == null || targetStr.isEmpty()) {
 sourceCompatibility = targetStr
 targetCompatibility = targetStr
 
+// workaround for JDK 14 as Gradle 6 so far doesn't work natively with it
 def jdk14dir = System.getenv("JDK14")
 if (jdk14dir != null) {
     println("JDK 14 override: " + jdk14dir);
