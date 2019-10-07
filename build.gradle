@@ -39,6 +39,8 @@ buildscript {
 group = "io.reactivex.rxjava3"
 ext.githubProjectName = "rxjava"
 
+println(project.version)
+
 version = project.properties["release.version"]
 
 def releaseTag = System.getenv("TRAVIS_TAG");
