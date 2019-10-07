@@ -41,8 +41,6 @@ ext.githubProjectName = "rxjava"
 
 println(project.version)
 
-version = project.properties["release.version"]
-
 def releaseTag = System.getenv("TRAVIS_TAG");
 if (releaseTag != null && !releaseTag.isEmpty()) {
     if (releaseTag.startsWith("v")) {
