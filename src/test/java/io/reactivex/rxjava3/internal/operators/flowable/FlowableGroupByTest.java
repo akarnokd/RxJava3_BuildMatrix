@@ -2341,7 +2341,8 @@ public class FlowableGroupByTest extends RxJavaTest {
             try {
                 final PublishProcessor<Integer> pp = PublishProcessor.create();
 
-                final AtomicReference<QueueSubscription<GroupedFlowable<Integer, Integer>>> qs = new AtomicReference<QueueSubscription<GroupedFlowable<Integer, Integer>>>();
+                final AtomicReference<QueueSubscription<GroupedFlowable<Integer, Integer>>> qs =
+                        new AtomicReference<QueueSubscription<GroupedFlowable<Integer, Integer>>>();
 
                 final TestSubscriber<Integer> ts2 = new TestSubscriber<Integer>();
 
