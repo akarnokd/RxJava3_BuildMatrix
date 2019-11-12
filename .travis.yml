@@ -23,15 +23,15 @@ matrix:
     - env: JDK='Oracle JDK 14 target 11' RXJAVA_TARGET=11
       jdk: openjdk11
       install: . ./usejdk14.sh
-# target 12+ doesn't work yet
-    - env: JDK='Oracle JDK 14 target 12' RXJAVA_TARGET=11
-      jdk: openjdk11
+    - env: JDK='Oracle JDK 14 target 12' RXJAVA_TARGET=12
+      jdk: openjdk13
       install: . ./usejdk14.sh
-    - env: JDK='Oracle JDK 14 target 13' RXJAVA_TARGET=11
-      jdk: openjdk11
+    - env: JDK='Oracle JDK 14 target 13' RXJAVA_TARGET=13
+      jdk: openjdk13
       install: . ./usejdk14.sh
-    - env: JDK='Oracle JDK 14 target 14' RXJAVA_TARGET=11
-      jdk: openjdk11
+    # target 14 doesn't work yet
+    - env: JDK='Oracle JDK 14 target 14' RXJAVA_TARGET=13
+      jdk: openjdk13
       install: . ./usejdk14.sh
     # ------------------------------------------------------------
     - env: JDK='Oracle JDK 13 target 8' RXJAVA_TARGET=1.8
