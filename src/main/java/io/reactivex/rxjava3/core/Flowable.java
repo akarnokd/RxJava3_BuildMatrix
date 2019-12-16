@@ -19,7 +19,7 @@ import org.reactivestreams.*;
 
 import io.reactivex.rxjava3.annotations.*;
 import io.reactivex.rxjava3.disposables.Disposable;
-import io.reactivex.rxjava3.exceptions.Exceptions;
+import io.reactivex.rxjava3.exceptions.*;
 import io.reactivex.rxjava3.flowables.*;
 import io.reactivex.rxjava3.functions.*;
 import io.reactivex.rxjava3.internal.functions.*;
@@ -114,7 +114,7 @@ import io.reactivex.rxjava3.subscribers.*;
  *         Thread.sleep(1000);
  *
  *         // the consumer might have cancelled the flow
- *         if (emitter.isCancelled() {
+ *         if (emitter.isCancelled()) {
  *             return;
  *         }
  *
@@ -10421,13 +10421,16 @@ public abstract class Flowable<T> implements Publisher<T> {
      *
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
-     *  <dd>Both the returned and its inner {@code Publisher}s honor backpressure and the source {@code Publisher}
-     *  is consumed in a bounded mode (i.e., requested a fixed amount upfront and replenished based on
-     *  downstream consumption). Note that both the returned and its inner {@code Publisher}s use
-     *  unbounded internal buffers and if the source {@code Publisher} doesn't honor backpressure, that <em>may</em>
-     *  lead to {@code OutOfMemoryError}.</dd>
+     *  <dd>The consumer of the returned {@code Flowable} has to be ready to receive new {@code GroupedFlowable}s or else
+     *  this operator will signal {@link MissingBackpressureException}. To avoid this exception, make
+     *  sure a combining operator (such as {@code flatMap}) has adequate amount of buffering/prefetch configured.
+     *  The inner {@code GroupedFlowable}s honor backpressure but due to the single-source multiple consumer
+     *  nature of this operator, each group must be consumed so the whole operator can make progress and not hang.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code groupBy} does not operate by default on a particular {@link Scheduler}.</dd>
+     *  <dt><b>Error handling:</b></dt>
+     *  <dd>If the upstream signals or the callback(s) throw an exception, the returned {@code Flowable} and
+     *  all active inner {@code GroupedFlowable}s will signal the same exception.</dd>
      * </dl>
      *
      * @param keySelector
@@ -10438,9 +10441,11 @@ public abstract class Flowable<T> implements Publisher<T> {
      *         unique key value and each of which emits those items from the source Publisher that share that
      *         key value
      * @see <a href="http://reactivex.io/documentation/operators/groupby.html">ReactiveX operators documentation: GroupBy</a>
+     * @see #groupBy(Function, boolean)
+     * @see #groupBy(Function, Function)
      */
     @CheckReturnValue
-    @BackpressureSupport(BackpressureKind.FULL)
+    @BackpressureSupport(BackpressureKind.ERROR)
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <K> Flowable<GroupedFlowable<K, T>> groupBy(Function<? super T, ? extends K> keySelector) {
         return groupBy(keySelector, Functions.<T>identity(), false, bufferSize());
@@ -10474,13 +10479,16 @@ public abstract class Flowable<T> implements Publisher<T> {
      *
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
-     *  <dd>Both the returned and its inner {@code Publisher}s honor backpressure and the source {@code Publisher}
-     *  is consumed in a bounded mode (i.e., requested a fixed amount upfront and replenished based on
-     *  downstream consumption). Note that both the returned and its inner {@code Publisher}s use
-     *  unbounded internal buffers and if the source {@code Publisher} doesn't honor backpressure, that <em>may</em>
-     *  lead to {@code OutOfMemoryError}.</dd>
+     *  <dd>The consumer of the returned {@code Flowable} has to be ready to receive new {@code GroupedFlowable}s or else
+     *  this operator will signal {@link MissingBackpressureException}. To avoid this exception, make
+     *  sure a combining operator (such as {@code flatMap}) has adequate amount of buffering/prefetch configured.
+     *  The inner {@code GroupedFlowable}s honor backpressure but due to the single-source multiple consumer
+     *  nature of this operator, each group must be consumed so the whole operator can make progress and not hang.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code groupBy} does not operate by default on a particular {@link Scheduler}.</dd>
+     *  <dt><b>Error handling:</b></dt>
+     *  <dd>If the upstream signals or the callback(s) throw an exception, the returned {@code Flowable} and
+     *  all active inner {@code GroupedFlowable}s will signal the same exception.</dd>
      * </dl>
      *
      * @param keySelector
@@ -10496,7 +10504,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @see <a href="http://reactivex.io/documentation/operators/groupby.html">ReactiveX operators documentation: GroupBy</a>
      */
     @CheckReturnValue
-    @BackpressureSupport(BackpressureKind.FULL)
+    @BackpressureSupport(BackpressureKind.ERROR)
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <K> Flowable<GroupedFlowable<K, T>> groupBy(Function<? super T, ? extends K> keySelector, boolean delayError) {
         return groupBy(keySelector, Functions.<T>identity(), delayError, bufferSize());
@@ -10530,13 +10538,16 @@ public abstract class Flowable<T> implements Publisher<T> {
      *
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
-     *  <dd>Both the returned and its inner {@code Publisher}s honor backpressure and the source {@code Publisher}
-     *  is consumed in a bounded mode (i.e., requested a fixed amount upfront and replenished based on
-     *  downstream consumption). Note that both the returned and its inner {@code Publisher}s use
-     *  unbounded internal buffers and if the source {@code Publisher} doesn't honor backpressure, that <em>may</em>
-     *  lead to {@code OutOfMemoryError}.</dd>
+     *  <dd>The consumer of the returned {@code Flowable} has to be ready to receive new {@code GroupedFlowable}s or else
+     *  this operator will signal {@link MissingBackpressureException}. To avoid this exception, make
+     *  sure a combining operator (such as {@code flatMap}) has adequate amount of buffering/prefetch configured.
+     *  The inner {@code GroupedFlowable}s honor backpressure but due to the single-source multiple consumer
+     *  nature of this operator, each group must be consumed so the whole operator can make progress and not hang.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code groupBy} does not operate by default on a particular {@link Scheduler}.</dd>
+     *  <dt><b>Error handling:</b></dt>
+     *  <dd>If the upstream signals or the callback(s) throw an exception, the returned {@code Flowable} and
+     *  all active inner {@code GroupedFlowable}s will signal the same exception.</dd>
      * </dl>
      *
      * @param keySelector
@@ -10551,9 +10562,12 @@ public abstract class Flowable<T> implements Publisher<T> {
      *         unique key value and each of which emits those items from the source Publisher that share that
      *         key value
      * @see <a href="http://reactivex.io/documentation/operators/groupby.html">ReactiveX operators documentation: GroupBy</a>
+     * @see #groupBy(Function, Function, boolean)
+     * @see #groupBy(Function, Function, boolean, int)
+     * @see #groupBy(Function, Function, boolean, int, Function)
      */
     @CheckReturnValue
-    @BackpressureSupport(BackpressureKind.FULL)
+    @BackpressureSupport(BackpressureKind.ERROR)
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <K, V> Flowable<GroupedFlowable<K, V>> groupBy(Function<? super T, ? extends K> keySelector,
             Function<? super T, ? extends V> valueSelector) {
@@ -10588,13 +10602,16 @@ public abstract class Flowable<T> implements Publisher<T> {
      *
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
-     *  <dd>Both the returned and its inner {@code Publisher}s honor backpressure and the source {@code Publisher}
-     *  is consumed in a bounded mode (i.e., requested a fixed amount upfront and replenished based on
-     *  downstream consumption). Note that both the returned and its inner {@code Publisher}s use
-     *  unbounded internal buffers and if the source {@code Publisher} doesn't honor backpressure, that <em>may</em>
-     *  lead to {@code OutOfMemoryError}.</dd>
+     *  <dd>The consumer of the returned {@code Flowable} has to be ready to receive new {@code GroupedFlowable}s or else
+     *  this operator will signal {@link MissingBackpressureException}. To avoid this exception, make
+     *  sure a combining operator (such as {@code flatMap}) has adequate amount of buffering/prefetch configured.
+     *  The inner {@code GroupedFlowable}s honor backpressure but due to the single-source multiple consumer
+     *  nature of this operator, each group must be consumed so the whole operator can make progress and not hang.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code groupBy} does not operate by default on a particular {@link Scheduler}.</dd>
+     *  <dt><b>Error handling:</b></dt>
+     *  <dd>If the upstream signals or the callback(s) throw an exception, the returned {@code Flowable} and
+     *  all active inner {@code GroupedFlowable}s will signal the same exception.</dd>
      * </dl>
      *
      * @param keySelector
@@ -10612,9 +10629,10 @@ public abstract class Flowable<T> implements Publisher<T> {
      *         unique key value and each of which emits those items from the source Publisher that share that
      *         key value
      * @see <a href="http://reactivex.io/documentation/operators/groupby.html">ReactiveX operators documentation: GroupBy</a>
+     * @see #groupBy(Function, Function, boolean, int)
      */
     @CheckReturnValue
-    @BackpressureSupport(BackpressureKind.FULL)
+    @BackpressureSupport(BackpressureKind.ERROR)
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <K, V> Flowable<GroupedFlowable<K, V>> groupBy(Function<? super T, ? extends K> keySelector,
             Function<? super T, ? extends V> valueSelector, boolean delayError) {
@@ -10649,13 +10667,16 @@ public abstract class Flowable<T> implements Publisher<T> {
      *
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
-     *  <dd>Both the returned and its inner {@code Publisher}s honor backpressure and the source {@code Publisher}
-     *  is consumed in a bounded mode (i.e., requested a fixed amount upfront and replenished based on
-     *  downstream consumption). Note that both the returned and its inner {@code Publisher}s use
-     *  unbounded internal buffers and if the source {@code Publisher} doesn't honor backpressure, that <em>may</em>
-     *  lead to {@code OutOfMemoryError}.</dd>
+     *  <dd>The consumer of the returned {@code Flowable} has to be ready to receive new {@code GroupedFlowable}s or else
+     *  this operator will signal {@link MissingBackpressureException}. To avoid this exception, make
+     *  sure a combining operator (such as {@code flatMap}) has adequate amount of buffering/prefetch configured.
+     *  The inner {@code GroupedFlowable}s honor backpressure but due to the single-source multiple consumer
+     *  nature of this operator, each group must be consumed so the whole operator can make progress and not hang.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code groupBy} does not operate by default on a particular {@link Scheduler}.</dd>
+     *  <dt><b>Error handling:</b></dt>
+     *  <dd>If the upstream signals or the callback(s) throw an exception, the returned {@code Flowable} and
+     *  all active inner {@code GroupedFlowable}s will signal the same exception.</dd>
      * </dl>
      *
      * @param keySelector
@@ -10678,7 +10699,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      */
     @CheckReturnValue
     @NonNull
-    @BackpressureSupport(BackpressureKind.FULL)
+    @BackpressureSupport(BackpressureKind.SPECIAL)
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <K, V> Flowable<GroupedFlowable<K, V>> groupBy(Function<? super T, ? extends K> keySelector,
             Function<? super T, ? extends V> valueSelector,
@@ -10759,13 +10780,16 @@ public abstract class Flowable<T> implements Publisher<T> {
      *
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
-     *  <dd>Both the returned and its inner {@code GroupedFlowable}s honor backpressure and the source {@code Publisher}
-     *  is consumed in a bounded mode (i.e., requested a fixed amount upfront and replenished based on
-     *  downstream consumption). Note that both the returned and its inner {@code GroupedFlowable}s use
-     *  unbounded internal buffers and if the source {@code Publisher} doesn't honor backpressure, that <em>may</em>
-     *  lead to {@code OutOfMemoryError}.</dd>
+     *  <dd>The consumer of the returned {@code Flowable} has to be ready to receive new {@code GroupedFlowable}s or else
+     *  this operator will signal {@link MissingBackpressureException}. To avoid this exception, make
+     *  sure a combining operator (such as {@code flatMap}) has adequate amount of buffering/prefetch configured.
+     *  The inner {@code GroupedFlowable}s honor backpressure but due to the single-source multiple consumer
+     *  nature of this operator, each group must be consumed so the whole operator can make progress and not hang.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code groupBy} does not operate by default on a particular {@link Scheduler}.</dd>
+     *  <dt><b>Error handling:</b></dt>
+     *  <dd>If the upstream signals or the callback(s) throw an exception, the returned {@code Flowable} and
+     *  all active inner {@code GroupedFlowable}s will signal the same exception.</dd>
      * </dl>
      * <p>History: 2.1.10 - beta
      * @param keySelector
@@ -10796,7 +10820,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      */
     @CheckReturnValue
     @NonNull
-    @BackpressureSupport(BackpressureKind.FULL)
+    @BackpressureSupport(BackpressureKind.SPECIAL)
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <K, V> Flowable<GroupedFlowable<K, V>> groupBy(Function<? super T, ? extends K> keySelector,
             Function<? super T, ? extends V> valueSelector,
@@ -11395,8 +11419,16 @@ public abstract class Flowable<T> implements Publisher<T> {
      *  <dd>This operator honors backpressure from downstream and expects it from the source {@code Publisher}. Violating this
      *  expectation will lead to {@code MissingBackpressureException}. This is the most common operator where the exception
      *  pops up; look for sources up the chain that don't support backpressure,
-     *  such as {@code interval}, {@code timer}, {code PublishSubject} or {@code BehaviorSubject} and apply any
-     *  of the {@code onBackpressureXXX} operators <strong>before</strong> applying {@code observeOn} itself.</dd>
+     *  such as {@link #interval(long, TimeUnit)}, {@link #timer(long, TimeUnit)},
+     *  {@link io.reactivex.rxjava3.processors.PublishProcessor PublishProcessor} or
+     *  {@link io.reactivex.rxjava3.processors.BehaviorProcessor BehaviorProcessor} and apply any
+     *  of the {@code onBackpressureXXX} operators <strong>before</strong> applying {@code observeOn} itself.
+     *  Note also that request amounts are not preserved between the immediate downstream and the
+     *  immediate upstream. The operator always requests the default {@link #bufferSize()} amount first, then after
+     *  every 75% of that amount delivered, another 75% of this default value. If preserving the request amounts
+     *  is to be preferred over potential excess scheduler infrastructure use, consider applying
+     *  {@link #delay(long, TimeUnit, Scheduler)} with zero time instead.
+     *  </dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>You specify which {@link Scheduler} this operator will use.</dd>
      * </dl>
@@ -11434,8 +11466,16 @@ public abstract class Flowable<T> implements Publisher<T> {
      *  <dd>This operator honors backpressure from downstream and expects it from the source {@code Publisher}. Violating this
      *  expectation will lead to {@code MissingBackpressureException}. This is the most common operator where the exception
      *  pops up; look for sources up the chain that don't support backpressure,
-     *  such as {@code interval}, {@code timer}, {code PublishSubject} or {@code BehaviorSubject} and apply any
-     *  of the {@code onBackpressureXXX} operators <strong>before</strong> applying {@code observeOn} itself.</dd>
+     *  such as {@link #interval(long, TimeUnit)}, {@link #timer(long, TimeUnit)},
+     *  {@link io.reactivex.rxjava3.processors.PublishProcessor PublishProcessor} or
+     *  {@link io.reactivex.rxjava3.processors.BehaviorProcessor BehaviorProcessor} and apply any
+     *  of the {@code onBackpressureXXX} operators <strong>before</strong> applying {@code observeOn} itself.
+     *  Note also that request amounts are not preserved between the immediate downstream and the
+     *  immediate upstream. The operator always requests the default {@link #bufferSize()} amount first, then after
+     *  every 75% of that amount delivered, another 75% of this default value. If preserving the request amounts
+     *  is to be preferred over potential excess scheduler infrastructure use, consider applying
+     *  {@link #delay(long, TimeUnit, Scheduler, boolean)} with zero time instead.
+     *  </dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>You specify which {@link Scheduler} this operator will use.</dd>
      * </dl>
@@ -11477,8 +11517,16 @@ public abstract class Flowable<T> implements Publisher<T> {
      *  <dd>This operator honors backpressure from downstream and expects it from the source {@code Publisher}. Violating this
      *  expectation will lead to {@code MissingBackpressureException}. This is the most common operator where the exception
      *  pops up; look for sources up the chain that don't support backpressure,
-     *  such as {@code interval}, {@code timer}, {code PublishSubject} or {@code BehaviorSubject} and apply any
-     *  of the {@code onBackpressureXXX} operators <strong>before</strong> applying {@code observeOn} itself.</dd>
+     *  such as {@link #interval(long, TimeUnit)}, {@link #timer(long, TimeUnit)},
+     *  {@link io.reactivex.rxjava3.processors.PublishProcessor PublishProcessor} or
+     *  {@link io.reactivex.rxjava3.processors.BehaviorProcessor BehaviorProcessor} and apply any
+     *  of the {@code onBackpressureXXX} operators <strong>before</strong> applying {@code observeOn} itself.
+     *  Note also that request amounts are not preserved between the immediate downstream and the
+     *  immediate upstream. The operator always requests the specified {@code bufferSize} amount first, then after
+     *  every 75% of that amount delivered, another 75% of this specified value. If preserving the request amounts
+     *  is to be preferred over potential excess scheduler infrastructure use, consider applying
+     *  {@link #delay(long, TimeUnit, Scheduler, boolean)} with zero time instead.
+     *  </dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>You specify which {@link Scheduler} this operator will use.</dd>
      * </dl>
@@ -17359,6 +17407,10 @@ public abstract class Flowable<T> implements Publisher<T> {
      * propagates the notification from the source Publisher.
      * <p>
      * <img width="640" height="400" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/window3.png" alt="">
+     * <p>
+     * Note that ignoring windows or subscribing later (i.e., on another thread) will result in
+     * so-called window abandonment where a window will only contain one element. The behavior is
+     * a tradeoff between no-dataloss and ensuring upstream cancellation can happen.
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator honors backpressure of its inner and outer subscribers, however, the inner Publisher uses an
@@ -17388,6 +17440,11 @@ public abstract class Flowable<T> implements Publisher<T> {
      * and propagates the notification from the source Publisher.
      * <p>
      * <img width="640" height="365" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/window4.png" alt="">
+     * <p>
+     * Note that ignoring windows or subscribing later (i.e., on another thread) will result in
+     * so-called window abandonment where a window may not contain any elements. In this case, subsequent
+     * elements will be dropped until the condition for the next window boundary is satisfied. The behavior is
+     * a tradeoff between no-dataloss and ensuring upstream cancellation can happen under some race conditions.
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator honors backpressure of its inner and outer subscribers, however, the inner Publisher uses an
@@ -17420,6 +17477,11 @@ public abstract class Flowable<T> implements Publisher<T> {
      * and propagates the notification from the source Publisher.
      * <p>
      * <img width="640" height="365" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/window4.png" alt="">
+     * <p>
+     * Note that ignoring windows or subscribing later (i.e., on another thread) will result in
+     * so-called window abandonment where a window may not contain any elements. In this case, subsequent
+     * elements will be dropped until the condition for the next window boundary is satisfied. The behavior is
+     * a tradeoff between no-dataloss and ensuring upstream cancellation can happen under some race conditions.
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator honors backpressure of its inner and outer subscribers, however, the inner Publisher uses an
@@ -17458,6 +17520,11 @@ public abstract class Flowable<T> implements Publisher<T> {
      * current window and propagates the notification from the source Publisher.
      * <p>
      * <img width="640" height="335" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/window7.png" alt="">
+     * <p>
+     * Note that ignoring windows or subscribing later (i.e., on another thread) will result in
+     * so-called window abandonment where a window may not contain any elements. In this case, subsequent
+     * elements will be dropped until the condition for the next window boundary is satisfied. The behavior is
+     * a tradeoff for ensuring upstream cancellation can happen under some race conditions.
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator consumes the source {@code Publisher} in an unbounded manner.
@@ -17493,6 +17560,11 @@ public abstract class Flowable<T> implements Publisher<T> {
      * current window and propagates the notification from the source Publisher.
      * <p>
      * <img width="640" height="335" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/window7.s.png" alt="">
+     * <p>
+     * Note that ignoring windows or subscribing later (i.e., on another thread) will result in
+     * so-called window abandonment where a window may not contain any elements. In this case, subsequent
+     * elements will be dropped until the condition for the next window boundary is satisfied. The behavior is
+     * a tradeoff for ensuring upstream cancellation can happen under some race conditions.
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator consumes the source {@code Publisher} in an unbounded manner.
@@ -17530,6 +17602,11 @@ public abstract class Flowable<T> implements Publisher<T> {
      * current window and propagates the notification from the source Publisher.
      * <p>
      * <img width="640" height="335" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/window7.s.png" alt="">
+     * <p>
+     * Note that ignoring windows or subscribing later (i.e., on another thread) will result in
+     * so-called window abandonment where a window may not contain any elements. In this case, subsequent
+     * elements will be dropped until the condition for the next window boundary is satisfied. The behavior is
+     * a tradeoff for ensuring upstream cancellation can happen under some race conditions.
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator consumes the source {@code Publisher} in an unbounded manner.
@@ -17574,6 +17651,11 @@ public abstract class Flowable<T> implements Publisher<T> {
      * Publisher emits the current window and propagates the notification from the source Publisher.
      * <p>
      * <img width="640" height="375" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/window5.png" alt="">
+     * <p>
+     * Note that ignoring windows or subscribing later (i.e., on another thread) will result in
+     * so-called window abandonment where a window may not contain any elements. In this case, subsequent
+     * elements will be dropped until the condition for the next window boundary is satisfied. The behavior is
+     * a tradeoff for ensuring upstream cancellation can happen under some race conditions.
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator consumes the source {@code Publisher} in an unbounded manner.
@@ -17608,6 +17690,11 @@ public abstract class Flowable<T> implements Publisher<T> {
      * emits the current window and propagates the notification from the source Publisher.
      * <p>
      * <img width="640" height="370" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/window6.png" alt="">
+     * <p>
+     * Note that ignoring windows or subscribing later (i.e., on another thread) will result in
+     * so-called window abandonment where a window may not contain any elements. In this case, subsequent
+     * elements will be dropped until the condition for the next window boundary is satisfied. The behavior is
+     * a tradeoff for ensuring upstream cancellation can happen under some race conditions.
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator consumes the source {@code Publisher} in an unbounded manner.
@@ -17646,6 +17733,11 @@ public abstract class Flowable<T> implements Publisher<T> {
      * emits the current window and propagates the notification from the source Publisher.
      * <p>
      * <img width="640" height="370" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/window6.png" alt="">
+     * <p>
+     * Note that ignoring windows or subscribing later (i.e., on another thread) will result in
+     * so-called window abandonment where a window may not contain any elements. In this case, subsequent
+     * elements will be dropped until the condition for the next window boundary is satisfied. The behavior is
+     * a tradeoff for ensuring upstream cancellation can happen under some race conditions.
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator consumes the source {@code Publisher} in an unbounded manner.
@@ -17685,6 +17777,11 @@ public abstract class Flowable<T> implements Publisher<T> {
      * Publisher emits the current window and propagates the notification from the source Publisher.
      * <p>
      * <img width="640" height="375" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/window5.s.png" alt="">
+     * <p>
+     * Note that ignoring windows or subscribing later (i.e., on another thread) will result in
+     * so-called window abandonment where a window may not contain any elements. In this case, subsequent
+     * elements will be dropped until the condition for the next window boundary is satisfied. The behavior is
+     * a tradeoff for ensuring upstream cancellation can happen under some race conditions.
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator consumes the source {@code Publisher} in an unbounded manner.
@@ -17723,6 +17820,11 @@ public abstract class Flowable<T> implements Publisher<T> {
      * current window and propagates the notification from the source Publisher.
      * <p>
      * <img width="640" height="370" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/window6.s.png" alt="">
+     * <p>
+     * Note that ignoring windows or subscribing later (i.e., on another thread) will result in
+     * so-called window abandonment where a window may not contain any elements. In this case, subsequent
+     * elements will be dropped until the condition for the next window boundary is satisfied. The behavior is
+     * a tradeoff for ensuring upstream cancellation can happen under some race conditions.
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator consumes the source {@code Publisher} in an unbounded manner.
@@ -17763,6 +17865,11 @@ public abstract class Flowable<T> implements Publisher<T> {
      * current window and propagates the notification from the source Publisher.
      * <p>
      * <img width="640" height="370" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/window6.s.png" alt="">
+     * <p>
+     * Note that ignoring windows or subscribing later (i.e., on another thread) will result in
+     * so-called window abandonment where a window may not contain any elements. In this case, subsequent
+     * elements will be dropped until the condition for the next window boundary is satisfied. The behavior is
+     * a tradeoff for ensuring upstream cancellation can happen under some race conditions.
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator consumes the source {@code Publisher} in an unbounded manner.
@@ -17805,6 +17912,11 @@ public abstract class Flowable<T> implements Publisher<T> {
      * current window and propagates the notification from the source Publisher.
      * <p>
      * <img width="640" height="370" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/window6.s.png" alt="">
+     * <p>
+     * Note that ignoring windows or subscribing later (i.e., on another thread) will result in
+     * so-called window abandonment where a window may not contain any elements. In this case, subsequent
+     * elements will be dropped until the condition for the next window boundary is satisfied. The behavior is
+     * a tradeoff for ensuring upstream cancellation can happen under some race conditions.
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator consumes the source {@code Publisher} in an unbounded manner.
