@@ -1,9 +1,9 @@
-# RxJava 3 built with JDK 8 through 14
+# RxJava 3 built with JDK 9 through 14
 
 <a href='https://travis-ci.org/akarnokd/RxJava3_BuildMatrix/builds'><img src='https://travis-ci.org/akarnokd/RxJava3_BuildMatrix.svg?branch=master'></a>
 [![codecov.io](http://codecov.io/github/akarnokd/RxJava3_BuildMatrix/coverage.svg?branch=master)](https://codecov.io/gh/akarnokd/RxJava3_BuildMatrix/branch/master)
 
-This repository is used for building [RxJava 3](https://github.com/ReactiveX/RxJava) with JDK 8 through 14 in a CI environment. 
+This repository is used for building [RxJava 3](https://github.com/ReactiveX/RxJava) with JDK 9 through 14 in a CI environment. 
 
 It **does not use the JDK 9 `Flow` API** nor does this repository create maven jars.
 
@@ -19,7 +19,6 @@ JDK runtime | Target 8 | Target 9 | Target 10 | Target 11 | Target 12 | Target 1
 11 | [![image](https://travis-matrix-badges.herokuapp.com/repos/akarnokd/RxJava3_BuildMatrix/branches/master/18)](https://travis-ci.org/akarnokd/RxJava3_BuildMatrix.svg?branch=master) | [![image](https://travis-matrix-badges.herokuapp.com/repos/akarnokd/RxJava3_BuildMatrix/branches/master/19)](https://travis-ci.org/akarnokd/RxJava3_BuildMatrix.svg?branch=master) | [![image](https://travis-matrix-badges.herokuapp.com/repos/akarnokd/RxJava3_BuildMatrix/branches/master/20)](https://travis-ci.org/akarnokd/RxJava3_BuildMatrix.svg?branch=master) | [![image](https://travis-matrix-badges.herokuapp.com/repos/akarnokd/RxJava3_BuildMatrix/branches/master/21)](https://travis-ci.org/akarnokd/RxJava3_BuildMatrix.svg?branch=master)
 10 | [![image](https://travis-matrix-badges.herokuapp.com/repos/akarnokd/RxJava3_BuildMatrix/branches/master/22)](https://travis-ci.org/akarnokd/RxJava3_BuildMatrix.svg?branch=master) | [![image](https://travis-matrix-badges.herokuapp.com/repos/akarnokd/RxJava3_BuildMatrix/branches/master/23)](https://travis-ci.org/akarnokd/RxJava3_BuildMatrix.svg?branch=master) | [![image](https://travis-matrix-badges.herokuapp.com/repos/akarnokd/RxJava3_BuildMatrix/branches/master/24)](https://travis-ci.org/akarnokd/RxJava3_BuildMatrix.svg?branch=master)
 9 | [![image](https://travis-matrix-badges.herokuapp.com/repos/akarnokd/RxJava3_BuildMatrix/branches/master/25)](https://travis-ci.org/akarnokd/RxJava3_BuildMatrix.svg?branch=master) | [![image](https://travis-matrix-badges.herokuapp.com/repos/akarnokd/RxJava3_BuildMatrix/branches/master/26)](https://travis-ci.org/akarnokd/RxJava3_BuildMatrix.svg?branch=master)
-8 | [![image](https://travis-matrix-badges.herokuapp.com/repos/akarnokd/RxJava3_BuildMatrix/branches/master/27)](https://travis-ci.org/akarnokd/RxJava3_BuildMatrix.svg?branch=master)
 
 #### Note on JDK target support
 

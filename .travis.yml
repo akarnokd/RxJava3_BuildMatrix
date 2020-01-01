@@ -15,13 +15,13 @@ before_install:
 matrix:
   include:
     - env: JDK='Oracle JDK 14 target 9' RXJAVA_TARGET=1.9
-      jdk: openjdk11
+      jdk: openjdk13
       install: . ./usejdk14.sh
     - env: JDK='Oracle JDK 14 target 10' RXJAVA_TARGET=10
-      jdk: openjdk11
+      jdk: openjdk13
       install: . ./usejdk14.sh
     - env: JDK='Oracle JDK 14 target 11' RXJAVA_TARGET=11
-      jdk: openjdk11
+      jdk: openjdk13
       install: . ./usejdk14.sh
     - env: JDK='Oracle JDK 14 target 12' RXJAVA_TARGET=12
       jdk: openjdk13
@@ -92,11 +92,11 @@ matrix:
     - env: JDK='Oracle JDK 9 target 9' RXJAVA_TARGET=1.9
       jdk: oraclejdk9
     # ------------------------------------------------------------
-    # Target 6 no longer supported by RxJava
+    # JDK 8 is now the default build for RxJava 3, no need to run that again
     #- env: JDK='Oracle JDK 8 target 6' RXJAVA_TARGET=1.6
     #  jdk: oraclejdk8
-    - env: JDK='Oracle JDK 8 target 8' RXJAVA_TARGET=1.8
-      jdk: oraclejdk8
+    #- env: JDK='Oracle JDK 8 target 8' RXJAVA_TARGET=1.8
+    #  jdk: oraclejdk8
 
 after_success:
   - bash <(curl -s https://codecov.io/bash)
