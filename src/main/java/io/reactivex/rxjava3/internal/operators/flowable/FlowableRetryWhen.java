@@ -18,11 +18,12 @@ import org.reactivestreams.*;
 import io.reactivex.rxjava3.core.Flowable;
 import io.reactivex.rxjava3.exceptions.Exceptions;
 import io.reactivex.rxjava3.functions.Function;
-import io.reactivex.rxjava3.internal.functions.ObjectHelper;
 import io.reactivex.rxjava3.internal.operators.flowable.FlowableRepeatWhen.*;
 import io.reactivex.rxjava3.internal.subscriptions.EmptySubscription;
 import io.reactivex.rxjava3.processors.*;
 import io.reactivex.rxjava3.subscribers.SerializedSubscriber;
+
+import java.util.Objects;
 
 public final class FlowableRetryWhen<T> extends AbstractFlowableWithUpstream<T, T> {
     final Function<? super Flowable<Throwable>, ? extends Publisher<?>> handler;
@@ -35,23 +36,23 @@ public final class FlowableRetryWhen<T> extends AbstractFlowableWithUpstream<T, 
 
     @Override
     public void subscribeActual(Subscriber<? super T> s) {
-        SerializedSubscriber<T> z = new SerializedSubscriber<T>(s);
+        SerializedSubscriber<T> z = new SerializedSubscriber<>(s);
 
         FlowableProcessor<Throwable> processor = UnicastProcessor.<Throwable>create(8).toSerialized();
 
         Publisher<?> when;
 
         try {
-            when = ObjectHelper.requireNonNull(handler.apply(processor), "handler returned a null Publisher");
+            when = Objects.requireNonNull(handler.apply(processor), "handler returned a null Publisher");
         } catch (Throwable ex) {
             Exceptions.throwIfFatal(ex);
             EmptySubscription.error(ex, s);
             return;
         }
 
-        WhenReceiver<T, Throwable> receiver = new WhenReceiver<T, Throwable>(source);
+        WhenReceiver<T, Throwable> receiver = new WhenReceiver<>(source);
 
-        RetryWhenSubscriber<T> subscriber = new RetryWhenSubscriber<T>(z, processor, receiver);
+        RetryWhenSubscriber<T> subscriber = new RetryWhenSubscriber<>(z, processor, receiver);
 
         receiver.subscriber = subscriber;
 

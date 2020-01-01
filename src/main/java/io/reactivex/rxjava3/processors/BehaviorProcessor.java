@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava3.processors;
 
+import java.util.Objects;
 import java.util.concurrent.atomic.*;
 import java.util.concurrent.locks.*;
 
@@ -20,7 +21,6 @@ import org.reactivestreams.*;
 
 import io.reactivex.rxjava3.annotations.*;
 import io.reactivex.rxjava3.exceptions.MissingBackpressureException;
-import io.reactivex.rxjava3.internal.functions.ObjectHelper;
 import io.reactivex.rxjava3.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.rxjava3.internal.util.*;
 import io.reactivex.rxjava3.internal.util.AppendOnlyLinkedArrayList.NonThrowingPredicate;
@@ -108,7 +108,7 @@ import io.reactivex.rxjava3.plugins.RxJavaPlugins;
  *  that returns true if any of the {@code Subscriber}s is not ready to receive {@code onNext} events. If
  *  there are no {@code Subscriber}s to the processor, {@code offer()} always succeeds.
  *  If the {@code BehaviorProcessor} is (optionally) subscribed to another {@code Publisher}, this upstream
- *  {@code Publisher} is consumed in an unbounded fashion (requesting {@code Long.MAX_VALUE}).</dd>
+ *  {@code Publisher} is consumed in an unbounded fashion (requesting {@link Long#MAX_VALUE}).</dd>
  *  <dt><b>Scheduler:</b></dt>
  *  <dd>{@code BehaviorProcessor} does not operate by default on a particular {@link io.reactivex.rxjava3.core.Scheduler} and
  *  the {@code Subscriber}s get notified on the thread the respective {@code onXXX} methods were invoked.</dd>
@@ -191,7 +191,7 @@ public final class BehaviorProcessor<T> extends FlowableProcessor<T> {
     @CheckReturnValue
     @NonNull
     public static <T> BehaviorProcessor<T> create() {
-        return new BehaviorProcessor<T>();
+        return new BehaviorProcessor<>();
     }
 
     /**
@@ -204,12 +204,13 @@ public final class BehaviorProcessor<T> extends FlowableProcessor<T> {
      *            the item that will be emitted first to any {@link Subscriber} as long as the
      *            {@link BehaviorProcessor} has not yet observed any items from its source {@code Observable}
      * @return the constructed {@link BehaviorProcessor}
+     * @throws NullPointerException if {@code defaultValue} is {@code null}
      */
     @CheckReturnValue
     @NonNull
-    public static <T> BehaviorProcessor<T> createDefault(T defaultValue) {
-        ObjectHelper.requireNonNull(defaultValue, "defaultValue is null");
-        return new BehaviorProcessor<T>(defaultValue);
+    public static <@NonNull T> BehaviorProcessor<T> createDefault(T defaultValue) {
+        Objects.requireNonNull(defaultValue, "defaultValue is null");
+        return new BehaviorProcessor<>(defaultValue);
     }
 
     /**
@@ -218,28 +219,28 @@ public final class BehaviorProcessor<T> extends FlowableProcessor<T> {
      */
     @SuppressWarnings("unchecked")
     BehaviorProcessor() {
-        this.value = new AtomicReference<Object>();
+        this.value = new AtomicReference<>();
         this.lock = new ReentrantReadWriteLock();
         this.readLock = lock.readLock();
         this.writeLock = lock.writeLock();
-        this.subscribers = new AtomicReference<BehaviorSubscription<T>[]>(EMPTY);
-        this.terminalEvent = new AtomicReference<Throwable>();
+        this.subscribers = new AtomicReference<>(EMPTY);
+        this.terminalEvent = new AtomicReference<>();
     }
 
     /**
      * Constructs a BehaviorProcessor with the given initial value.
      * @param defaultValue the initial value, not null (verified)
-     * @throws NullPointerException if {@code defaultValue} is null
+     * @throws NullPointerException if {@code defaultValue} is {@code null}
      * @since 2.0
      */
     BehaviorProcessor(T defaultValue) {
         this();
-        this.value.lazySet(ObjectHelper.requireNonNull(defaultValue, "defaultValue is null"));
+        this.value.lazySet(defaultValue);
     }
 
     @Override
-    protected void subscribeActual(Subscriber<? super T> s) {
-        BehaviorSubscription<T> bs = new BehaviorSubscription<T>(s, this);
+    protected void subscribeActual(@NonNull Subscriber<? super T> s) {
+        BehaviorSubscription<T> bs = new BehaviorSubscription<>(s, this);
         s.onSubscribe(bs);
         if (add(bs)) {
             if (bs.cancelled) {
@@ -258,7 +259,7 @@ public final class BehaviorProcessor<T> extends FlowableProcessor<T> {
     }
 
     @Override
-    public void onSubscribe(Subscription s) {
+    public void onSubscribe(@NonNull Subscription s) {
         if (terminalEvent.get() != null) {
             s.cancel();
             return;
@@ -267,7 +268,7 @@ public final class BehaviorProcessor<T> extends FlowableProcessor<T> {
     }
 
     @Override
-    public void onNext(T t) {
+    public void onNext(@NonNull T t) {
         ExceptionHelper.nullCheck(t, "onNext called with a null value.");
 
         if (terminalEvent.get() != null) {
@@ -281,7 +282,7 @@ public final class BehaviorProcessor<T> extends FlowableProcessor<T> {
     }
 
     @Override
-    public void onError(Throwable t) {
+    public void onError(@NonNull Throwable t) {
         ExceptionHelper.nullCheck(t, "onError called with a null Throwable.");
         if (!terminalEvent.compareAndSet(null, t)) {
             RxJavaPlugins.onError(t);
@@ -316,13 +317,13 @@ public final class BehaviorProcessor<T> extends FlowableProcessor<T> {
      * <p>History: 2.0.8 - experimental
      * @param t the item to emit, not null
      * @return true if the item was emitted to all Subscribers
+     * @throws NullPointerException if {@code t} is {@code null}
      * @since 2.2
      */
-    public boolean offer(T t) {
-        if (t == null) {
-            onError(ExceptionHelper.createNullPointerException("offer called with a null value."));
-            return true;
-        }
+    @CheckReturnValue
+    public boolean offer(@NonNull T t) {
+        ExceptionHelper.nullCheck(t, "offer called with a null value.");
+
         BehaviorSubscription<T>[] array = subscribers.get();
 
         for (BehaviorSubscription<T> s : array) {
@@ -340,16 +341,19 @@ public final class BehaviorProcessor<T> extends FlowableProcessor<T> {
     }
 
     @Override
+    @CheckReturnValue
     public boolean hasSubscribers() {
         return subscribers.get().length != 0;
     }
 
+    @CheckReturnValue
     /* test support*/ int subscriberCount() {
         return subscribers.get().length;
     }
 
     @Override
     @Nullable
+    @CheckReturnValue
     public Throwable getThrowable() {
         Object o = value.get();
         if (NotificationLite.isError(o)) {
@@ -364,6 +368,7 @@ public final class BehaviorProcessor<T> extends FlowableProcessor<T> {
      * @return a single value the BehaviorProcessor currently has or null if no such value exists
      */
     @Nullable
+    @CheckReturnValue
     public T getValue() {
         Object o = value.get();
         if (NotificationLite.isComplete(o) || NotificationLite.isError(o)) {
@@ -373,12 +378,14 @@ public final class BehaviorProcessor<T> extends FlowableProcessor<T> {
     }
 
     @Override
+    @CheckReturnValue
     public boolean hasComplete() {
         Object o = value.get();
         return NotificationLite.isComplete(o);
     }
 
     @Override
+    @CheckReturnValue
     public boolean hasThrowable() {
         Object o = value.get();
         return NotificationLite.isError(o);
@@ -389,6 +396,7 @@ public final class BehaviorProcessor<T> extends FlowableProcessor<T> {
      * <p>The method is thread-safe.
      * @return true if the BehaviorProcessor has any value
      */
+    @CheckReturnValue
     public boolean hasValue() {
         Object o = value.get();
         return o != null && !NotificationLite.isComplete(o) && !NotificationLite.isError(o);
@@ -554,7 +562,7 @@ public final class BehaviorProcessor<T> extends FlowableProcessor<T> {
                     if (emitting) {
                         AppendOnlyLinkedArrayList<Object> q = queue;
                         if (q == null) {
-                            q = new AppendOnlyLinkedArrayList<Object>(4);
+                            q = new AppendOnlyLinkedArrayList<>(4);
                             queue = q;
                         }
                         q.add(value);

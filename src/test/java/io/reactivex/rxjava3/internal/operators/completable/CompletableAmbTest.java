@@ -38,7 +38,7 @@ public class CompletableAmbTest extends RxJavaTest {
 
     @Test
     public void ambLots() {
-        List<Completable> ms = new ArrayList<Completable>();
+        List<Completable> ms = new ArrayList<>();
 
         for (int i = 0; i < 32; i++) {
             ms.add(Completable.never());
@@ -172,13 +172,13 @@ public class CompletableAmbTest extends RxJavaTest {
 
     @Test
     public void ambRace() {
-        TestObserver<Void> to = new TestObserver<Void>();
-        to.onSubscribe(Disposables.empty());
+        TestObserver<Void> to = new TestObserver<>();
+        to.onSubscribe(Disposable.empty());
 
         CompositeDisposable cd = new CompositeDisposable();
         AtomicBoolean once = new AtomicBoolean();
         Amb a = new Amb(once, cd, to);
-        a.onSubscribe(Disposables.empty());
+        a.onSubscribe(Disposable.empty());
 
         a.onComplete();
         a.onComplete();

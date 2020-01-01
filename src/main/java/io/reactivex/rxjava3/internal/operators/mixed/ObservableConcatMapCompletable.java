@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava3.internal.operators.mixed;
 
+import java.util.Objects;
 import java.util.concurrent.atomic.*;
 
 import io.reactivex.rxjava3.core.*;
@@ -20,7 +21,6 @@ import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.exceptions.Exceptions;
 import io.reactivex.rxjava3.functions.Function;
 import io.reactivex.rxjava3.internal.disposables.DisposableHelper;
-import io.reactivex.rxjava3.internal.functions.ObjectHelper;
 import io.reactivex.rxjava3.internal.fuseable.*;
 import io.reactivex.rxjava3.internal.queue.SpscLinkedArrayQueue;
 import io.reactivex.rxjava3.internal.util.*;
@@ -55,7 +55,7 @@ public final class ObservableConcatMapCompletable<T> extends Completable {
     @Override
     protected void subscribeActual(CompletableObserver observer) {
         if (!ScalarXMapZHelper.tryAsCompletable(source, mapper, observer)) {
-            source.subscribe(new ConcatMapCompletableObserver<T>(observer, mapper, errorMode, prefetch));
+            source.subscribe(new ConcatMapCompletableObserver<>(observer, mapper, errorMode, prefetch));
         }
     }
 
@@ -120,7 +120,7 @@ public final class ObservableConcatMapCompletable<T> extends Completable {
                         return;
                     }
                 }
-                queue = new SpscLinkedArrayQueue<T>(prefetch);
+                queue = new SpscLinkedArrayQueue<>(prefetch);
                 downstream.onSubscribe(this);
             }
         }
@@ -224,7 +224,7 @@ public final class ObservableConcatMapCompletable<T> extends Completable {
                     try {
                         T v = queue.poll();
                         if (v != null) {
-                            cs = ObjectHelper.requireNonNull(mapper.apply(v), "The mapper returned a null CompletableSource");
+                            cs = Objects.requireNonNull(mapper.apply(v), "The mapper returned a null CompletableSource");
                             empty = false;
                         }
                     } catch (Throwable ex) {

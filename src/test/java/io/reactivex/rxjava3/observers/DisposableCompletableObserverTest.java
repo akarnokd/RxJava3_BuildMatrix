@@ -33,7 +33,7 @@ public class DisposableCompletableObserverTest extends RxJavaTest {
 
         int complete;
 
-        final List<Throwable> errors = new ArrayList<Throwable>();
+        final List<Throwable> errors = new ArrayList<>();
 
         @Override
         protected void onStart() {
@@ -79,9 +79,9 @@ public class DisposableCompletableObserverTest extends RxJavaTest {
         try {
             TestCompletable tc = new TestCompletable();
 
-            tc.onSubscribe(Disposables.empty());
+            tc.onSubscribe(Disposable.empty());
 
-            Disposable d = Disposables.empty();
+            Disposable d = Disposable.empty();
 
             tc.onSubscribe(d);
 
@@ -102,7 +102,7 @@ public class DisposableCompletableObserverTest extends RxJavaTest {
 
         assertTrue(tc.isDisposed());
 
-        Disposable d = Disposables.empty();
+        Disposable d = Disposable.empty();
 
         tc.onSubscribe(d);
 

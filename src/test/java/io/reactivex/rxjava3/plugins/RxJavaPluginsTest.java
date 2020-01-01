@@ -599,7 +599,7 @@ public class RxJavaPluginsTest extends RxJavaTest {
             RxJavaPlugins.setOnSingleAssembly(new Function<Single, Single>() {
                 @Override
                 public Single apply(Single t) {
-                    return new SingleJust<Integer>(10);
+                    return new SingleJust<>(10);
                 }
             });
 
@@ -806,7 +806,7 @@ public class RxJavaPluginsTest extends RxJavaTest {
     @Test
     public void onError() {
         try {
-            final List<Throwable> list = new ArrayList<Throwable>();
+            final List<Throwable> list = new ArrayList<>();
 
             RxJavaPlugins.setErrorHandler(new Consumer<Throwable>() {
                 @Override
@@ -827,7 +827,7 @@ public class RxJavaPluginsTest extends RxJavaTest {
     @Test
     public void onErrorNoHandler() {
         try {
-            final List<Throwable> list = new ArrayList<Throwable>();
+            final List<Throwable> list = new ArrayList<>();
 
             RxJavaPlugins.setErrorHandler(null);
 
@@ -858,7 +858,7 @@ public class RxJavaPluginsTest extends RxJavaTest {
     @Test
     public void onErrorCrashes() {
         try {
-            final List<Throwable> list = new ArrayList<Throwable>();
+            final List<Throwable> list = new ArrayList<>();
 
             RxJavaPlugins.setErrorHandler(new Consumer<Throwable>() {
                 @Override
@@ -893,7 +893,7 @@ public class RxJavaPluginsTest extends RxJavaTest {
     @Test
     public void onErrorWithNull() {
         try {
-            final List<Throwable> list = new ArrayList<Throwable>();
+            final List<Throwable> list = new ArrayList<>();
 
             RxJavaPlugins.setErrorHandler(new Consumer<Throwable>() {
                 @Override
@@ -1261,7 +1261,7 @@ public class RxJavaPluginsTest extends RxJavaTest {
                         @SuppressWarnings("unchecked")
                         @Override
                         protected void subscribeActual(Observer observer) {
-                            observer.onSubscribe(Disposables.empty());
+                            observer.onSubscribe(Disposable.empty());
                             observer.onNext(10);
                             observer.onComplete();
                         }
@@ -1523,7 +1523,7 @@ public class RxJavaPluginsTest extends RxJavaTest {
     @Test
     public void onErrorNull() {
         try {
-            final AtomicReference<Throwable> t = new AtomicReference<Throwable>();
+            final AtomicReference<Throwable> t = new AtomicReference<>();
 
             RxJavaPlugins.setErrorHandler(new Consumer<Throwable>() {
                 @Override
@@ -1547,7 +1547,7 @@ public class RxJavaPluginsTest extends RxJavaTest {
         assertNotNull(scheduler);
         Worker w = scheduler.createWorker();
         try {
-            final AtomicReference<Thread> value = new AtomicReference<Thread>();
+            final AtomicReference<Thread> value = new AtomicReference<>();
             final CountDownLatch cdl = new CountDownLatch(1);
 
             w.schedule(new Runnable() {
@@ -1703,7 +1703,7 @@ public class RxJavaPluginsTest extends RxJavaTest {
             RxJavaPlugins.setOnParallelAssembly(new Function<ParallelFlowable, ParallelFlowable>() {
                 @Override
                 public ParallelFlowable apply(ParallelFlowable pf) throws Exception {
-                    return new ParallelFromPublisher<Integer>(Flowable.just(2), 2, 2);
+                    return new ParallelFromPublisher<>(Flowable.just(2), 2, 2);
                 }
             });
 

@@ -25,7 +25,6 @@ import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.exceptions.Exceptions;
 import io.reactivex.rxjava3.functions.Supplier;
 import io.reactivex.rxjava3.internal.disposables.DisposableHelper;
-import io.reactivex.rxjava3.internal.functions.ObjectHelper;
 import io.reactivex.rxjava3.internal.queue.MpscLinkedQueue;
 import io.reactivex.rxjava3.internal.subscribers.QueueDrainSubscriber;
 import io.reactivex.rxjava3.internal.subscriptions.*;
@@ -57,16 +56,16 @@ public final class FlowableBufferTimed<T, U extends Collection<? super T>> exten
     @Override
     protected void subscribeActual(Subscriber<? super U> s) {
         if (timespan == timeskip && maxSize == Integer.MAX_VALUE) {
-            source.subscribe(new BufferExactUnboundedSubscriber<T, U>(
-                    new SerializedSubscriber<U>(s),
+            source.subscribe(new BufferExactUnboundedSubscriber<>(
+                    new SerializedSubscriber<>(s),
                     bufferSupplier, timespan, unit, scheduler));
             return;
         }
         Scheduler.Worker w = scheduler.createWorker();
 
         if (timespan == timeskip) {
-            source.subscribe(new BufferExactBoundedSubscriber<T, U>(
-                    new SerializedSubscriber<U>(s),
+            source.subscribe(new BufferExactBoundedSubscriber<>(
+                    new SerializedSubscriber<>(s),
                     bufferSupplier,
                     timespan, unit, maxSize, restartTimerOnMaxSize, w
             ));
@@ -74,8 +73,8 @@ public final class FlowableBufferTimed<T, U extends Collection<? super T>> exten
         }
         // Can't use maxSize because what to do if a buffer is full but its
         // timespan hasn't been elapsed?
-        source.subscribe(new BufferSkipBoundedSubscriber<T, U>(
-                new SerializedSubscriber<U>(s),
+        source.subscribe(new BufferSkipBoundedSubscriber<>(
+                new SerializedSubscriber<>(s),
                 bufferSupplier, timespan, timeskip, unit, w));
     }
 
@@ -90,12 +89,12 @@ public final class FlowableBufferTimed<T, U extends Collection<? super T>> exten
 
         U buffer;
 
-        final AtomicReference<Disposable> timer = new AtomicReference<Disposable>();
+        final AtomicReference<Disposable> timer = new AtomicReference<>();
 
         BufferExactUnboundedSubscriber(
                 Subscriber<? super U> actual, Supplier<U> bufferSupplier,
                 long timespan, TimeUnit unit, Scheduler scheduler) {
-            super(actual, new MpscLinkedQueue<U>());
+            super(actual, new MpscLinkedQueue<>());
             this.bufferSupplier = bufferSupplier;
             this.timespan = timespan;
             this.unit = unit;
@@ -110,7 +109,7 @@ public final class FlowableBufferTimed<T, U extends Collection<? super T>> exten
                 U b;
 
                 try {
-                    b = ObjectHelper.requireNonNull(bufferSupplier.get(), "The supplied buffer is null");
+                    b = Objects.requireNonNull(bufferSupplier.get(), "The supplied buffer is null");
                 } catch (Throwable e) {
                     Exceptions.throwIfFatal(e);
                     cancel();
@@ -187,7 +186,7 @@ public final class FlowableBufferTimed<T, U extends Collection<? super T>> exten
             U next;
 
             try {
-                next = ObjectHelper.requireNonNull(bufferSupplier.get(), "The supplied buffer is null");
+                next = Objects.requireNonNull(bufferSupplier.get(), "The supplied buffer is null");
             } catch (Throwable e) {
                 Exceptions.throwIfFatal(e);
                 cancel();
@@ -239,13 +238,13 @@ public final class FlowableBufferTimed<T, U extends Collection<? super T>> exten
         BufferSkipBoundedSubscriber(Subscriber<? super U> actual,
                 Supplier<U> bufferSupplier, long timespan,
                 long timeskip, TimeUnit unit, Worker w) {
-            super(actual, new MpscLinkedQueue<U>());
+            super(actual, new MpscLinkedQueue<>());
             this.bufferSupplier = bufferSupplier;
             this.timespan = timespan;
             this.timeskip = timeskip;
             this.unit = unit;
             this.w = w;
-            this.buffers = new LinkedList<U>();
+            this.buffers = new LinkedList<>();
         }
 
         @Override
@@ -258,7 +257,7 @@ public final class FlowableBufferTimed<T, U extends Collection<? super T>> exten
             final U b; // NOPMD
 
             try {
-                b = ObjectHelper.requireNonNull(bufferSupplier.get(), "The supplied buffer is null");
+                b = Objects.requireNonNull(bufferSupplier.get(), "The supplied buffer is null");
             } catch (Throwable e) {
                 Exceptions.throwIfFatal(e);
                 w.dispose();
@@ -299,7 +298,7 @@ public final class FlowableBufferTimed<T, U extends Collection<? super T>> exten
         public void onComplete() {
             List<U> bs;
             synchronized (this) {
-                bs = new ArrayList<U>(buffers);
+                bs = new ArrayList<>(buffers);
                 buffers.clear();
             }
 
@@ -339,7 +338,7 @@ public final class FlowableBufferTimed<T, U extends Collection<? super T>> exten
             final U b; // NOPMD
 
             try {
-                b = ObjectHelper.requireNonNull(bufferSupplier.get(), "The supplied buffer is null");
+                b = Objects.requireNonNull(bufferSupplier.get(), "The supplied buffer is null");
             } catch (Throwable e) {
                 Exceptions.throwIfFatal(e);
                 cancel();
@@ -405,7 +404,7 @@ public final class FlowableBufferTimed<T, U extends Collection<? super T>> exten
                 Supplier<U> bufferSupplier,
                 long timespan, TimeUnit unit, int maxSize,
                 boolean restartOnMaxSize, Worker w) {
-            super(actual, new MpscLinkedQueue<U>());
+            super(actual, new MpscLinkedQueue<>());
             this.bufferSupplier = bufferSupplier;
             this.timespan = timespan;
             this.unit = unit;
@@ -424,7 +423,7 @@ public final class FlowableBufferTimed<T, U extends Collection<? super T>> exten
             U b;
 
             try {
-                b = ObjectHelper.requireNonNull(bufferSupplier.get(), "The supplied buffer is null");
+                b = Objects.requireNonNull(bufferSupplier.get(), "The supplied buffer is null");
             } catch (Throwable e) {
                 Exceptions.throwIfFatal(e);
                 w.dispose();
@@ -468,7 +467,7 @@ public final class FlowableBufferTimed<T, U extends Collection<? super T>> exten
             fastPathOrderedEmitMax(b, false, this);
 
             try {
-                b = ObjectHelper.requireNonNull(bufferSupplier.get(), "The supplied buffer is null");
+                b = Objects.requireNonNull(bufferSupplier.get(), "The supplied buffer is null");
             } catch (Throwable e) {
                 Exceptions.throwIfFatal(e);
                 cancel();
@@ -550,7 +549,7 @@ public final class FlowableBufferTimed<T, U extends Collection<? super T>> exten
             U next;
 
             try {
-                next = ObjectHelper.requireNonNull(bufferSupplier.get(), "The supplied buffer is null");
+                next = Objects.requireNonNull(bufferSupplier.get(), "The supplied buffer is null");
             } catch (Throwable e) {
                 Exceptions.throwIfFatal(e);
                 cancel();

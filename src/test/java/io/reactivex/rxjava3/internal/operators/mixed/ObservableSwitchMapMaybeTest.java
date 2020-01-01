@@ -18,10 +18,10 @@ import static org.junit.Assert.*;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 
+import io.reactivex.rxjava3.disposables.Disposable;
 import org.junit.Test;
 
 import io.reactivex.rxjava3.core.*;
-import io.reactivex.rxjava3.disposables.Disposables;
 import io.reactivex.rxjava3.exceptions.*;
 import io.reactivex.rxjava3.functions.*;
 import io.reactivex.rxjava3.internal.functions.Functions;
@@ -283,7 +283,7 @@ public class ObservableSwitchMapMaybeTest extends RxJavaTest {
 
     @Test
     public void disposeBeforeSwitchInOnNext() {
-        final TestObserver<Integer> to = new TestObserver<Integer>();
+        final TestObserver<Integer> to = new TestObserver<>();
 
         Observable.just(1)
         .switchMapMaybe(new Function<Integer, MaybeSource<Integer>>() {
@@ -300,7 +300,7 @@ public class ObservableSwitchMapMaybeTest extends RxJavaTest {
 
     @Test
     public void disposeOnNextAfterFirst() {
-        final TestObserver<Integer> to = new TestObserver<Integer>();
+        final TestObserver<Integer> to = new TestObserver<>();
 
         Observable.just(1, 2)
         .switchMapMaybe(new Function<Integer, MaybeSource<Integer>>() {
@@ -355,7 +355,7 @@ public class ObservableSwitchMapMaybeTest extends RxJavaTest {
             new Observable<Integer>() {
                 @Override
                 protected void subscribeActual(Observer<? super Integer> observer) {
-                    observer.onSubscribe(Disposables.empty());
+                    observer.onSubscribe(Disposable.empty());
                     observer.onNext(1);
                     observer.onError(new TestException("outer"));
                 }
@@ -380,12 +380,12 @@ public class ObservableSwitchMapMaybeTest extends RxJavaTest {
     public void innerErrorAfterTermination() {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
-            final AtomicReference<MaybeObserver<? super Integer>> moRef = new AtomicReference<MaybeObserver<? super Integer>>();
+            final AtomicReference<MaybeObserver<? super Integer>> moRef = new AtomicReference<>();
 
             TestObserverEx<Integer> to = new Observable<Integer>() {
                 @Override
                 protected void subscribeActual(Observer<? super Integer> observer) {
-                    observer.onSubscribe(Disposables.empty());
+                    observer.onSubscribe(Disposable.empty());
                     observer.onNext(1);
                     observer.onError(new TestException("outer"));
                 }
@@ -398,7 +398,7 @@ public class ObservableSwitchMapMaybeTest extends RxJavaTest {
                         @Override
                         protected void subscribeActual(
                                 MaybeObserver<? super Integer> observer) {
-                            observer.onSubscribe(Disposables.empty());
+                            observer.onSubscribe(Disposable.empty());
                             moRef.set(observer);
                         }
                     };

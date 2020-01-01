@@ -18,8 +18,9 @@ import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.exceptions.Exceptions;
 import io.reactivex.rxjava3.functions.BiFunction;
 import io.reactivex.rxjava3.internal.disposables.DisposableHelper;
-import io.reactivex.rxjava3.internal.functions.ObjectHelper;
 import io.reactivex.rxjava3.plugins.RxJavaPlugins;
+
+import java.util.Objects;
 
 /**
  * Reduce a sequence of values into a single value via an aggregator function and emit the final value or complete
@@ -40,7 +41,7 @@ public final class ObservableReduceMaybe<T> extends Maybe<T> {
 
     @Override
     protected void subscribeActual(MaybeObserver<? super T> observer) {
-        source.subscribe(new ReduceObserver<T>(observer, reducer));
+        source.subscribe(new ReduceObserver<>(observer, reducer));
     }
 
     static final class ReduceObserver<T> implements Observer<T>, Disposable {
@@ -78,7 +79,7 @@ public final class ObservableReduceMaybe<T> extends Maybe<T> {
                     this.value = value;
                 } else {
                     try {
-                        this.value = ObjectHelper.requireNonNull(reducer.apply(v, value), "The reducer returned a null value");
+                        this.value = Objects.requireNonNull(reducer.apply(v, value), "The reducer returned a null value");
                     } catch (Throwable ex) {
                         Exceptions.throwIfFatal(ex);
                         upstream.dispose();

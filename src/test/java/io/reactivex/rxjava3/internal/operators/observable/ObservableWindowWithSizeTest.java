@@ -36,7 +36,7 @@ public class ObservableWindowWithSizeTest extends RxJavaTest {
 
     private static <T> List<List<T>> toLists(Observable<Observable<T>> observables) {
 
-        final List<List<T>> lists = new ArrayList<List<T>>();
+        final List<List<T>> lists = new ArrayList<>();
         Observable.concatEager(observables.map(new Function<Observable<T>, Observable<List<T>>>() {
             @Override
             public Observable<List<T>> apply(Observable<T> xs) {
@@ -106,7 +106,7 @@ public class ObservableWindowWithSizeTest extends RxJavaTest {
 
     @Test
     public void windowUnsubscribeNonOverlapping() {
-        TestObserverEx<Integer> to = new TestObserverEx<Integer>();
+        TestObserverEx<Integer> to = new TestObserverEx<>();
 
         final AtomicInteger count = new AtomicInteger();
         Observable.merge(Observable.range(1, 10000).doOnNext(new Consumer<Integer>() {
@@ -128,7 +128,7 @@ public class ObservableWindowWithSizeTest extends RxJavaTest {
 
     @Test
     public void windowUnsubscribeNonOverlappingAsyncSource() {
-        TestObserverEx<Integer> to = new TestObserverEx<Integer>();
+        TestObserverEx<Integer> to = new TestObserverEx<>();
 
         final AtomicInteger count = new AtomicInteger();
         Observable.merge(Observable.range(1, 100000)
@@ -161,7 +161,7 @@ public class ObservableWindowWithSizeTest extends RxJavaTest {
 
     @Test
     public void windowUnsubscribeOverlapping() {
-        TestObserverEx<Integer> to = new TestObserverEx<Integer>();
+        TestObserverEx<Integer> to = new TestObserverEx<>();
 
         final AtomicInteger count = new AtomicInteger();
         Observable.merge(Observable.range(1, 10000).doOnNext(new Consumer<Integer>() {
@@ -183,7 +183,7 @@ public class ObservableWindowWithSizeTest extends RxJavaTest {
 
     @Test
     public void windowUnsubscribeOverlappingAsyncSource() {
-        TestObserverEx<Integer> to = new TestObserverEx<Integer>();
+        TestObserverEx<Integer> to = new TestObserverEx<>();
 
         final AtomicInteger count = new AtomicInteger();
         Observable.merge(Observable.range(1, 100000)
@@ -208,7 +208,7 @@ public class ObservableWindowWithSizeTest extends RxJavaTest {
     }
 
     private List<String> list(String... args) {
-        List<String> list = new ArrayList<String>();
+        List<String> list = new ArrayList<>();
         for (String arg : args) {
             list.add(arg);
         }
@@ -219,7 +219,7 @@ public class ObservableWindowWithSizeTest extends RxJavaTest {
         return Observable.unsafeCreate(new ObservableSource<Integer>() {
             @Override
             public void subscribe(Observer<? super Integer> observer) {
-                Disposable d = Disposables.empty();
+                Disposable d = Disposable.empty();
                 observer.onSubscribe(d);
                 while (!d.isDisposed()) {
                     // burst some number of items
@@ -241,7 +241,7 @@ public class ObservableWindowWithSizeTest extends RxJavaTest {
 
     @Test
     public void takeFlatMapCompletes() {
-        TestObserver<Integer> to = new TestObserver<Integer>();
+        TestObserver<Integer> to = new TestObserver<>();
 
         final int indicator = 999999999;
 
@@ -293,7 +293,6 @@ public class ObservableWindowWithSizeTest extends RxJavaTest {
         });
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void errorExact() {
         Observable.error(new TestException())
@@ -302,7 +301,6 @@ public class ObservableWindowWithSizeTest extends RxJavaTest {
         .assertFailure(TestException.class);
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void errorSkip() {
         Observable.error(new TestException())
@@ -311,7 +309,6 @@ public class ObservableWindowWithSizeTest extends RxJavaTest {
         .assertFailure(TestException.class);
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void errorOverlap() {
         Observable.error(new TestException())
@@ -398,14 +395,14 @@ public class ObservableWindowWithSizeTest extends RxJavaTest {
         to
         .assertResult(1);
 
-        assertFalse("Subject still has subscribers!", ps.hasObservers());
+        assertFalse("Subject still has observers!", ps.hasObservers());
     }
 
     @Test
     public void windowAbandonmentCancelsUpstreamSize() {
         PublishSubject<Integer> ps = PublishSubject.create();
 
-        final AtomicReference<Observable<Integer>> inner = new AtomicReference<Observable<Integer>>();
+        final AtomicReference<Observable<Integer>> inner = new AtomicReference<>();
 
         TestObserver<Observable<Integer>> to = ps.window(10)
         .take(1)
@@ -426,7 +423,7 @@ public class ObservableWindowWithSizeTest extends RxJavaTest {
         .assertNoErrors()
         .assertComplete();
 
-        assertFalse("Subject still has subscribers!", ps.hasObservers());
+        assertFalse("Subject still has observers!", ps.hasObservers());
 
         inner.get().test().assertResult(1);
     }
@@ -452,14 +449,14 @@ public class ObservableWindowWithSizeTest extends RxJavaTest {
         to
         .assertResult(1);
 
-        assertFalse("Subject still has subscribers!", ps.hasObservers());
+        assertFalse("Subject still has observers!", ps.hasObservers());
     }
 
     @Test
     public void windowAbandonmentCancelsUpstreamSkip() {
         PublishSubject<Integer> ps = PublishSubject.create();
 
-        final AtomicReference<Observable<Integer>> inner = new AtomicReference<Observable<Integer>>();
+        final AtomicReference<Observable<Integer>> inner = new AtomicReference<>();
 
         TestObserver<Observable<Integer>> to = ps.window(5, 10)
         .take(1)
@@ -480,7 +477,7 @@ public class ObservableWindowWithSizeTest extends RxJavaTest {
         .assertNoErrors()
         .assertComplete();
 
-        assertFalse("Subject still has subscribers!", ps.hasObservers());
+        assertFalse("Subject still has observers!", ps.hasObservers());
 
         inner.get().test().assertResult(1);
     }
@@ -506,14 +503,14 @@ public class ObservableWindowWithSizeTest extends RxJavaTest {
         to
         .assertResult(1);
 
-        assertFalse("Subject still has subscribers!", ps.hasObservers());
+        assertFalse("Subject still has observers!", ps.hasObservers());
     }
 
     @Test
     public void windowAbandonmentCancelsUpstreamOverlap() {
         PublishSubject<Integer> ps = PublishSubject.create();
 
-        final AtomicReference<Observable<Integer>> inner = new AtomicReference<Observable<Integer>>();
+        final AtomicReference<Observable<Integer>> inner = new AtomicReference<>();
 
         TestObserver<Observable<Integer>> to = ps.window(5, 3)
         .take(1)
@@ -534,7 +531,7 @@ public class ObservableWindowWithSizeTest extends RxJavaTest {
         .assertNoErrors()
         .assertComplete();
 
-        assertFalse("Subject still has subscribers!", ps.hasObservers());
+        assertFalse("Subject still has observers!", ps.hasObservers());
 
         inner.get().test().assertResult(1);
     }

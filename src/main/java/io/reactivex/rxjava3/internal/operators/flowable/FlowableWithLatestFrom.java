@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava3.internal.operators.flowable;
 
+import java.util.Objects;
 import java.util.concurrent.atomic.*;
 
 import org.reactivestreams.*;
@@ -20,7 +21,6 @@ import org.reactivestreams.*;
 import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.exceptions.Exceptions;
 import io.reactivex.rxjava3.functions.BiFunction;
-import io.reactivex.rxjava3.internal.functions.ObjectHelper;
 import io.reactivex.rxjava3.internal.fuseable.ConditionalSubscriber;
 import io.reactivex.rxjava3.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.rxjava3.subscribers.SerializedSubscriber;
@@ -36,8 +36,8 @@ public final class FlowableWithLatestFrom<T, U, R> extends AbstractFlowableWithU
 
     @Override
     protected void subscribeActual(Subscriber<? super R> s) {
-        final SerializedSubscriber<R> serial = new SerializedSubscriber<R>(s);
-        final WithLatestFromSubscriber<T, U, R> wlf = new WithLatestFromSubscriber<T, U, R>(serial, combiner);
+        final SerializedSubscriber<R> serial = new SerializedSubscriber<>(s);
+        final WithLatestFromSubscriber<T, U, R> wlf = new WithLatestFromSubscriber<>(serial, combiner);
 
         serial.onSubscribe(wlf);
 
@@ -55,11 +55,11 @@ public final class FlowableWithLatestFrom<T, U, R> extends AbstractFlowableWithU
 
         final BiFunction<? super T, ? super U, ? extends R> combiner;
 
-        final AtomicReference<Subscription> upstream = new AtomicReference<Subscription>();
+        final AtomicReference<Subscription> upstream = new AtomicReference<>();
 
         final AtomicLong requested = new AtomicLong();
 
-        final AtomicReference<Subscription> other = new AtomicReference<Subscription>();
+        final AtomicReference<Subscription> other = new AtomicReference<>();
 
         WithLatestFromSubscriber(Subscriber<? super R> actual, BiFunction<? super T, ? super U, ? extends R> combiner) {
             this.downstream = actual;
@@ -84,7 +84,7 @@ public final class FlowableWithLatestFrom<T, U, R> extends AbstractFlowableWithU
             if (u != null) {
                 R r;
                 try {
-                    r = ObjectHelper.requireNonNull(combiner.apply(t, u), "The combiner returned a null value");
+                    r = Objects.requireNonNull(combiner.apply(t, u), "The combiner returned a null value");
                 } catch (Throwable e) {
                     Exceptions.throwIfFatal(e);
                     cancel();

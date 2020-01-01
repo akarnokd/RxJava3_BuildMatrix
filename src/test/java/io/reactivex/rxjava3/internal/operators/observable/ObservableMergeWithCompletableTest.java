@@ -29,7 +29,7 @@ public class ObservableMergeWithCompletableTest extends RxJavaTest {
 
     @Test
     public void normal() {
-        final TestObserver<Integer> to = new TestObserver<Integer>();
+        final TestObserver<Integer> to = new TestObserver<>();
 
         Observable.range(1, 5).mergeWith(
                 Completable.fromAction(new Action() {
@@ -46,7 +46,7 @@ public class ObservableMergeWithCompletableTest extends RxJavaTest {
 
     @Test
     public void take() {
-        final TestObserver<Integer> to = new TestObserver<Integer>();
+        final TestObserver<Integer> to = new TestObserver<>();
 
         Observable.range(1, 5).mergeWith(
                 Completable.complete()
@@ -123,7 +123,7 @@ public class ObservableMergeWithCompletableTest extends RxJavaTest {
         new Observable<Integer>() {
             @Override
             protected void subscribeActual(Observer<? super Integer> observer) {
-                observer.onSubscribe(Disposables.empty());
+                observer.onSubscribe(Disposable.empty());
 
                 assertFalse(((Disposable)observer).isDisposed());
 

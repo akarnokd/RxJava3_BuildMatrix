@@ -70,7 +70,7 @@ public class ObservableBufferTest extends RxJavaTest {
         Observable<String> source = Observable.unsafeCreate(new ObservableSource<String>() {
             @Override
             public void subscribe(Observer<? super String> observer) {
-                observer.onSubscribe(Disposables.empty());
+                observer.onSubscribe(Disposable.empty());
                 observer.onNext("one");
                 observer.onNext("two");
                 observer.onNext("three");
@@ -126,7 +126,7 @@ public class ObservableBufferTest extends RxJavaTest {
         Observable<String> source = Observable.unsafeCreate(new ObservableSource<String>() {
             @Override
             public void subscribe(Observer<? super String> observer) {
-                observer.onSubscribe(Disposables.empty());
+                observer.onSubscribe(Disposable.empty());
                 push(observer, "one", 10);
                 push(observer, "two", 90);
                 push(observer, "three", 110);
@@ -158,7 +158,7 @@ public class ObservableBufferTest extends RxJavaTest {
         Observable<String> source = Observable.unsafeCreate(new ObservableSource<String>() {
             @Override
             public void subscribe(Observer<? super String> observer) {
-                observer.onSubscribe(Disposables.empty());
+                observer.onSubscribe(Disposable.empty());
                 push(observer, "one", 97);
                 push(observer, "two", 98);
                 /**
@@ -192,7 +192,7 @@ public class ObservableBufferTest extends RxJavaTest {
         Observable<String> source = Observable.unsafeCreate(new ObservableSource<String>() {
             @Override
             public void subscribe(Observer<? super String> observer) {
-                observer.onSubscribe(Disposables.empty());
+                observer.onSubscribe(Disposable.empty());
                 push(observer, "one", 10);
                 push(observer, "two", 60);
                 push(observer, "three", 110);
@@ -205,7 +205,7 @@ public class ObservableBufferTest extends RxJavaTest {
         Observable<Object> openings = Observable.unsafeCreate(new ObservableSource<Object>() {
             @Override
             public void subscribe(Observer<Object> observer) {
-                observer.onSubscribe(Disposables.empty());
+                observer.onSubscribe(Disposable.empty());
                 push(observer, new Object(), 50);
                 push(observer, new Object(), 200);
                 complete(observer, 250);
@@ -218,7 +218,7 @@ public class ObservableBufferTest extends RxJavaTest {
                 return Observable.unsafeCreate(new ObservableSource<Object>() {
                     @Override
                     public void subscribe(Observer<? super Object> observer) {
-                        observer.onSubscribe(Disposables.empty());
+                        observer.onSubscribe(Disposable.empty());
                         push(observer, new Object(), 100);
                         complete(observer, 101);
                     }
@@ -273,7 +273,7 @@ public class ObservableBufferTest extends RxJavaTest {
     }
 
     private List<String> list(String... args) {
-        List<String> list = new ArrayList<String>();
+        List<String> list = new ArrayList<>();
         for (String arg : args) {
             list.add(arg);
         }
@@ -303,7 +303,7 @@ public class ObservableBufferTest extends RxJavaTest {
         Observable<Integer> source = Observable.never();
 
         Observer<List<Integer>> o = TestHelper.mockObserver();
-        TestObserver<List<Integer>> to = new TestObserver<List<Integer>>(o);
+        TestObserver<List<Integer>> to = new TestObserver<>(o);
 
         source.buffer(100, 200, TimeUnit.MILLISECONDS, scheduler)
         .doOnNext(new Consumer<List<Integer>>() {
@@ -764,7 +764,6 @@ public class ObservableBufferTest extends RxJavaTest {
         assertFalse(observer.isDisposed());
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void bufferTimeSkipDefault() {
         Observable.range(1, 5).buffer(1, 1, TimeUnit.MINUTES)
@@ -772,7 +771,6 @@ public class ObservableBufferTest extends RxJavaTest {
         .assertResult(Arrays.asList(1, 2, 3, 4, 5));
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void bufferBoundaryHint() {
         Observable.range(1, 5).buffer(Observable.timer(1, TimeUnit.MINUTES), 2)
@@ -781,31 +779,29 @@ public class ObservableBufferTest extends RxJavaTest {
     }
 
     static HashSet<Integer> set(Integer... values) {
-        return new HashSet<Integer>(Arrays.asList(values));
+        return new HashSet<>(Arrays.asList(values));
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void bufferIntoCustomCollection() {
         Observable.just(1, 1, 2, 2, 3, 3, 4, 4)
         .buffer(3, new Supplier<Collection<Integer>>() {
             @Override
             public Collection<Integer> get() throws Exception {
-                return new HashSet<Integer>();
+                return new HashSet<>();
             }
         })
         .test()
         .assertResult(set(1, 2), set(2, 3), set(4));
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void bufferSkipIntoCustomCollection() {
         Observable.just(1, 1, 2, 2, 3, 3, 4, 4)
         .buffer(3, 3, new Supplier<Collection<Integer>>() {
             @Override
             public Collection<Integer> get() throws Exception {
-                return new HashSet<Integer>();
+                return new HashSet<>();
             }
         })
         .test()
@@ -813,7 +809,6 @@ public class ObservableBufferTest extends RxJavaTest {
     }
 
     @Test
-    @SuppressWarnings("unchecked")
     public void supplierThrows() {
         Observable.just(1)
         .buffer(1, TimeUnit.SECONDS, Schedulers.single(), Integer.MAX_VALUE, new Supplier<Collection<Integer>>() {
@@ -827,7 +822,6 @@ public class ObservableBufferTest extends RxJavaTest {
     }
 
     @Test
-    @SuppressWarnings("unchecked")
     public void supplierThrows2() {
         Observable.just(1)
         .buffer(1, TimeUnit.SECONDS, Schedulers.single(), 10, new Supplier<Collection<Integer>>() {
@@ -841,7 +835,6 @@ public class ObservableBufferTest extends RxJavaTest {
     }
 
     @Test
-    @SuppressWarnings("unchecked")
     public void supplierThrows3() {
         Observable.just(1)
         .buffer(2, 1, TimeUnit.SECONDS, Schedulers.single(), new Supplier<Collection<Integer>>() {
@@ -855,7 +848,6 @@ public class ObservableBufferTest extends RxJavaTest {
     }
 
     @Test
-    @SuppressWarnings("unchecked")
     public void supplierThrows4() {
         Observable.<Integer>never()
         .buffer(1, TimeUnit.MILLISECONDS, Schedulers.single(), Integer.MAX_VALUE, new Supplier<Collection<Integer>>() {
@@ -865,7 +857,7 @@ public class ObservableBufferTest extends RxJavaTest {
                 if (count++ == 1) {
                     throw new TestException();
                 } else {
-                    return new ArrayList<Integer>();
+                    return new ArrayList<>();
                 }
             }
         }, false)
@@ -875,7 +867,6 @@ public class ObservableBufferTest extends RxJavaTest {
     }
 
     @Test
-    @SuppressWarnings("unchecked")
     public void supplierThrows5() {
         Observable.<Integer>never()
         .buffer(1, TimeUnit.MILLISECONDS, Schedulers.single(), 10, new Supplier<Collection<Integer>>() {
@@ -885,7 +876,7 @@ public class ObservableBufferTest extends RxJavaTest {
                 if (count++ == 1) {
                     throw new TestException();
                 } else {
-                    return new ArrayList<Integer>();
+                    return new ArrayList<>();
                 }
             }
         }, false)
@@ -895,7 +886,6 @@ public class ObservableBufferTest extends RxJavaTest {
     }
 
     @Test
-    @SuppressWarnings("unchecked")
     public void supplierThrows6() {
         Observable.<Integer>never()
         .buffer(2, 1, TimeUnit.MILLISECONDS, Schedulers.single(), new Supplier<Collection<Integer>>() {
@@ -905,7 +895,7 @@ public class ObservableBufferTest extends RxJavaTest {
                 if (count++ == 1) {
                     throw new TestException();
                 } else {
-                    return new ArrayList<Integer>();
+                    return new ArrayList<>();
                 }
             }
         })
@@ -915,7 +905,6 @@ public class ObservableBufferTest extends RxJavaTest {
     }
 
     @Test
-    @SuppressWarnings("unchecked")
     public void supplierReturnsNull() {
         Observable.<Integer>never()
         .buffer(1, TimeUnit.MILLISECONDS, Schedulers.single(), Integer.MAX_VALUE, new Supplier<Collection<Integer>>() {
@@ -925,7 +914,7 @@ public class ObservableBufferTest extends RxJavaTest {
                 if (count++ == 1) {
                     return null;
                 } else {
-                    return new ArrayList<Integer>();
+                    return new ArrayList<>();
                 }
             }
         }, false)
@@ -935,7 +924,6 @@ public class ObservableBufferTest extends RxJavaTest {
     }
 
     @Test
-    @SuppressWarnings("unchecked")
     public void supplierReturnsNull2() {
         Observable.<Integer>never()
         .buffer(1, TimeUnit.MILLISECONDS, Schedulers.single(), 10, new Supplier<Collection<Integer>>() {
@@ -945,7 +933,7 @@ public class ObservableBufferTest extends RxJavaTest {
                 if (count++ == 1) {
                     return null;
                 } else {
-                    return new ArrayList<Integer>();
+                    return new ArrayList<>();
                 }
             }
         }, false)
@@ -955,7 +943,6 @@ public class ObservableBufferTest extends RxJavaTest {
     }
 
     @Test
-    @SuppressWarnings("unchecked")
     public void supplierReturnsNull3() {
         Observable.<Integer>never()
         .buffer(2, 1, TimeUnit.MILLISECONDS, Schedulers.single(), new Supplier<Collection<Integer>>() {
@@ -965,7 +952,7 @@ public class ObservableBufferTest extends RxJavaTest {
                 if (count++ == 1) {
                     return null;
                 } else {
-                    return new ArrayList<Integer>();
+                    return new ArrayList<>();
                 }
             }
         })
@@ -996,7 +983,6 @@ public class ObservableBufferTest extends RxJavaTest {
         TestHelper.checkDisposed(PublishSubject.create().buffer(Observable.never(), Functions.justFunction(Observable.never())));
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void restartTimer() {
         Observable.range(1, 5)
@@ -1005,7 +991,6 @@ public class ObservableBufferTest extends RxJavaTest {
         .assertResult(Arrays.asList(1, 2), Arrays.asList(3, 4), Arrays.asList(5));
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void bufferSupplierCrash2() {
         Observable.range(1, 2)
@@ -1016,14 +1001,13 @@ public class ObservableBufferTest extends RxJavaTest {
                 if (++calls == 2) {
                     throw new TestException();
                 }
-                return new ArrayList<Integer>();
+                return new ArrayList<>();
             }
         })
         .test()
         .assertFailure(TestException.class, Arrays.asList(1));
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void bufferSkipSupplierCrash2() {
         Observable.range(1, 2)
@@ -1034,14 +1018,13 @@ public class ObservableBufferTest extends RxJavaTest {
                 if (++calls == 2) {
                     throw new TestException();
                 }
-                return new ArrayList<Integer>();
+                return new ArrayList<>();
             }
         })
         .test()
         .assertFailure(TestException.class);
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void bufferSkipError() {
         Observable.<Integer>error(new TestException())
@@ -1050,7 +1033,6 @@ public class ObservableBufferTest extends RxJavaTest {
         .assertFailure(TestException.class);
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void bufferSkipOverlap() {
         Observable.range(1, 5)
@@ -1065,7 +1047,6 @@ public class ObservableBufferTest extends RxJavaTest {
         );
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void bufferTimedExactError() {
         Observable.error(new TestException())
@@ -1074,7 +1055,6 @@ public class ObservableBufferTest extends RxJavaTest {
         .assertFailure(TestException.class);
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void bufferTimedSkipError() {
         Observable.error(new TestException())
@@ -1083,7 +1063,6 @@ public class ObservableBufferTest extends RxJavaTest {
         .assertFailure(TestException.class);
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void bufferTimedOverlapError() {
         Observable.error(new TestException())
@@ -1092,7 +1071,6 @@ public class ObservableBufferTest extends RxJavaTest {
         .assertFailure(TestException.class);
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void bufferTimedExactEmpty() {
         Observable.empty()
@@ -1101,7 +1079,6 @@ public class ObservableBufferTest extends RxJavaTest {
         .assertResult(Collections.emptyList());
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void bufferTimedSkipEmpty() {
         Observable.empty()
@@ -1110,7 +1087,6 @@ public class ObservableBufferTest extends RxJavaTest {
         .assertResult(Collections.emptyList());
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void bufferTimedOverlapEmpty() {
         Observable.empty()
@@ -1119,7 +1095,6 @@ public class ObservableBufferTest extends RxJavaTest {
         .assertResult(Collections.emptyList());
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void bufferTimedExactSupplierCrash() {
         TestScheduler scheduler = new TestScheduler();
@@ -1134,7 +1109,7 @@ public class ObservableBufferTest extends RxJavaTest {
                 if (++calls == 2) {
                     throw new TestException();
                 }
-                return new ArrayList<Integer>();
+                return new ArrayList<>();
             }
         }, true)
         .test();
@@ -1149,7 +1124,6 @@ public class ObservableBufferTest extends RxJavaTest {
         .assertFailure(TestException.class, Arrays.asList(1));
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void bufferTimedExactBoundedError() {
         TestScheduler scheduler = new TestScheduler();
@@ -1207,7 +1181,6 @@ public class ObservableBufferTest extends RxJavaTest {
         }
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void noCompletionCancelExact() {
         final AtomicInteger counter = new AtomicInteger();
@@ -1227,7 +1200,6 @@ public class ObservableBufferTest extends RxJavaTest {
         assertEquals(0, counter.get());
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void noCompletionCancelSkip() {
         final AtomicInteger counter = new AtomicInteger();
@@ -1247,7 +1219,6 @@ public class ObservableBufferTest extends RxJavaTest {
         assertEquals(0, counter.get());
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void noCompletionCancelOverlap() {
         final AtomicInteger counter = new AtomicInteger();
@@ -1268,7 +1239,6 @@ public class ObservableBufferTest extends RxJavaTest {
     }
 
     @Test
-    @SuppressWarnings("unchecked")
     public void boundaryOpenCloseDisposedOnComplete() {
         PublishSubject<Integer> source = PublishSubject.create();
 
@@ -1344,7 +1314,6 @@ public class ObservableBufferTest extends RxJavaTest {
     }
 
     @Test
-    @SuppressWarnings("unchecked")
     public void openClosemainError() {
         Observable.error(new TestException())
         .buffer(Observable.never(), Functions.justFunction(Observable.never()))
@@ -1353,15 +1322,14 @@ public class ObservableBufferTest extends RxJavaTest {
     }
 
     @Test
-    @SuppressWarnings("unchecked")
     public void openClosebadSource() {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
             new Observable<Object>() {
                 @Override
                 protected void subscribeActual(Observer<? super Object> observer) {
-                    Disposable bs1 = Disposables.empty();
-                    Disposable bs2 = Disposables.empty();
+                    Disposable bs1 = Disposable.empty();
+                    Disposable bs2 = Disposable.empty();
 
                     observer.onSubscribe(bs1);
 
@@ -1391,7 +1359,6 @@ public class ObservableBufferTest extends RxJavaTest {
     }
 
     @Test
-    @SuppressWarnings("unchecked")
     public void openCloseOpenCompletes() {
         PublishSubject<Integer> source = PublishSubject.create();
 
@@ -1420,7 +1387,6 @@ public class ObservableBufferTest extends RxJavaTest {
     }
 
     @Test
-    @SuppressWarnings("unchecked")
     public void openCloseOpenCompletesNoBuffers() {
         PublishSubject<Integer> source = PublishSubject.create();
 
@@ -1449,7 +1415,6 @@ public class ObservableBufferTest extends RxJavaTest {
     }
 
     @Test
-    @SuppressWarnings("unchecked")
     public void openCloseTake() {
         PublishSubject<Integer> source = PublishSubject.create();
 
@@ -1473,7 +1438,6 @@ public class ObservableBufferTest extends RxJavaTest {
     }
 
     @Test
-    @SuppressWarnings("unchecked")
     public void openCloseBadOpen() {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
@@ -1484,8 +1448,8 @@ public class ObservableBufferTest extends RxJavaTest {
 
                     assertFalse(((Disposable)observer).isDisposed());
 
-                    Disposable bs1 = Disposables.empty();
-                    Disposable bs2 = Disposables.empty();
+                    Disposable bs1 = Disposable.empty();
+                    Disposable bs2 = Disposable.empty();
 
                     observer.onSubscribe(bs1);
 
@@ -1517,7 +1481,6 @@ public class ObservableBufferTest extends RxJavaTest {
     }
 
     @Test
-    @SuppressWarnings("unchecked")
     public void openCloseBadClose() {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
@@ -1529,8 +1492,8 @@ public class ObservableBufferTest extends RxJavaTest {
 
                     assertFalse(((Disposable)observer).isDisposed());
 
-                    Disposable bs1 = Disposables.empty();
-                    Disposable bs2 = Disposables.empty();
+                    Disposable bs1 = Disposable.empty();
+                    Disposable bs2 = Disposable.empty();
 
                     observer.onSubscribe(bs1);
 
@@ -1574,7 +1537,6 @@ public class ObservableBufferTest extends RxJavaTest {
         );
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void bufferExactBoundarySecondBufferCrash() {
         PublishSubject<Integer> ps = PublishSubject.create();
@@ -1587,7 +1549,7 @@ public class ObservableBufferTest extends RxJavaTest {
                 if (++calls == 2) {
                     throw new TestException();
                 }
-                return new ArrayList<Integer>();
+                return new ArrayList<>();
             }
         }).test();
 
@@ -1596,24 +1558,23 @@ public class ObservableBufferTest extends RxJavaTest {
         to.assertFailure(TestException.class);
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void bufferExactBoundaryBadSource() {
         Observable<Integer> ps = new Observable<Integer>() {
             @Override
             protected void subscribeActual(Observer<? super Integer> observer) {
-                observer.onSubscribe(Disposables.empty());
+                observer.onSubscribe(Disposable.empty());
                 observer.onComplete();
                 observer.onNext(1);
                 observer.onComplete();
             }
         };
 
-        final AtomicReference<Observer<? super Integer>> ref = new AtomicReference<Observer<? super Integer>>();
+        final AtomicReference<Observer<? super Integer>> ref = new AtomicReference<>();
         Observable<Integer> b = new Observable<Integer>() {
             @Override
             protected void subscribeActual(Observer<? super Integer> observer) {
-                observer.onSubscribe(Disposables.empty());
+                observer.onSubscribe(Disposable.empty());
                 ref.set(observer);
             }
         };
@@ -1653,12 +1614,12 @@ public class ObservableBufferTest extends RxJavaTest {
     public void timedInternalState() {
         TestScheduler sch = new TestScheduler();
 
-        TestObserver<List<Integer>> to = new TestObserver<List<Integer>>();
+        TestObserver<List<Integer>> to = new TestObserver<>();
 
-        BufferExactUnboundedObserver<Integer, List<Integer>> sub = new BufferExactUnboundedObserver<Integer, List<Integer>>(
-                to, Functions.justSupplier((List<Integer>)new ArrayList<Integer>()), 1, TimeUnit.SECONDS, sch);
+        BufferExactUnboundedObserver<Integer, List<Integer>> sub = new BufferExactUnboundedObserver<>(
+                to, Functions.justSupplier((List<Integer>) new ArrayList<Integer>()), 1, TimeUnit.SECONDS, sch);
 
-        sub.onSubscribe(Disposables.empty());
+        sub.onSubscribe(Disposable.empty());
 
         assertFalse(sub.isDisposed());
 
@@ -1672,7 +1633,7 @@ public class ObservableBufferTest extends RxJavaTest {
 
         assertTrue(sub.isDisposed());
 
-        sub.buffer = new ArrayList<Integer>();
+        sub.buffer = new ArrayList<>();
         sub.enter();
         sub.onComplete();
     }
@@ -1703,12 +1664,12 @@ public class ObservableBufferTest extends RxJavaTest {
     public void timedSkipInternalState() {
         TestScheduler sch = new TestScheduler();
 
-        TestObserver<List<Integer>> to = new TestObserver<List<Integer>>();
+        TestObserver<List<Integer>> to = new TestObserver<>();
 
-        BufferSkipBoundedObserver<Integer, List<Integer>> sub = new BufferSkipBoundedObserver<Integer, List<Integer>>(
-                to, Functions.justSupplier((List<Integer>)new ArrayList<Integer>()), 1, 1, TimeUnit.SECONDS, sch.createWorker());
+        BufferSkipBoundedObserver<Integer, List<Integer>> sub = new BufferSkipBoundedObserver<>(
+                to, Functions.justSupplier((List<Integer>) new ArrayList<Integer>()), 1, 1, TimeUnit.SECONDS, sch.createWorker());
 
-        sub.onSubscribe(Disposables.empty());
+        sub.onSubscribe(Disposable.empty());
 
         sub.enter();
         sub.onComplete();
@@ -1722,21 +1683,22 @@ public class ObservableBufferTest extends RxJavaTest {
     public void timedSkipCancelWhenSecondBuffer() {
         TestScheduler sch = new TestScheduler();
 
-        final TestObserver<List<Integer>> to = new TestObserver<List<Integer>>();
+        final TestObserver<List<Integer>> to = new TestObserver<>();
 
-        BufferSkipBoundedObserver<Integer, List<Integer>> sub = new BufferSkipBoundedObserver<Integer, List<Integer>>(
+        BufferSkipBoundedObserver<Integer, List<Integer>> sub = new BufferSkipBoundedObserver<>(
                 to, new Supplier<List<Integer>>() {
-                    int calls;
-                    @Override
-                    public List<Integer> get() throws Exception {
-                        if (++calls == 2) {
-                            to.dispose();
-                        }
-                        return new ArrayList<Integer>();
-                    }
-                }, 1, 1, TimeUnit.SECONDS, sch.createWorker());
+            int calls;
 
-        sub.onSubscribe(Disposables.empty());
+            @Override
+            public List<Integer> get() throws Exception {
+                if (++calls == 2) {
+                    to.dispose();
+                }
+                return new ArrayList<>();
+            }
+        }, 1, 1, TimeUnit.SECONDS, sch.createWorker());
+
+        sub.onSubscribe(Disposable.empty());
 
         sub.run();
 
@@ -1747,15 +1709,15 @@ public class ObservableBufferTest extends RxJavaTest {
     public void timedSizeBufferAlreadyCleared() {
         TestScheduler sch = new TestScheduler();
 
-        TestObserver<List<Integer>> to = new TestObserver<List<Integer>>();
+        TestObserver<List<Integer>> to = new TestObserver<>();
 
         BufferExactBoundedObserver<Integer, List<Integer>> sub =
-                new BufferExactBoundedObserver<Integer, List<Integer>>(
-                        to, Functions.justSupplier((List<Integer>)new ArrayList<Integer>()),
+                new BufferExactBoundedObserver<>(
+                        to, Functions.justSupplier((List<Integer>) new ArrayList<Integer>()),
                         1, TimeUnit.SECONDS, 1, false, sch.createWorker())
         ;
 
-        Disposable bs = Disposables.empty();
+        Disposable bs = Disposable.empty();
 
         sub.onSubscribe(bs);
 
@@ -1790,10 +1752,10 @@ public class ObservableBufferTest extends RxJavaTest {
 
     @Test
     public void bufferExactState() {
-        TestObserver<List<Integer>> to = new TestObserver<List<Integer>>();
+        TestObserver<List<Integer>> to = new TestObserver<>();
 
-        BufferExactObserver<Integer, List<Integer>> sub = new BufferExactObserver<Integer, List<Integer>>(
-                to, 1, Functions.justSupplier((List<Integer>)new ArrayList<Integer>())
+        BufferExactObserver<Integer, List<Integer>> sub = new BufferExactObserver<>(
+                to, 1, Functions.justSupplier((List<Integer>) new ArrayList<Integer>())
         );
 
         sub.onComplete();
@@ -1813,7 +1775,6 @@ public class ObservableBufferTest extends RxJavaTest {
     }
 
     @Test
-    @SuppressWarnings("unchecked")
     public void bufferExactFailingSupplier() {
         Observable.empty()
                 .buffer(1, TimeUnit.SECONDS, Schedulers.computation(), 10, new Supplier<List<Object>>() {

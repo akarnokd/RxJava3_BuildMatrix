@@ -71,7 +71,7 @@ import io.reactivex.rxjava3.plugins.RxJavaPlugins;
  * <dl>
  *  <dt><b>Backpressure:</b></dt>
  *  <dd>The processor does not coordinate backpressure for its subscribers and implements a weaker {@code onSubscribe} which
- *  calls requests Long.MAX_VALUE from the incoming Subscriptions. This makes it possible to subscribe the {@code PublishProcessor}
+ *  calls requests {@link Long#MAX_VALUE} from the incoming Subscriptions. This makes it possible to subscribe the {@code PublishProcessor}
  *  to multiple sources (note on serialization though) unlike the standard {@code Subscriber} contract. Child subscribers, however, are not overflown but receive an
  *  {@link IllegalStateException} in case their requested amount is zero.</dd>
  *  <dt><b>Scheduler:</b></dt>
@@ -128,7 +128,7 @@ public final class PublishProcessor<T> extends FlowableProcessor<T> {
     @CheckReturnValue
     @NonNull
     public static <T> PublishProcessor<T> create() {
-        return new PublishProcessor<T>();
+        return new PublishProcessor<>();
     }
 
     /**
@@ -137,12 +137,12 @@ public final class PublishProcessor<T> extends FlowableProcessor<T> {
      */
     @SuppressWarnings("unchecked")
     PublishProcessor() {
-        subscribers = new AtomicReference<PublishSubscription<T>[]>(EMPTY);
+        subscribers = new AtomicReference<>(EMPTY);
     }
 
     @Override
-    protected void subscribeActual(Subscriber<? super T> t) {
-        PublishSubscription<T> ps = new PublishSubscription<T>(t, this);
+    protected void subscribeActual(@NonNull Subscriber<? super T> t) {
+        PublishSubscription<T> ps = new PublishSubscription<>(t, this);
         t.onSubscribe(ps);
         if (add(ps)) {
             // if cancellation happened while a successful add, the remove() didn't work
@@ -226,7 +226,7 @@ public final class PublishProcessor<T> extends FlowableProcessor<T> {
     }
 
     @Override
-    public void onSubscribe(Subscription s) {
+    public void onSubscribe(@NonNull Subscription s) {
         if (subscribers.get() == TERMINATED) {
             s.cancel();
             return;
@@ -236,7 +236,7 @@ public final class PublishProcessor<T> extends FlowableProcessor<T> {
     }
 
     @Override
-    public void onNext(T t) {
+    public void onNext(@NonNull T t) {
         ExceptionHelper.nullCheck(t, "onNext called with a null value.");
         for (PublishSubscription<T> s : subscribers.get()) {
             s.onNext(t);
@@ -245,7 +245,7 @@ public final class PublishProcessor<T> extends FlowableProcessor<T> {
 
     @SuppressWarnings("unchecked")
     @Override
-    public void onError(Throwable t) {
+    public void onError(@NonNull Throwable t) {
         ExceptionHelper.nullCheck(t, "onError called with a null Throwable.");
         if (subscribers.get() == TERMINATED) {
             RxJavaPlugins.onError(t);
@@ -281,13 +281,13 @@ public final class PublishProcessor<T> extends FlowableProcessor<T> {
      * <p>History: 2.0.8 - experimental
      * @param t the item to emit, not null
      * @return true if the item was emitted to all Subscribers
+     * @throws NullPointerException if {@code t} is {@code null}
      * @since 2.2
      */
-    public boolean offer(T t) {
-        if (t == null) {
-            onError(ExceptionHelper.createNullPointerException("offer called with a null value."));
-            return true;
-        }
+    @CheckReturnValue
+    public boolean offer(@NonNull T t) {
+        ExceptionHelper.nullCheck(t, "offer called with a null value.");
+
         PublishSubscription<T>[] array = subscribers.get();
 
         for (PublishSubscription<T> s : array) {
@@ -303,12 +303,14 @@ public final class PublishProcessor<T> extends FlowableProcessor<T> {
     }
 
     @Override
+    @CheckReturnValue
     public boolean hasSubscribers() {
         return subscribers.get().length != 0;
     }
 
     @Override
     @Nullable
+    @CheckReturnValue
     public Throwable getThrowable() {
         if (subscribers.get() == TERMINATED) {
             return error;
@@ -317,11 +319,13 @@ public final class PublishProcessor<T> extends FlowableProcessor<T> {
     }
 
     @Override
+    @CheckReturnValue
     public boolean hasThrowable() {
         return subscribers.get() == TERMINATED && error != null;
     }
 
     @Override
+    @CheckReturnValue
     public boolean hasComplete() {
         return subscribers.get() == TERMINATED && error == null;
     }

@@ -16,18 +16,19 @@ package io.reactivex.rxjava3.core;
 import io.reactivex.rxjava3.annotations.NonNull;
 
 /**
- * Convenience interface and callback used by the {@link Maybe#to} operator to turn a Maybe into another
+ * Convenience interface and callback used by the {@link Maybe#to} operator to turn a {@link Maybe} into another
  * value fluently.
  * <p>History: 2.1.7 - experimental
  * @param <T> the upstream type
  * @param <R> the output type
  * @since 2.2
  */
+@FunctionalInterface
 public interface MaybeConverter<T, R> {
     /**
-     * Applies a function to the upstream Maybe and returns a converted value of type {@code R}.
+     * Applies a function to the upstream {@link Maybe} and returns a converted value of type {@code R}.
      *
-     * @param upstream the upstream Maybe instance
+     * @param upstream the upstream {@code Maybe} instance
      * @return the converted value
      */
     @NonNull

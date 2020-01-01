@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava3.internal.operators.mixed;
 
+import java.util.Objects;
 import java.util.concurrent.atomic.AtomicReference;
 
 import io.reactivex.rxjava3.core.*;
@@ -20,7 +21,6 @@ import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.exceptions.Exceptions;
 import io.reactivex.rxjava3.functions.Function;
 import io.reactivex.rxjava3.internal.disposables.DisposableHelper;
-import io.reactivex.rxjava3.internal.functions.ObjectHelper;
 import io.reactivex.rxjava3.internal.util.AtomicThrowable;
 import io.reactivex.rxjava3.plugins.RxJavaPlugins;
 
@@ -50,7 +50,7 @@ public final class ObservableSwitchMapCompletable<T> extends Completable {
     @Override
     protected void subscribeActual(CompletableObserver observer) {
         if (!ScalarXMapZHelper.tryAsCompletable(source, mapper, observer)) {
-            source.subscribe(new SwitchMapCompletableObserver<T>(observer, mapper, delayErrors));
+            source.subscribe(new SwitchMapCompletableObserver<>(observer, mapper, delayErrors));
         }
     }
 
@@ -78,7 +78,7 @@ public final class ObservableSwitchMapCompletable<T> extends Completable {
             this.mapper = mapper;
             this.delayErrors = delayErrors;
             this.errors = new AtomicThrowable();
-            this.inner = new AtomicReference<SwitchMapInnerObserver>();
+            this.inner = new AtomicReference<>();
         }
 
         @Override
@@ -94,7 +94,7 @@ public final class ObservableSwitchMapCompletable<T> extends Completable {
             CompletableSource c;
 
             try {
-                c = ObjectHelper.requireNonNull(mapper.apply(t), "The mapper returned a null CompletableSource");
+                c = Objects.requireNonNull(mapper.apply(t), "The mapper returned a null CompletableSource");
             } catch (Throwable ex) {
                 Exceptions.throwIfFatal(ex);
                 upstream.dispose();

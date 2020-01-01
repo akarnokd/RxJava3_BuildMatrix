@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava3.internal.operators.flowable;
 
+import java.util.Objects;
 import java.util.concurrent.atomic.*;
 
 import org.reactivestreams.Subscription;
@@ -22,7 +23,6 @@ import io.reactivex.rxjava3.disposables.*;
 import io.reactivex.rxjava3.exceptions.Exceptions;
 import io.reactivex.rxjava3.functions.Function;
 import io.reactivex.rxjava3.internal.disposables.DisposableHelper;
-import io.reactivex.rxjava3.internal.functions.ObjectHelper;
 import io.reactivex.rxjava3.internal.fuseable.FuseToFlowable;
 import io.reactivex.rxjava3.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.rxjava3.internal.util.AtomicThrowable;
@@ -53,12 +53,12 @@ public final class FlowableFlatMapCompletableCompletable<T> extends Completable 
 
     @Override
     protected void subscribeActual(CompletableObserver observer) {
-        source.subscribe(new FlatMapCompletableMainSubscriber<T>(observer, mapper, delayErrors, maxConcurrency));
+        source.subscribe(new FlatMapCompletableMainSubscriber<>(observer, mapper, delayErrors, maxConcurrency));
     }
 
     @Override
     public Flowable<T> fuseToFlowable() {
-        return RxJavaPlugins.onAssembly(new FlowableFlatMapCompletable<T>(source, mapper, delayErrors, maxConcurrency));
+        return RxJavaPlugins.onAssembly(new FlowableFlatMapCompletable<>(source, mapper, delayErrors, maxConcurrency));
     }
 
     static final class FlatMapCompletableMainSubscriber<T> extends AtomicInteger
@@ -114,7 +114,7 @@ public final class FlowableFlatMapCompletableCompletable<T> extends Completable 
             CompletableSource cs;
 
             try {
-                cs = ObjectHelper.requireNonNull(mapper.apply(value), "The mapper returned a null CompletableSource");
+                cs = Objects.requireNonNull(mapper.apply(value), "The mapper returned a null CompletableSource");
             } catch (Throwable ex) {
                 Exceptions.throwIfFatal(ex);
                 upstream.cancel();

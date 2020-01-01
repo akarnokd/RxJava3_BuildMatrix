@@ -14,6 +14,7 @@
 package io.reactivex.rxjava3.internal.operators.flowable;
 
 import java.util.Arrays;
+import java.util.Objects;
 import java.util.concurrent.atomic.*;
 
 import org.reactivestreams.*;
@@ -21,7 +22,6 @@ import org.reactivestreams.*;
 import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.exceptions.Exceptions;
 import io.reactivex.rxjava3.functions.Function;
-import io.reactivex.rxjava3.internal.functions.ObjectHelper;
 import io.reactivex.rxjava3.internal.fuseable.*;
 import io.reactivex.rxjava3.internal.queue.SpscArrayQueue;
 import io.reactivex.rxjava3.internal.subscriptions.*;
@@ -71,7 +71,7 @@ public final class FlowableZip<T, R> extends Flowable<R> {
             return;
         }
 
-        ZipCoordinator<T, R> coordinator = new ZipCoordinator<T, R>(s, zipper, count, bufferSize, delayError);
+        ZipCoordinator<T, R> coordinator = new ZipCoordinator<>(s, zipper, count, bufferSize, delayError);
 
         s.onSubscribe(coordinator);
 
@@ -108,7 +108,7 @@ public final class FlowableZip<T, R> extends Flowable<R> {
             @SuppressWarnings("unchecked")
             ZipSubscriber<T, R>[] a = new ZipSubscriber[n];
             for (int i = 0; i < n; i++) {
-                a[i] = new ZipSubscriber<T, R>(this, prefetch);
+                a[i] = new ZipSubscriber<>(this, prefetch);
             }
             this.current = new Object[n];
             this.subscribers = a;
@@ -229,7 +229,7 @@ public final class FlowableZip<T, R> extends Flowable<R> {
                     R v;
 
                     try {
-                        v = ObjectHelper.requireNonNull(zipper.apply(values.clone()), "The zipper returned a null value");
+                        v = Objects.requireNonNull(zipper.apply(values.clone()), "The zipper returned a null value");
                     } catch (Throwable ex) {
                         Exceptions.throwIfFatal(ex);
                         cancelAll();
@@ -354,7 +354,7 @@ public final class FlowableZip<T, R> extends Flowable<R> {
                     }
                 }
 
-                queue = new SpscArrayQueue<T>(prefetch);
+                queue = new SpscArrayQueue<>(prefetch);
 
                 s.request(prefetch);
             }

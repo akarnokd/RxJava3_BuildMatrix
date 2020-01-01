@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava3.internal.operators.mixed;
 
+import java.util.Objects;
 import java.util.concurrent.atomic.*;
 
 import io.reactivex.rxjava3.core.*;
@@ -20,7 +21,6 @@ import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.exceptions.Exceptions;
 import io.reactivex.rxjava3.functions.Function;
 import io.reactivex.rxjava3.internal.disposables.DisposableHelper;
-import io.reactivex.rxjava3.internal.functions.ObjectHelper;
 import io.reactivex.rxjava3.internal.fuseable.SimplePlainQueue;
 import io.reactivex.rxjava3.internal.queue.SpscLinkedArrayQueue;
 import io.reactivex.rxjava3.internal.util.*;
@@ -56,7 +56,7 @@ public final class ObservableConcatMapSingle<T, R> extends Observable<R> {
     @Override
     protected void subscribeActual(Observer<? super R> observer) {
         if (!ScalarXMapZHelper.tryAsSingle(source, mapper, observer)) {
-            source.subscribe(new ConcatMapSingleMainObserver<T, R>(observer, mapper, prefetch, errorMode));
+            source.subscribe(new ConcatMapSingleMainObserver<>(observer, mapper, prefetch, errorMode));
         }
     }
 
@@ -102,8 +102,8 @@ public final class ObservableConcatMapSingle<T, R> extends Observable<R> {
             this.mapper = mapper;
             this.errorMode = errorMode;
             this.errors = new AtomicThrowable();
-            this.inner = new ConcatMapSingleObserver<R>(this);
-            this.queue = new SpscLinkedArrayQueue<T>(prefetch);
+            this.inner = new ConcatMapSingleObserver<>(this);
+            this.queue = new SpscLinkedArrayQueue<>(prefetch);
         }
 
         @Override
@@ -219,7 +219,7 @@ public final class ObservableConcatMapSingle<T, R> extends Observable<R> {
                         SingleSource<? extends R> ss;
 
                         try {
-                            ss = ObjectHelper.requireNonNull(mapper.apply(v), "The mapper returned a null SingleSource");
+                            ss = Objects.requireNonNull(mapper.apply(v), "The mapper returned a null SingleSource");
                         } catch (Throwable ex) {
                             Exceptions.throwIfFatal(ex);
                             upstream.dispose();

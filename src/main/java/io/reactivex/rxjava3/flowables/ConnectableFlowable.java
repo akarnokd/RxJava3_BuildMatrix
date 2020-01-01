@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava3.flowables;
 
+import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
 import org.reactivestreams.Subscriber;
@@ -58,20 +59,30 @@ public abstract class ConnectableFlowable<T> extends Flowable<T> {
     /**
      * Instructs the {@code ConnectableFlowable} to begin emitting the items from its underlying
      * {@link Flowable} to its {@link Subscriber}s.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>The behavior is determined by the implementor of this abstract class.</dd>
+     * </dl>
      *
      * @param connection
      *          the action that receives the connection subscription before the subscription to source happens
      *          allowing the caller to synchronously disconnect a synchronous source
      * @see <a href="http://reactivex.io/documentation/operators/connect.html">ReactiveX documentation: Connect</a>
      */
+    @SchedulerSupport(SchedulerSupport.NONE)
     public abstract void connect(@NonNull Consumer<? super Disposable> connection);
 
     /**
      * Resets this ConnectableFlowable into its fresh state if it has terminated.
      * <p>
      * Calling this method on a fresh or active {@code ConnectableFlowable} has no effect.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>The behavior is determined by the implementor of this abstract class.</dd>
+     * </dl>
      * @since 3.0.0
      */
+    @SchedulerSupport(SchedulerSupport.NONE)
     public abstract void reset();
 
     /**
@@ -79,10 +90,16 @@ public abstract class ConnectableFlowable<T> extends Flowable<T> {
      * {@link Flowable} to its {@link Subscriber}s.
      * <p>
      * To disconnect from a synchronous source, use the {@link #connect(io.reactivex.rxjava3.functions.Consumer)} method.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>The behavior is determined by the implementor of this abstract class.</dd>
+     * </dl>
      *
      * @return the subscription representing the connection
      * @see <a href="http://reactivex.io/documentation/operators/connect.html">ReactiveX documentation: Connect</a>
      */
+    @NonNull
+    @SchedulerSupport(SchedulerSupport.NONE)
     public final Disposable connect() {
         ConnectConsumer cc = new ConnectConsumer();
         connect(cc);
@@ -110,7 +127,7 @@ public abstract class ConnectableFlowable<T> extends Flowable<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     @BackpressureSupport(BackpressureKind.PASS_THROUGH)
     public Flowable<T> refCount() {
-        return RxJavaPlugins.onAssembly(new FlowableRefCount<T>(this));
+        return RxJavaPlugins.onAssembly(new FlowableRefCount<>(this));
     }
 
     /**
@@ -131,6 +148,7 @@ public abstract class ConnectableFlowable<T> extends Flowable<T> {
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     @BackpressureSupport(BackpressureKind.PASS_THROUGH)
+    @NonNull
     public final Flowable<T> refCount(int subscriberCount) {
         return refCount(subscriberCount, 0, TimeUnit.NANOSECONDS, Schedulers.trampoline());
     }
@@ -156,7 +174,8 @@ public abstract class ConnectableFlowable<T> extends Flowable<T> {
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.COMPUTATION)
     @BackpressureSupport(BackpressureKind.PASS_THROUGH)
-    public final Flowable<T> refCount(long timeout, TimeUnit unit) {
+    @NonNull
+    public final Flowable<T> refCount(long timeout, @NonNull TimeUnit unit) {
         return refCount(1, timeout, unit, Schedulers.computation());
     }
 
@@ -181,7 +200,8 @@ public abstract class ConnectableFlowable<T> extends Flowable<T> {
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.CUSTOM)
     @BackpressureSupport(BackpressureKind.PASS_THROUGH)
-    public final Flowable<T> refCount(long timeout, TimeUnit unit, Scheduler scheduler) {
+    @NonNull
+    public final Flowable<T> refCount(long timeout, @NonNull TimeUnit unit, @NonNull Scheduler scheduler) {
         return refCount(1, timeout, unit, scheduler);
     }
 
@@ -207,7 +227,8 @@ public abstract class ConnectableFlowable<T> extends Flowable<T> {
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.COMPUTATION)
     @BackpressureSupport(BackpressureKind.PASS_THROUGH)
-    public final Flowable<T> refCount(int subscriberCount, long timeout, TimeUnit unit) {
+    @NonNull
+    public final Flowable<T> refCount(int subscriberCount, long timeout, @NonNull TimeUnit unit) {
         return refCount(subscriberCount, timeout, unit, Schedulers.computation());
     }
 
@@ -228,16 +249,19 @@ public abstract class ConnectableFlowable<T> extends Flowable<T> {
      * @param unit the time unit of the timeout
      * @param scheduler the target scheduler to wait on before disconnecting
      * @return the new Flowable instance
+     * @throws NullPointerException if {@code unit} or {@code scheduler} is {@code null}
+     * @throws IllegalArgumentException if {@code subscriberCount} is non-positive
      * @since 2.2
      */
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.CUSTOM)
     @BackpressureSupport(BackpressureKind.PASS_THROUGH)
-    public final Flowable<T> refCount(int subscriberCount, long timeout, TimeUnit unit, Scheduler scheduler) {
+    @NonNull
+    public final Flowable<T> refCount(int subscriberCount, long timeout, @NonNull TimeUnit unit, @NonNull Scheduler scheduler) {
         ObjectHelper.verifyPositive(subscriberCount, "subscriberCount");
-        ObjectHelper.requireNonNull(unit, "unit is null");
-        ObjectHelper.requireNonNull(scheduler, "scheduler is null");
-        return RxJavaPlugins.onAssembly(new FlowableRefCount<T>(this, subscriberCount, timeout, unit, scheduler));
+        Objects.requireNonNull(unit, "unit is null");
+        Objects.requireNonNull(scheduler, "scheduler is null");
+        return RxJavaPlugins.onAssembly(new FlowableRefCount<>(this, subscriberCount, timeout, unit, scheduler));
     }
 
     /**
@@ -255,6 +279,13 @@ public abstract class ConnectableFlowable<T> extends Flowable<T> {
      * This overload does not allow disconnecting the connection established via
      * {@link #connect(Consumer)}. Use the {@link #autoConnect(int, Consumer)} overload
      * to gain access to the {@code Disposable} representing the only connection.
+     * <dl>
+     *  <dt><b>Backpressure:</b></dt>
+     *  <dd>The operator itself doesn't interfere with backpressure which is determined by
+     *  the upstream {@code ConnectableFlowable}'s behavior.</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code autoConnect} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
      *
      * @return a Flowable that automatically connects to this ConnectableFlowable
      *         when the first Subscriber subscribes
@@ -262,6 +293,9 @@ public abstract class ConnectableFlowable<T> extends Flowable<T> {
      * @see #autoConnect(int, Consumer)
      */
     @NonNull
+    @CheckReturnValue
+    @BackpressureSupport(BackpressureKind.PASS_THROUGH)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public Flowable<T> autoConnect() {
         return autoConnect(1);
     }
@@ -280,6 +314,13 @@ public abstract class ConnectableFlowable<T> extends Flowable<T> {
      * This overload does not allow disconnecting the connection established via
      * {@link #connect(Consumer)}. Use the {@link #autoConnect(int, Consumer)} overload
      * to gain access to the {@code Disposable} representing the only connection.
+     * <dl>
+     *  <dt><b>Backpressure:</b></dt>
+     *  <dd>The operator itself doesn't interfere with backpressure which is determined by
+     *  the upstream {@code ConnectableFlowable}'s behavior.</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code autoConnect} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
      *
      * @param numberOfSubscribers the number of subscribers to await before calling connect
      *                            on the ConnectableFlowable. A non-positive value indicates
@@ -288,6 +329,9 @@ public abstract class ConnectableFlowable<T> extends Flowable<T> {
      *         when the specified number of Subscribers subscribe to it
      */
     @NonNull
+    @CheckReturnValue
+    @BackpressureSupport(BackpressureKind.PASS_THROUGH)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public Flowable<T> autoConnect(int numberOfSubscribers) {
         return autoConnect(numberOfSubscribers, Functions.emptyConsumer());
     }
@@ -304,6 +348,13 @@ public abstract class ConnectableFlowable<T> extends Flowable<T> {
      * terminates, the connection is never renewed, no matter how Subscribers come
      * and go. Use {@link #refCount()} to renew a connection or dispose an active
      * connection when all {@code Subscriber}s have cancelled their {@code Subscription}s.
+     * <dl>
+     *  <dt><b>Backpressure:</b></dt>
+     *  <dd>The operator itself doesn't interfere with backpressure which is determined by
+     *  the upstream {@code ConnectableFlowable}'s behavior.</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code autoConnect} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
      *
      * @param numberOfSubscribers the number of subscribers to await before calling connect
      *                            on the ConnectableFlowable. A non-positive value indicates
@@ -315,11 +366,14 @@ public abstract class ConnectableFlowable<T> extends Flowable<T> {
      *         specified callback with the Subscription associated with the established connection
      */
     @NonNull
+    @CheckReturnValue
+    @BackpressureSupport(BackpressureKind.PASS_THROUGH)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public Flowable<T> autoConnect(int numberOfSubscribers, @NonNull Consumer<? super Disposable> connection) {
         if (numberOfSubscribers <= 0) {
             this.connect(connection);
             return RxJavaPlugins.onAssembly(this);
         }
-        return RxJavaPlugins.onAssembly(new FlowableAutoConnect<T>(this, numberOfSubscribers, connection));
+        return RxJavaPlugins.onAssembly(new FlowableAutoConnect<>(this, numberOfSubscribers, connection));
     }
 }

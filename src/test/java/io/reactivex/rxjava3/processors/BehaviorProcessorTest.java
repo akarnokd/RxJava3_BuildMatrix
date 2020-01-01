@@ -137,7 +137,7 @@ public class BehaviorProcessorTest extends FlowableProcessorTest<Object> {
         Subscriber<Object> observerB = TestHelper.mockSubscriber();
         Subscriber<Object> observerC = TestHelper.mockSubscriber();
 
-        TestSubscriber<Object> ts = new TestSubscriber<Object>(observerA);
+        TestSubscriber<Object> ts = new TestSubscriber<>(observerA);
 
         channel.subscribe(ts);
         channel.subscribe(observerB);
@@ -389,7 +389,7 @@ public class BehaviorProcessorTest extends FlowableProcessorTest<Object> {
                     }
                 });
 
-                final AtomicReference<Object> o = new AtomicReference<Object>();
+                final AtomicReference<Object> o = new AtomicReference<>();
 
                 rs.subscribeOn(s).observeOn(Schedulers.io())
                 .subscribe(new DefaultSubscriber<Object>() {
@@ -673,12 +673,14 @@ public class BehaviorProcessorTest extends FlowableProcessorTest<Object> {
 
         ts = pp.test(1);
 
-        assertTrue(pp.offer(null));
+        try {
+            pp.offer(null);
+            fail("Should have thrown NPE!");
+        } catch (NullPointerException expected) {
+            // expected
+        }
 
-        ts.assertFailure(NullPointerException.class, 2);
-
-        assertTrue(pp.hasThrowable());
-        assertTrue(pp.getThrowable().toString(), pp.getThrowable() instanceof NullPointerException);
+        ts.assertValuesOnly(2);
     }
 
     @Test
@@ -715,7 +717,7 @@ public class BehaviorProcessorTest extends FlowableProcessorTest<Object> {
         for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             final BehaviorProcessor<Object> p = BehaviorProcessor.create();
 
-            final TestSubscriber<Object> ts = new TestSubscriber<Object>();
+            final TestSubscriber<Object> ts = new TestSubscriber<>();
 
             Runnable r1 = new Runnable() {
                 @Override
@@ -742,7 +744,7 @@ public class BehaviorProcessorTest extends FlowableProcessorTest<Object> {
         for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             final BehaviorProcessor<Object> p = BehaviorProcessor.create();
 
-            final TestSubscriber<Object> ts = new TestSubscriber<Object>();
+            final TestSubscriber<Object> ts = new TestSubscriber<>();
 
             final TestException ex = new TestException();
 
@@ -804,9 +806,9 @@ public class BehaviorProcessorTest extends FlowableProcessorTest<Object> {
         BehaviorProcessor<Integer> bp = BehaviorProcessor.create();
         bp.onNext(1);
 
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+        TestSubscriber<Integer> ts = new TestSubscriber<>();
 
-        BehaviorSubscription<Integer> bs = new BehaviorSubscription<Integer>(ts, bp);
+        BehaviorSubscription<Integer> bs = new BehaviorSubscription<>(ts, bp);
         ts.onSubscribe(bs);
 
         assertFalse(bs.cancelled);
@@ -835,9 +837,9 @@ public class BehaviorProcessorTest extends FlowableProcessorTest<Object> {
             BehaviorProcessor<Integer> bp = BehaviorProcessor.create();
             bp.onNext(1);
 
-            TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+            TestSubscriber<Integer> ts = new TestSubscriber<>();
 
-            final BehaviorSubscription<Integer> bs = new BehaviorSubscription<Integer>(ts, bp);
+            final BehaviorSubscription<Integer> bs = new BehaviorSubscription<>(ts, bp);
             ts.onSubscribe(bs);
 
             Runnable r1 = new Runnable() {
@@ -864,9 +866,9 @@ public class BehaviorProcessorTest extends FlowableProcessorTest<Object> {
             BehaviorProcessor<Integer> bp = BehaviorProcessor.create();
             bp.onNext(1);
 
-            TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+            TestSubscriber<Integer> ts = new TestSubscriber<>();
 
-            final BehaviorSubscription<Integer> bs = new BehaviorSubscription<Integer>(ts, bp);
+            final BehaviorSubscription<Integer> bs = new BehaviorSubscription<>(ts, bp);
             ts.onSubscribe(bs);
 
             Runnable r1 = new Runnable() {
@@ -891,9 +893,9 @@ public class BehaviorProcessorTest extends FlowableProcessorTest<Object> {
         BehaviorProcessor<Integer> bp = BehaviorProcessor.create();
         bp.onNext(1);
 
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+        TestSubscriber<Integer> ts = new TestSubscriber<>();
 
-        final BehaviorSubscription<Integer> bs = new BehaviorSubscription<Integer>(ts, bp);
+        final BehaviorSubscription<Integer> bs = new BehaviorSubscription<>(ts, bp);
         ts.onSubscribe(bs);
 
         bs.emitting = true;
@@ -910,9 +912,9 @@ public class BehaviorProcessorTest extends FlowableProcessorTest<Object> {
             BehaviorProcessor<Integer> bp = BehaviorProcessor.create();
             bp.onNext(1);
 
-            TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+            TestSubscriber<Integer> ts = new TestSubscriber<>();
 
-            final BehaviorSubscription<Integer> bs = new BehaviorSubscription<Integer>(ts, bp);
+            final BehaviorSubscription<Integer> bs = new BehaviorSubscription<>(ts, bp);
             ts.onSubscribe(bs);
 
             bs.request(-1);

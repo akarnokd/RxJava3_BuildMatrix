@@ -19,11 +19,11 @@ import static org.mockito.Mockito.*;
 import java.io.IOException;
 import java.util.List;
 
+import io.reactivex.rxjava3.disposables.Disposable;
 import org.junit.*;
 import org.mockito.InOrder;
 
 import io.reactivex.rxjava3.core.*;
-import io.reactivex.rxjava3.disposables.Disposables;
 import io.reactivex.rxjava3.exceptions.TestException;
 import io.reactivex.rxjava3.functions.*;
 import io.reactivex.rxjava3.internal.fuseable.QueueFuseable;
@@ -148,7 +148,7 @@ public class ObservableDistinctUntilChangedTest extends RxJavaTest {
 
     @Test
     public void fused() {
-        TestObserverEx<Integer> to = new TestObserverEx<Integer>(QueueFuseable.ANY);
+        TestObserverEx<Integer> to = new TestObserverEx<>(QueueFuseable.ANY);
 
         Observable.just(1, 2, 2, 3, 3, 4, 5)
         .distinctUntilChanged(new BiPredicate<Integer, Integer>() {
@@ -167,11 +167,11 @@ public class ObservableDistinctUntilChangedTest extends RxJavaTest {
 
     @Test
     public void fusedAsync() {
-        TestObserverEx<Integer> to = new TestObserverEx<Integer>(QueueFuseable.ANY);
+        TestObserverEx<Integer> to = new TestObserverEx<>(QueueFuseable.ANY);
 
-        UnicastSubject<Integer> up = UnicastSubject.create();
+        UnicastSubject<Integer> us = UnicastSubject.create();
 
-        up
+        us
         .distinctUntilChanged(new BiPredicate<Integer, Integer>() {
             @Override
             public boolean test(Integer a, Integer b) throws Exception {
@@ -180,7 +180,7 @@ public class ObservableDistinctUntilChangedTest extends RxJavaTest {
         })
         .subscribe(to);
 
-        TestHelper.emit(up, 1, 2, 2, 3, 3, 4, 5);
+        TestHelper.emit(us, 1, 2, 2, 3, 3, 4, 5);
 
         to.assertFuseable()
         .assertFusionMode(QueueFuseable.ASYNC)
@@ -196,7 +196,7 @@ public class ObservableDistinctUntilChangedTest extends RxJavaTest {
             Observable.wrap(new ObservableSource<Integer>() {
                 @Override
                 public void subscribe(Observer<? super Integer> observer) {
-                    observer.onSubscribe(Disposables.empty());
+                    observer.onSubscribe(Disposable.empty());
                     observer.onNext(1);
                     observer.onNext(2);
                     observer.onNext(3);

@@ -18,11 +18,11 @@ import static org.junit.Assert.*;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 
+import io.reactivex.rxjava3.disposables.Disposable;
 import org.junit.Test;
 import org.reactivestreams.Subscriber;
 
 import io.reactivex.rxjava3.core.*;
-import io.reactivex.rxjava3.disposables.Disposables;
 import io.reactivex.rxjava3.exceptions.*;
 import io.reactivex.rxjava3.functions.Function;
 import io.reactivex.rxjava3.internal.functions.Functions;
@@ -209,7 +209,7 @@ public class FlowableConcatMapSingleTest extends RxJavaTest {
         try {
             final PublishProcessor<Integer> pp = PublishProcessor.create();
 
-            final AtomicReference<SingleObserver<? super Integer>> obs = new AtomicReference<SingleObserver<? super Integer>>();
+            final AtomicReference<SingleObserver<? super Integer>> obs = new AtomicReference<>();
 
             TestSubscriberEx<Integer> ts = pp.concatMapSingle(
                     new Function<Integer, SingleSource<Integer>>() {
@@ -220,7 +220,7 @@ public class FlowableConcatMapSingleTest extends RxJavaTest {
                                     @Override
                                     protected void subscribeActual(
                                             SingleObserver<? super Integer> observer) {
-                                        observer.onSubscribe(Disposables.empty());
+                                        observer.onSubscribe(Disposable.empty());
                                         obs.set(observer);
                                     }
                             };
@@ -286,9 +286,9 @@ public class FlowableConcatMapSingleTest extends RxJavaTest {
 
     @Test
     public void cancelNoConcurrentClean() {
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+        TestSubscriber<Integer> ts = new TestSubscriber<>();
         ConcatMapSingleSubscriber<Integer, Integer> operator =
-                new ConcatMapSingleSubscriber<Integer, Integer>(
+                new ConcatMapSingleSubscriber<>(
                         ts, Functions.justFunction(Single.<Integer>never()), 16, ErrorMode.IMMEDIATE);
 
         operator.onSubscribe(new BooleanSubscription());

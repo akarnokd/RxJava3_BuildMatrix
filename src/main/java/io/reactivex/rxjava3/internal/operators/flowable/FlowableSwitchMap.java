@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava3.internal.operators.flowable;
 
+import java.util.Objects;
 import java.util.concurrent.atomic.*;
 
 import org.reactivestreams.*;
@@ -20,7 +21,6 @@ import org.reactivestreams.*;
 import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.exceptions.*;
 import io.reactivex.rxjava3.functions.Function;
-import io.reactivex.rxjava3.internal.functions.ObjectHelper;
 import io.reactivex.rxjava3.internal.fuseable.*;
 import io.reactivex.rxjava3.internal.queue.SpscArrayQueue;
 import io.reactivex.rxjava3.internal.subscriptions.SubscriptionHelper;
@@ -46,7 +46,7 @@ public final class FlowableSwitchMap<T, R> extends AbstractFlowableWithUpstream<
         if (FlowableScalarXMap.tryScalarXMapSubscribe(source, s, mapper)) {
             return;
         }
-        source.subscribe(new SwitchMapSubscriber<T, R>(s, mapper, bufferSize, delayErrors));
+        source.subscribe(new SwitchMapSubscriber<>(s, mapper, bufferSize, delayErrors));
     }
 
     static final class SwitchMapSubscriber<T, R> extends AtomicInteger implements FlowableSubscriber<T>, Subscription {
@@ -64,13 +64,13 @@ public final class FlowableSwitchMap<T, R> extends AbstractFlowableWithUpstream<
 
         Subscription upstream;
 
-        final AtomicReference<SwitchMapInnerSubscriber<T, R>> active = new AtomicReference<SwitchMapInnerSubscriber<T, R>>();
+        final AtomicReference<SwitchMapInnerSubscriber<T, R>> active = new AtomicReference<>();
 
         final AtomicLong requested = new AtomicLong();
 
         static final SwitchMapInnerSubscriber<Object, Object> CANCELLED;
         static {
-            CANCELLED = new SwitchMapInnerSubscriber<Object, Object>(null, -1L, 1);
+            CANCELLED = new SwitchMapInnerSubscriber<>(null, -1L, 1);
             CANCELLED.cancel();
         }
 
@@ -110,7 +110,7 @@ public final class FlowableSwitchMap<T, R> extends AbstractFlowableWithUpstream<
 
             Publisher<? extends R> p;
             try {
-                p = ObjectHelper.requireNonNull(mapper.apply(t), "The publisher returned is null");
+                p = Objects.requireNonNull(mapper.apply(t), "The publisher returned is null");
             } catch (Throwable e) {
                 Exceptions.throwIfFatal(e);
                 upstream.cancel();
@@ -118,7 +118,7 @@ public final class FlowableSwitchMap<T, R> extends AbstractFlowableWithUpstream<
                 return;
             }
 
-            SwitchMapInnerSubscriber<T, R> nextInner = new SwitchMapInnerSubscriber<T, R>(this, c, bufferSize);
+            SwitchMapInnerSubscriber<T, R> nextInner = new SwitchMapInnerSubscriber<>(this, c, bufferSize);
 
             for (;;) {
                 inner = active.get();
@@ -371,7 +371,7 @@ public final class FlowableSwitchMap<T, R> extends AbstractFlowableWithUpstream<
                     }
                 }
 
-                queue = new SpscArrayQueue<R>(bufferSize);
+                queue = new SpscArrayQueue<>(bufferSize);
 
                 s.request(bufferSize);
             }

@@ -43,12 +43,12 @@ public class CompletableMergeTest extends RxJavaTest {
 
     @Test
     public void cancelAfterFirst() {
-        final TestObserver<Void> to = new TestObserver<Void>();
+        final TestObserver<Void> to = new TestObserver<>();
 
         Completable.mergeArray(new Completable() {
             @Override
             protected void subscribeActual(CompletableObserver observer) {
-                observer.onSubscribe(Disposables.empty());
+                observer.onSubscribe(Disposable.empty());
                 observer.onComplete();
                 to.dispose();
             }
@@ -60,12 +60,12 @@ public class CompletableMergeTest extends RxJavaTest {
 
     @Test
     public void cancelAfterFirstDelayError() {
-        final TestObserver<Void> to = new TestObserver<Void>();
+        final TestObserver<Void> to = new TestObserver<>();
 
         Completable.mergeArrayDelayError(new Completable() {
             @Override
             protected void subscribeActual(CompletableObserver observer) {
-                observer.onSubscribe(Disposables.empty());
+                observer.onSubscribe(Disposable.empty());
                 observer.onComplete();
                 to.dispose();
             }
@@ -84,7 +84,7 @@ public class CompletableMergeTest extends RxJavaTest {
             Completable.mergeArrayDelayError(Completable.complete(), new Completable() {
                 @Override
                 protected void subscribeActual(CompletableObserver observer) {
-                    observer.onSubscribe(Disposables.empty());
+                    observer.onSubscribe(Disposable.empty());
                     observer.onComplete();
                     co[0] = observer;
                 }
@@ -410,7 +410,7 @@ public class CompletableMergeTest extends RxJavaTest {
             Completable.mergeDelayError(Flowable.just(new Completable() {
                 @Override
                 protected void subscribeActual(CompletableObserver observer) {
-                    observer.onSubscribe(Disposables.empty());
+                    observer.onSubscribe(Disposable.empty());
                     observer.onError(new TestException("First"));
                     o[0] = observer;
                 }
@@ -428,12 +428,12 @@ public class CompletableMergeTest extends RxJavaTest {
 
     @Test
     public void innerIsDisposed() {
-        final TestObserver<Void> to = new TestObserver<Void>();
+        final TestObserver<Void> to = new TestObserver<>();
 
         Completable.mergeDelayError(Flowable.just(new Completable() {
             @Override
             protected void subscribeActual(CompletableObserver observer) {
-                observer.onSubscribe(Disposables.empty());
+                observer.onSubscribe(Disposable.empty());
                 assertFalse(((Disposable)observer).isDisposed());
 
                 to.dispose();
@@ -494,7 +494,7 @@ public class CompletableMergeTest extends RxJavaTest {
 
     @Test
     public void delayErrorIterableCancelAfterHasNext() {
-        final TestObserver<Void> to = new TestObserver<Void>();
+        final TestObserver<Void> to = new TestObserver<>();
 
         Completable.mergeDelayError(new Iterable<Completable>() {
             @Override
@@ -525,7 +525,7 @@ public class CompletableMergeTest extends RxJavaTest {
 
     @Test
     public void delayErrorIterableCancelAfterNext() {
-        final TestObserver<Void> to = new TestObserver<Void>();
+        final TestObserver<Void> to = new TestObserver<>();
 
         Completable.mergeDelayError(new Iterable<Completable>() {
             @Override

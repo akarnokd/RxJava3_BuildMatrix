@@ -49,7 +49,7 @@ public class CheckLocalVariablesInTests {
             return;
         }
 
-        Queue<File> dirs = new ArrayDeque<File>();
+        Queue<File> dirs = new ArrayDeque<>();
 
         StringBuilder fail = new StringBuilder();
         fail.append("The following code pattern was found: ").append(pattern).append("\n");
@@ -94,7 +94,15 @@ public class CheckLocalVariablesInTests {
                                                 .append(fname)
                                                 .append("#L").append(lineNum)
                                                 .append("    ").append(line)
-                                                .append("\n");
+                                                .append("\n")
+                                                .append(" at ")
+                                                .append(fname.replace(".java", ""))
+                                                .append(".method(")
+                                                .append(fname)
+                                                .append(":")
+                                                .append(lineNum)
+                                                .append(")\n");
+
                                                 total++;
                                             }
                                         }
@@ -111,9 +119,7 @@ public class CheckLocalVariablesInTests {
             }
         }
         if (total != 0) {
-            fail.append("Found ")
-            .append(total)
-            .append(" instances");
+            fail.insert(0, "Found " + total + " instances");
             System.out.println(fail);
             throw new AssertionError(fail.toString());
         }
@@ -147,6 +153,16 @@ public class CheckLocalVariablesInTests {
     @Test
     public void publishProcessorAsPs() throws Exception {
         findPattern("PublishProcessor<.*>\\s+ps");
+    }
+
+    @Test
+    public void unicastSubjectAsUp() throws Exception {
+        findPattern("UnicastSubject<.*>\\s+up");
+    }
+
+    @Test
+    public void unicastProcessorAsUs() throws Exception {
+        findPattern("UnicastProcessor<.*>\\s+us");
     }
 
     @Test

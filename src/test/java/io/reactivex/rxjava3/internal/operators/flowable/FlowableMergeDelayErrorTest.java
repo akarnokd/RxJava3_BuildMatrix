@@ -257,7 +257,7 @@ public class FlowableMergeDelayErrorTest extends RxJavaTest {
     public void mergeList() {
         final Flowable<String> f1 = Flowable.unsafeCreate(new TestSynchronousFlowable());
         final Flowable<String> f2 = Flowable.unsafeCreate(new TestSynchronousFlowable());
-        List<Flowable<String>> listOfFlowables = new ArrayList<Flowable<String>>();
+        List<Flowable<String>> listOfFlowables = new ArrayList<>();
         listOfFlowables.add(f1);
         listOfFlowables.add(f2);
 
@@ -438,7 +438,7 @@ public class FlowableMergeDelayErrorTest extends RxJavaTest {
 
     @Test
     public void errorInParentFlowable() {
-        TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>();
+        TestSubscriberEx<Integer> ts = new TestSubscriberEx<>();
         Flowable.mergeDelayError(
                 Flowable.just(Flowable.just(1), Flowable.just(2))
                         .startWithItem(Flowable.<Integer> error(new RuntimeException()))
@@ -467,7 +467,7 @@ public class FlowableMergeDelayErrorTest extends RxJavaTest {
 
             stringSubscriber = TestHelper.mockSubscriber();
 
-            TestSubscriberEx<String> ts = new TestSubscriberEx<String>(stringSubscriber);
+            TestSubscriberEx<String> ts = new TestSubscriberEx<>(stringSubscriber);
             Flowable<String> m = Flowable.mergeDelayError(parentFlowable);
             m.subscribe(ts);
             System.out.println("testErrorInParentFlowableDelayed | " + i);
@@ -506,7 +506,7 @@ public class FlowableMergeDelayErrorTest extends RxJavaTest {
 
     @Test
     public void delayErrorMaxConcurrent() {
-        final List<Long> requests = new ArrayList<Long>();
+        final List<Long> requests = new ArrayList<>();
         Flowable<Integer> source = Flowable.mergeDelayError(Flowable.just(
                 Flowable.just(1).hide(),
                 Flowable.<Integer>error(new TestException()))
@@ -517,7 +517,7 @@ public class FlowableMergeDelayErrorTest extends RxJavaTest {
                     }
                 }), 1);
 
-        TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>();
+        TestSubscriberEx<Integer> ts = new TestSubscriberEx<>();
 
         source.subscribe(ts);
 
@@ -532,7 +532,7 @@ public class FlowableMergeDelayErrorTest extends RxJavaTest {
     public void mergeIterable() {
         final Flowable<String> f1 = Flowable.unsafeCreate(new TestSynchronousFlowable());
         final Flowable<String> f2 = Flowable.unsafeCreate(new TestSynchronousFlowable());
-        List<Flowable<String>> listOfFlowables = new ArrayList<Flowable<String>>();
+        List<Flowable<String>> listOfFlowables = new ArrayList<>();
         listOfFlowables.add(f1);
         listOfFlowables.add(f2);
 
@@ -544,7 +544,6 @@ public class FlowableMergeDelayErrorTest extends RxJavaTest {
         verify(stringSubscriber, times(2)).onNext("hello");
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void iterableMaxConcurrent() {
         TestSubscriber<Integer> ts = TestSubscriber.create();
@@ -571,10 +570,9 @@ public class FlowableMergeDelayErrorTest extends RxJavaTest {
         ts.assertComplete();
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void iterableMaxConcurrentError() {
-        TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>();
+        TestSubscriberEx<Integer> ts = new TestSubscriberEx<>();
 
         PublishProcessor<Integer> pp1 = PublishProcessor.create();
         PublishProcessor<Integer> pp2 = PublishProcessor.create();
@@ -624,7 +622,6 @@ public class FlowableMergeDelayErrorTest extends RxJavaTest {
         }
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void mergeArrayDelayError() {
         Flowable.mergeArrayDelayError(Flowable.just(1), Flowable.just(2))
@@ -632,7 +629,6 @@ public class FlowableMergeDelayErrorTest extends RxJavaTest {
         .assertResult(1, 2);
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void mergeIterableDelayErrorWithError() {
         Flowable.mergeDelayError(
@@ -678,7 +674,6 @@ public class FlowableMergeDelayErrorTest extends RxJavaTest {
         .assertFailure(TestException.class, 1, 2);
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void mergeIterableDelayErrorMaxConcurrency() {
         Flowable.mergeDelayError(
@@ -688,7 +683,6 @@ public class FlowableMergeDelayErrorTest extends RxJavaTest {
         .assertResult(1, 2);
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void mergeIterableDelayErrorWithErrorMaxConcurrency() {
         Flowable.mergeDelayError(
@@ -720,7 +714,6 @@ public class FlowableMergeDelayErrorTest extends RxJavaTest {
         .assertFailure(TestException.class, 1, 2, 3);
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void mergeIterableDelayError() {
         Flowable.mergeDelayError(Arrays.asList(Flowable.just(1), Flowable.just(2)))

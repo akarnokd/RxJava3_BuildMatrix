@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava3.internal.operators.flowable;
 
+import java.util.Objects;
 import java.util.concurrent.atomic.*;
 
 import org.reactivestreams.*;
@@ -20,7 +21,6 @@ import org.reactivestreams.*;
 import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.exceptions.Exceptions;
 import io.reactivex.rxjava3.functions.Function;
-import io.reactivex.rxjava3.internal.functions.ObjectHelper;
 import io.reactivex.rxjava3.internal.subscriptions.*;
 import io.reactivex.rxjava3.processors.*;
 import io.reactivex.rxjava3.subscribers.SerializedSubscriber;
@@ -37,23 +37,23 @@ public final class FlowableRepeatWhen<T> extends AbstractFlowableWithUpstream<T,
     @Override
     public void subscribeActual(Subscriber<? super T> s) {
 
-        SerializedSubscriber<T> z = new SerializedSubscriber<T>(s);
+        SerializedSubscriber<T> z = new SerializedSubscriber<>(s);
 
-        FlowableProcessor<Object> processor = UnicastProcessor.<Object>create(8).toSerialized();
+        FlowableProcessor<Object> processor = UnicastProcessor.create(8).toSerialized();
 
         Publisher<?> when;
 
         try {
-            when = ObjectHelper.requireNonNull(handler.apply(processor), "handler returned a null Publisher");
+            when = Objects.requireNonNull(handler.apply(processor), "handler returned a null Publisher");
         } catch (Throwable ex) {
             Exceptions.throwIfFatal(ex);
             EmptySubscription.error(ex, s);
             return;
         }
 
-        WhenReceiver<T, Object> receiver = new WhenReceiver<T, Object>(source);
+        WhenReceiver<T, Object> receiver = new WhenReceiver<>(source);
 
-        RepeatWhenSubscriber<T> subscriber = new RepeatWhenSubscriber<T>(z, processor, receiver);
+        RepeatWhenSubscriber<T> subscriber = new RepeatWhenSubscriber<>(z, processor, receiver);
 
         receiver.subscriber = subscriber;
 
@@ -80,7 +80,7 @@ public final class FlowableRepeatWhen<T> extends AbstractFlowableWithUpstream<T,
 
         WhenReceiver(Publisher<T> source) {
             this.source = source;
-            this.upstream = new AtomicReference<Subscription>();
+            this.upstream = new AtomicReference<>();
             this.requested = new AtomicLong();
         }
 

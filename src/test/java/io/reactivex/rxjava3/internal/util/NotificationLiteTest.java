@@ -26,9 +26,9 @@ public class NotificationLiteTest extends RxJavaTest {
 
     @Test
     public void acceptFullObserver() {
-        TestObserverEx<Integer> to = new TestObserverEx<Integer>();
+        TestObserverEx<Integer> to = new TestObserverEx<>();
 
-        Disposable d = Disposables.empty();
+        Disposable d = Disposable.empty();
 
         assertFalse(NotificationLite.acceptFull(NotificationLite.disposable(d), to));
 

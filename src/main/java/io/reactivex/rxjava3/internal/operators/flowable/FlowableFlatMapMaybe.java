@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava3.internal.operators.flowable;
 
+import java.util.Objects;
 import java.util.concurrent.atomic.*;
 
 import org.reactivestreams.*;
@@ -22,7 +23,6 @@ import io.reactivex.rxjava3.disposables.*;
 import io.reactivex.rxjava3.exceptions.Exceptions;
 import io.reactivex.rxjava3.functions.Function;
 import io.reactivex.rxjava3.internal.disposables.DisposableHelper;
-import io.reactivex.rxjava3.internal.functions.ObjectHelper;
 import io.reactivex.rxjava3.internal.queue.SpscLinkedArrayQueue;
 import io.reactivex.rxjava3.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.rxjava3.internal.util.*;
@@ -50,7 +50,7 @@ public final class FlowableFlatMapMaybe<T, R> extends AbstractFlowableWithUpstre
 
     @Override
     protected void subscribeActual(Subscriber<? super R> s) {
-        source.subscribe(new FlatMapMaybeSubscriber<T, R>(s, mapper, delayErrors, maxConcurrency));
+        source.subscribe(new FlatMapMaybeSubscriber<>(s, mapper, delayErrors, maxConcurrency));
     }
 
     static final class FlatMapMaybeSubscriber<T, R>
@@ -91,7 +91,7 @@ public final class FlowableFlatMapMaybe<T, R> extends AbstractFlowableWithUpstre
             this.set = new CompositeDisposable();
             this.errors = new AtomicThrowable();
             this.active = new AtomicInteger(1);
-            this.queue = new AtomicReference<SpscLinkedArrayQueue<R>>();
+            this.queue = new AtomicReference<>();
         }
 
         @Override
@@ -115,7 +115,7 @@ public final class FlowableFlatMapMaybe<T, R> extends AbstractFlowableWithUpstre
             MaybeSource<? extends R> ms;
 
             try {
-                ms = ObjectHelper.requireNonNull(mapper.apply(t), "The mapper returned a null MaybeSource");
+                ms = Objects.requireNonNull(mapper.apply(t), "The mapper returned a null MaybeSource");
             } catch (Throwable ex) {
                 Exceptions.throwIfFatal(ex);
                 upstream.cancel();
@@ -210,7 +210,7 @@ public final class FlowableFlatMapMaybe<T, R> extends AbstractFlowableWithUpstre
                 if (current != null) {
                     return current;
                 }
-                current = new SpscLinkedArrayQueue<R>(Flowable.bufferSize());
+                current = new SpscLinkedArrayQueue<>(Flowable.bufferSize());
                 if (queue.compareAndSet(null, current)) {
                     return current;
                 }

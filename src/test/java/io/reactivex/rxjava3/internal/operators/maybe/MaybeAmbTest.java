@@ -19,10 +19,10 @@ import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import io.reactivex.rxjava3.disposables.Disposable;
 import org.junit.Test;
 
 import io.reactivex.rxjava3.core.*;
-import io.reactivex.rxjava3.disposables.Disposables;
 import io.reactivex.rxjava3.exceptions.TestException;
 import io.reactivex.rxjava3.functions.*;
 import io.reactivex.rxjava3.internal.functions.Functions;
@@ -37,7 +37,7 @@ public class MaybeAmbTest extends RxJavaTest {
 
     @Test
     public void ambLots() {
-        List<Maybe<Integer>> ms = new ArrayList<Maybe<Integer>>();
+        List<Maybe<Integer>> ms = new ArrayList<>();
 
         for (int i = 0; i < 32; i++) {
             ms.add(Maybe.<Integer>never());
@@ -50,7 +50,6 @@ public class MaybeAmbTest extends RxJavaTest {
         .assertResult(1);
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void ambFirstDone() {
         Maybe.amb(Arrays.asList(Maybe.just(1), Maybe.just(2)))
@@ -58,7 +57,6 @@ public class MaybeAmbTest extends RxJavaTest {
         .assertResult(1);
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void dispose() {
         PublishProcessor<Integer> pp1 = PublishProcessor.create();
@@ -76,7 +74,6 @@ public class MaybeAmbTest extends RxJavaTest {
         assertFalse(pp2.hasSubscribers());
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void innerErrorRace() {
         for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
@@ -119,12 +116,11 @@ public class MaybeAmbTest extends RxJavaTest {
 
     @Test
     public void disposeNoFurtherSignals() {
-        @SuppressWarnings("unchecked")
         TestObserver<Integer> to = Maybe.ambArray(new Maybe<Integer>() {
             @Override
             protected void subscribeActual(
                     MaybeObserver<? super Integer> observer) {
-                observer.onSubscribe(Disposables.empty());
+                observer.onSubscribe(Disposable.empty());
                 observer.onSuccess(1);
                 observer.onSuccess(2);
                 observer.onComplete();
@@ -137,7 +133,6 @@ public class MaybeAmbTest extends RxJavaTest {
         to.assertResult(1);
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void noWinnerSuccessDispose() throws Exception {
         for (int i = 0; i < TestHelper.RACE_LONG_LOOPS; i++) {
@@ -163,7 +158,6 @@ public class MaybeAmbTest extends RxJavaTest {
         }
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void noWinnerErrorDispose() throws Exception {
         final TestException ex = new TestException();
@@ -190,7 +184,6 @@ public class MaybeAmbTest extends RxJavaTest {
         }
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void noWinnerCompleteDispose() throws Exception {
         for (int i = 0; i < TestHelper.RACE_LONG_LOOPS; i++) {
@@ -226,7 +219,6 @@ public class MaybeAmbTest extends RxJavaTest {
                 final Subject<Integer> ps = ReplaySubject.create();
                 ps.onNext(1);
 
-                @SuppressWarnings("unchecked")
                 final Maybe<Integer> source = Maybe.ambArray(ps.singleElement(),
                         Maybe.<Integer>never(), Maybe.<Integer>never(), null);
 
@@ -255,7 +247,6 @@ public class MaybeAmbTest extends RxJavaTest {
         }
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void maybeSourcesInIterable() {
         MaybeSource<Integer> source = new MaybeSource<Integer>() {

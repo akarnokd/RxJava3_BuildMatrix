@@ -17,10 +17,10 @@ import static org.junit.Assert.*;
 
 import java.util.List;
 
+import io.reactivex.rxjava3.disposables.Disposable;
 import org.junit.Test;
 
 import io.reactivex.rxjava3.core.RxJavaTest;
-import io.reactivex.rxjava3.disposables.Disposables;
 import io.reactivex.rxjava3.exceptions.TestException;
 import io.reactivex.rxjava3.functions.Action;
 import io.reactivex.rxjava3.internal.functions.Functions;
@@ -32,8 +32,8 @@ public class DisposableLambdaObserverTest extends RxJavaTest {
 
     @Test
     public void doubleOnSubscribe() {
-        TestHelper.doubleOnSubscribe(new DisposableLambdaObserver<Integer>(
-                new TestObserver<Integer>(), Functions.emptyConsumer(), Functions.EMPTY_ACTION
+        TestHelper.doubleOnSubscribe(new DisposableLambdaObserver<>(
+                new TestObserver<>(), Functions.emptyConsumer(), Functions.EMPTY_ACTION
         ));
     }
 
@@ -41,8 +41,8 @@ public class DisposableLambdaObserverTest extends RxJavaTest {
     public void disposeCrash() {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
-            DisposableLambdaObserver<Integer> o = new DisposableLambdaObserver<Integer>(
-                    new TestObserver<Integer>(), Functions.emptyConsumer(),
+            DisposableLambdaObserver<Integer> o = new DisposableLambdaObserver<>(
+                    new TestObserver<>(), Functions.emptyConsumer(),
                     new Action() {
                         @Override
                         public void run() throws Exception {
@@ -51,7 +51,7 @@ public class DisposableLambdaObserverTest extends RxJavaTest {
                     }
             );
 
-            o.onSubscribe(Disposables.empty());
+            o.onSubscribe(Disposable.empty());
 
             assertFalse(o.isDisposed());
 

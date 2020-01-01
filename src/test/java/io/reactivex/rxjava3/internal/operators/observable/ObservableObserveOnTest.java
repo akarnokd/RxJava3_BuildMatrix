@@ -66,7 +66,7 @@ public class ObservableObserveOnTest extends RxJavaTest {
         Observer<String> observer = TestHelper.mockObserver();
 
         InOrder inOrder = inOrder(observer);
-        TestObserverEx<String> to = new TestObserverEx<String>(observer);
+        TestObserverEx<String> to = new TestObserverEx<>(observer);
 
         obs.observeOn(Schedulers.computation()).subscribe(to);
 
@@ -387,7 +387,7 @@ public class ObservableObserveOnTest extends RxJavaTest {
         final TestScheduler testScheduler = new TestScheduler();
 
         final Observer<Integer> observer = TestHelper.mockObserver();
-        TestObserver<Integer> to = new TestObserver<Integer>(observer);
+        TestObserver<Integer> to = new TestObserver<>(observer);
 
         Observable.just(1, 2, 3)
                 .observeOn(testScheduler)
@@ -428,7 +428,7 @@ public class ObservableObserveOnTest extends RxJavaTest {
             }
         });
 
-        TestObserver<Integer> to = new TestObserver<Integer>();
+        TestObserver<Integer> to = new TestObserver<>();
         o
                 .take(7)
                 .observeOn(Schedulers.newThread())
@@ -441,7 +441,7 @@ public class ObservableObserveOnTest extends RxJavaTest {
 
     @Test
     public void asyncChild() {
-        TestObserver<Integer> to = new TestObserver<Integer>();
+        TestObserver<Integer> to = new TestObserver<>();
         Observable.range(0, 100000).observeOn(Schedulers.newThread()).observeOn(Schedulers.newThread()).subscribe(to);
         to.awaitDone(5, TimeUnit.SECONDS);
         to.assertNoErrors();
@@ -495,7 +495,7 @@ public class ObservableObserveOnTest extends RxJavaTest {
             TestObserver<Integer> to = new Observable<Integer>() {
                 @Override
                 protected void subscribeActual(Observer<? super Integer> observer) {
-                    observer.onSubscribe(Disposables.empty());
+                    observer.onSubscribe(Disposable.empty());
                     observer.onComplete();
                     observer.onNext(1);
                     observer.onError(new TestException());
@@ -565,7 +565,7 @@ public class ObservableObserveOnTest extends RxJavaTest {
 
     @Test
     public void outputFused() {
-        TestObserverEx<Integer> to = new TestObserverEx<Integer>(QueueFuseable.ANY);
+        TestObserverEx<Integer> to = new TestObserverEx<>(QueueFuseable.ANY);
 
         Observable.range(1, 5).hide()
         .observeOn(Schedulers.single())
@@ -578,7 +578,7 @@ public class ObservableObserveOnTest extends RxJavaTest {
 
     @Test
     public void outputFusedReject() {
-        TestObserverEx<Integer> to = new TestObserverEx<Integer>(QueueFuseable.SYNC);
+        TestObserverEx<Integer> to = new TestObserverEx<>(QueueFuseable.SYNC);
 
         Observable.range(1, 5).hide()
         .observeOn(Schedulers.single())
@@ -591,7 +591,7 @@ public class ObservableObserveOnTest extends RxJavaTest {
 
     @Test
     public void inputOutputAsyncFusedError() {
-        TestObserverEx<Integer> to = new TestObserverEx<Integer>(QueueFuseable.ANY);
+        TestObserverEx<Integer> to = new TestObserverEx<>(QueueFuseable.ANY);
 
         UnicastSubject<Integer> us = UnicastSubject.create();
 
@@ -611,7 +611,7 @@ public class ObservableObserveOnTest extends RxJavaTest {
 
     @Test
     public void inputOutputAsyncFusedErrorDelayed() {
-        TestObserverEx<Integer> to = new TestObserverEx<Integer>(QueueFuseable.ANY);
+        TestObserverEx<Integer> to = new TestObserverEx<>(QueueFuseable.ANY);
 
         UnicastSubject<Integer> us = UnicastSubject.create();
 
@@ -675,7 +675,7 @@ public class ObservableObserveOnTest extends RxJavaTest {
         new Observable<Integer>() {
             @Override
             protected void subscribeActual(Observer<? super Integer> observer) {
-                observer.onSubscribe(Disposables.empty());
+                observer.onSubscribe(Disposable.empty());
 
                 @SuppressWarnings("unchecked")
                 ObserveOnObserver<Integer> oo = (ObserveOnObserver<Integer>)observer;
@@ -775,12 +775,12 @@ public class ObservableObserveOnTest extends RxJavaTest {
     public void workerNotDisposedPrematurelyAsyncInNormalOut() {
         DisposeTrackingScheduler s = new DisposeTrackingScheduler();
 
-        UnicastSubject<Integer> up = UnicastSubject.create();
-        up.onNext(1);
-        up.onComplete();
+        UnicastSubject<Integer> us = UnicastSubject.create();
+        us.onNext(1);
+        us.onComplete();
 
         Observable.concat(
-                up.observeOn(s),
+                us.observeOn(s),
                 Observable.just(2)
         )
         .test()

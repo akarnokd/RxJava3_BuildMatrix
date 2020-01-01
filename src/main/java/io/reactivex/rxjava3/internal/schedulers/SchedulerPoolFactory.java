@@ -20,6 +20,7 @@ import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicReference;
 
+import io.reactivex.rxjava3.exceptions.Exceptions;
 import io.reactivex.rxjava3.functions.Function;
 
 /**
@@ -46,12 +47,12 @@ public final class SchedulerPoolFactory {
     public static final int PURGE_PERIOD_SECONDS;
 
     static final AtomicReference<ScheduledExecutorService> PURGE_THREAD =
-            new AtomicReference<ScheduledExecutorService>();
+            new AtomicReference<>();
 
     // Upcast to the Map interface here to avoid 8.x compatibility issues.
     // See http://stackoverflow.com/a/32955708/61158
     static final Map<ScheduledThreadPoolExecutor, Object> POOLS =
-            new ConcurrentHashMap<ScheduledThreadPoolExecutor, Object>();
+            new ConcurrentHashMap<>();
 
     /**
      * Starts the purge thread if not already started.
@@ -108,6 +109,7 @@ public final class SchedulerPoolFactory {
                 }
                 return Integer.parseInt(value);
             } catch (Throwable ex) {
+                Exceptions.throwIfFatal(ex);
                 return defaultNotFound;
             }
         }
@@ -123,6 +125,7 @@ public final class SchedulerPoolFactory {
                 }
                 return "true".equals(value);
             } catch (Throwable ex) {
+                Exceptions.throwIfFatal(ex);
                 return defaultNotFound;
             }
         }
@@ -131,7 +134,7 @@ public final class SchedulerPoolFactory {
 
     static final class SystemPropertyAccessor implements Function<String, String> {
         @Override
-        public String apply(String t) throws Throwable {
+        public String apply(String t) {
             return System.getProperty(t);
         }
     }
@@ -157,7 +160,7 @@ public final class SchedulerPoolFactory {
     static final class ScheduledTask implements Runnable {
         @Override
         public void run() {
-            for (ScheduledThreadPoolExecutor e : new ArrayList<ScheduledThreadPoolExecutor>(POOLS.keySet())) {
+            for (ScheduledThreadPoolExecutor e : new ArrayList<>(POOLS.keySet())) {
                 if (e.isShutdown()) {
                     POOLS.remove(e);
                 } else {

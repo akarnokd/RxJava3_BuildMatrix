@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava3.internal.operators.observable;
 
+import java.util.Objects;
 import java.util.concurrent.atomic.AtomicReference;
 
 import io.reactivex.rxjava3.core.*;
@@ -20,7 +21,6 @@ import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.exceptions.Exceptions;
 import io.reactivex.rxjava3.functions.Function;
 import io.reactivex.rxjava3.internal.disposables.*;
-import io.reactivex.rxjava3.internal.functions.ObjectHelper;
 import io.reactivex.rxjava3.subjects.PublishSubject;
 
 /**
@@ -45,21 +45,21 @@ public final class ObservablePublishSelector<T, R> extends AbstractObservableWit
         ObservableSource<? extends R> target;
 
         try {
-            target = ObjectHelper.requireNonNull(selector.apply(subject), "The selector returned a null ObservableSource");
+            target = Objects.requireNonNull(selector.apply(subject), "The selector returned a null ObservableSource");
         } catch (Throwable ex) {
             Exceptions.throwIfFatal(ex);
             EmptyDisposable.error(ex, observer);
             return;
         }
 
-        TargetObserver<T, R> o = new TargetObserver<T, R>(observer);
+        TargetObserver<R> o = new TargetObserver<>(observer);
 
         target.subscribe(o);
 
-        source.subscribe(new SourceObserver<T, R>(subject, o));
+        source.subscribe(new SourceObserver<>(subject, o));
     }
 
-    static final class SourceObserver<T, R> implements Observer<T> {
+    static final class SourceObserver<T> implements Observer<T> {
 
         final PublishSubject<T> subject;
 
@@ -91,7 +91,7 @@ public final class ObservablePublishSelector<T, R> extends AbstractObservableWit
         }
     }
 
-    static final class TargetObserver<T, R>
+    static final class TargetObserver<R>
     extends AtomicReference<Disposable> implements Observer<R>, Disposable {
         private static final long serialVersionUID = 854110278590336484L;
 

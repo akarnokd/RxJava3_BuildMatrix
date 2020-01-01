@@ -14,13 +14,13 @@
 package io.reactivex.rxjava3.internal.operators.observable;
 
 import java.util.Collection;
+import java.util.Objects;
 
 import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.exceptions.Exceptions;
 import io.reactivex.rxjava3.functions.Supplier;
 import io.reactivex.rxjava3.internal.disposables.*;
-import io.reactivex.rxjava3.internal.functions.ObjectHelper;
 import io.reactivex.rxjava3.internal.observers.QueueDrainObserver;
 import io.reactivex.rxjava3.internal.queue.MpscLinkedQueue;
 import io.reactivex.rxjava3.internal.util.QueueDrainHelper;
@@ -39,7 +39,7 @@ extends AbstractObservableWithUpstream<T, U> {
 
     @Override
     protected void subscribeActual(Observer<? super U> t) {
-        source.subscribe(new BufferExactBoundaryObserver<T, U, B>(new SerializedObserver<U>(t), bufferSupplier, boundary));
+        source.subscribe(new BufferExactBoundaryObserver<>(new SerializedObserver<>(t), bufferSupplier, boundary));
     }
 
     static final class BufferExactBoundaryObserver<T, U extends Collection<? super T>, B>
@@ -56,7 +56,7 @@ extends AbstractObservableWithUpstream<T, U> {
 
         BufferExactBoundaryObserver(Observer<? super U> actual, Supplier<U> bufferSupplier,
                                              ObservableSource<B> boundary) {
-            super(actual, new MpscLinkedQueue<U>());
+            super(actual, new MpscLinkedQueue<>());
             this.bufferSupplier = bufferSupplier;
             this.boundary = boundary;
         }
@@ -69,7 +69,7 @@ extends AbstractObservableWithUpstream<T, U> {
                 U b;
 
                 try {
-                    b = ObjectHelper.requireNonNull(bufferSupplier.get(), "The buffer supplied is null");
+                    b = Objects.requireNonNull(bufferSupplier.get(), "The buffer supplied is null");
                 } catch (Throwable e) {
                     Exceptions.throwIfFatal(e);
                     cancelled = true;
@@ -80,7 +80,7 @@ extends AbstractObservableWithUpstream<T, U> {
 
                 buffer = b;
 
-                BufferBoundaryObserver<T, U, B> bs = new BufferBoundaryObserver<T, U, B>(this);
+                BufferBoundaryObserver<T, U, B> bs = new BufferBoundaryObserver<>(this);
                 other = bs;
 
                 downstream.onSubscribe(this);
@@ -148,7 +148,7 @@ extends AbstractObservableWithUpstream<T, U> {
             U next;
 
             try {
-                next = ObjectHelper.requireNonNull(bufferSupplier.get(), "The buffer supplied is null");
+                next = Objects.requireNonNull(bufferSupplier.get(), "The buffer supplied is null");
             } catch (Throwable e) {
                 Exceptions.throwIfFatal(e);
                 dispose();

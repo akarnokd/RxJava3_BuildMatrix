@@ -64,8 +64,8 @@ public class MaybeDetachTest extends RxJavaTest {
 
     @Test
     public void cancelDetaches() throws Exception {
-        Disposable d = Disposables.empty();
-        final WeakReference<Disposable> wr = new WeakReference<Disposable>(d);
+        Disposable d = Disposable.empty();
+        final WeakReference<Disposable> wr = new WeakReference<>(d);
 
         TestObserver<Object> to = new Maybe<Object>() {
             @Override
@@ -90,8 +90,8 @@ public class MaybeDetachTest extends RxJavaTest {
 
     @Test
     public void completeDetaches() throws Exception {
-        Disposable d = Disposables.empty();
-        final WeakReference<Disposable> wr = new WeakReference<Disposable>(d);
+        Disposable d = Disposable.empty();
+        final WeakReference<Disposable> wr = new WeakReference<>(d);
 
         TestObserver<Integer> to = new Maybe<Integer>() {
             @Override
@@ -116,8 +116,8 @@ public class MaybeDetachTest extends RxJavaTest {
 
     @Test
     public void errorDetaches() throws Exception {
-        Disposable d = Disposables.empty();
-        final WeakReference<Disposable> wr = new WeakReference<Disposable>(d);
+        Disposable d = Disposable.empty();
+        final WeakReference<Disposable> wr = new WeakReference<>(d);
 
         TestObserver<Integer> to = new Maybe<Integer>() {
             @Override
@@ -142,8 +142,8 @@ public class MaybeDetachTest extends RxJavaTest {
 
     @Test
     public void successDetaches() throws Exception {
-        Disposable d = Disposables.empty();
-        final WeakReference<Disposable> wr = new WeakReference<Disposable>(d);
+        Disposable d = Disposable.empty();
+        final WeakReference<Disposable> wr = new WeakReference<>(d);
 
         TestObserver<Integer> to = new Maybe<Integer>() {
             @Override

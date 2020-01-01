@@ -49,7 +49,6 @@ public class SingleNullTests extends RxJavaTest {
         }).test().assertError(NullPointerException.class);
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void ambIterableOneIsNull() {
         Single.amb(Arrays.asList(null, just1))
@@ -62,7 +61,6 @@ public class SingleNullTests extends RxJavaTest {
         Single.ambArray((Single<Integer>[])null);
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void ambArrayOneIsNull() {
         Single.ambArray(null, just1)
@@ -85,7 +83,6 @@ public class SingleNullTests extends RxJavaTest {
         }).blockingSubscribe();
     }
 
-    @SuppressWarnings("unchecked")
     @Test(expected = NullPointerException.class)
     public void concatIterableOneIsNull() {
         Single.concat(Arrays.asList(just1, null)).blockingSubscribe();
@@ -177,7 +174,7 @@ public class SingleNullTests extends RxJavaTest {
 
     @Test(expected = NullPointerException.class)
     public void fromFutureReturnsNull() {
-        FutureTask<Object> f = new FutureTask<Object>(Functions.EMPTY_RUNNABLE, null);
+        FutureTask<Object> f = new FutureTask<>(Functions.EMPTY_RUNNABLE, null);
         f.run();
         Single.fromFuture(f).blockingGet();
     }
@@ -189,7 +186,7 @@ public class SingleNullTests extends RxJavaTest {
 
     @Test(expected = NullPointerException.class)
     public void fromFutureTimedUnitNull() {
-        Single.fromFuture(new FutureTask<Object>(new Callable<Object>() {
+        Single.fromFuture(new FutureTask<>(new Callable<Object>() {
             @Override
             public Object call() throws Exception {
                 return null;
@@ -199,7 +196,7 @@ public class SingleNullTests extends RxJavaTest {
 
     @Test(expected = NullPointerException.class)
     public void fromFutureTimedSchedulerNull() {
-        Single.fromFuture(new FutureTask<Object>(new Callable<Object>() {
+        Single.fromFuture(new FutureTask<>(new Callable<Object>() {
             @Override
             public Object call() throws Exception {
                 return null;
@@ -209,14 +206,14 @@ public class SingleNullTests extends RxJavaTest {
 
     @Test(expected = NullPointerException.class)
     public void fromFutureTimedReturnsNull() {
-        FutureTask<Object> f = new FutureTask<Object>(Functions.EMPTY_RUNNABLE, null);
+        FutureTask<Object> f = new FutureTask<>(Functions.EMPTY_RUNNABLE, null);
         f.run();
         Single.fromFuture(f, 1, TimeUnit.SECONDS).blockingGet();
     }
 
     @Test(expected = NullPointerException.class)
     public void fromFutureSchedulerNull() {
-        Single.fromFuture(new FutureTask<Object>(new Callable<Object>() {
+        Single.fromFuture(new FutureTask<>(new Callable<Object>() {
             @Override
             public Object call() throws Exception {
                 return null;
@@ -249,7 +246,6 @@ public class SingleNullTests extends RxJavaTest {
         }).blockingSubscribe();
     }
 
-    @SuppressWarnings("unchecked")
     @Test(expected = NullPointerException.class)
     public void mergeIterableOneIsNull() {
         Single.merge(Arrays.asList(null, just1)).blockingSubscribe();
@@ -384,7 +380,6 @@ public class SingleNullTests extends RxJavaTest {
         }).blockingGet();
     }
 
-    @SuppressWarnings("unchecked")
     @Test(expected = NullPointerException.class)
     public void zipIterableOneIsNull() {
         Single.zip(Arrays.asList(null, just1), new Function<Object[], Object>() {
@@ -395,13 +390,11 @@ public class SingleNullTests extends RxJavaTest {
         }).blockingGet();
     }
 
-    @SuppressWarnings("unchecked")
     @Test(expected = NullPointerException.class)
     public void zipIterableOneFunctionNull() {
         Single.zip(Arrays.asList(just1, just1), null).blockingGet();
     }
 
-    @SuppressWarnings("unchecked")
     @Test(expected = NullPointerException.class)
     public void zipIterableOneFunctionReturnsNull() {
         Single.zip(Arrays.asList(just1, just1), new Function<Object[], Object>() {
@@ -529,7 +522,6 @@ public class SingleNullTests extends RxJavaTest {
         }, (Single<Integer>[])null);
     }
 
-    @SuppressWarnings("unchecked")
     @Test(expected = NullPointerException.class)
     public void zipIterableTwoIsNull() {
         Single.zip(Arrays.asList(just1, null), new Function<Object[], Object>() {
@@ -541,7 +533,6 @@ public class SingleNullTests extends RxJavaTest {
         .blockingGet();
     }
 
-    @SuppressWarnings("unchecked")
     @Test(expected = NullPointerException.class)
     public void zipArrayOneIsNull() {
         Single.zipArray(new Function<Object[], Object>() {
@@ -553,13 +544,11 @@ public class SingleNullTests extends RxJavaTest {
         .blockingGet();
     }
 
-    @SuppressWarnings("unchecked")
     @Test(expected = NullPointerException.class)
     public void zipArrayFunctionNull() {
         Single.zipArray(null, just1, just1);
     }
 
-    @SuppressWarnings("unchecked")
     @Test(expected = NullPointerException.class)
     public void zipArrayFunctionReturnsNull() {
         Single.zipArray(new Function<Object[], Object>() {

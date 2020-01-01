@@ -69,12 +69,12 @@ public class ObservableDoOnSubscribeTest extends RxJavaTest {
         final AtomicInteger onSubscribed = new AtomicInteger();
         final AtomicInteger countBefore = new AtomicInteger();
         final AtomicInteger countAfter = new AtomicInteger();
-        final AtomicReference<Observer<? super Integer>> sref = new AtomicReference<Observer<? super Integer>>();
+        final AtomicReference<Observer<? super Integer>> sref = new AtomicReference<>();
         Observable<Integer> o = Observable.unsafeCreate(new ObservableSource<Integer>() {
 
             @Override
             public void subscribe(Observer<? super Integer> observer) {
-                observer.onSubscribe(Disposables.empty());
+                observer.onSubscribe(Disposable.empty());
                 onSubscribed.incrementAndGet();
                 sref.set(observer);
             }
@@ -111,7 +111,7 @@ public class ObservableDoOnSubscribeTest extends RxJavaTest {
     public void onSubscribeCrash() {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
-            final Disposable bs = Disposables.empty();
+            final Disposable bs = Disposable.empty();
 
             new Observable<Integer>() {
                 @Override

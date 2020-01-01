@@ -35,7 +35,7 @@ public class ParallelReduceTest extends RxJavaTest {
         .reduce(new Supplier<List<Integer>>() {
             @Override
             public List<Integer> get() throws Exception {
-                return new ArrayList<Integer>();
+                return new ArrayList<>();
             }
         }, new BiFunction<List<Integer>, Integer, List<Integer>>() {
             @Override
@@ -46,7 +46,6 @@ public class ParallelReduceTest extends RxJavaTest {
         }));
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void initialCrash() {
         Flowable.range(1, 5)
@@ -68,7 +67,6 @@ public class ParallelReduceTest extends RxJavaTest {
         .assertFailure(TestException.class);
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void reducerCrash() {
         Flowable.range(1, 5)
@@ -76,7 +74,7 @@ public class ParallelReduceTest extends RxJavaTest {
         .reduce(new Supplier<List<Integer>>() {
             @Override
             public List<Integer> get() throws Exception {
-                return new ArrayList<Integer>();
+                return new ArrayList<>();
             }
         }, new BiFunction<List<Integer>, Integer, List<Integer>>() {
             @Override
@@ -102,7 +100,7 @@ public class ParallelReduceTest extends RxJavaTest {
         .reduce(new Supplier<List<Integer>>() {
             @Override
             public List<Integer> get() throws Exception {
-                return new ArrayList<Integer>();
+                return new ArrayList<>();
             }
         }, new BiFunction<List<Integer>, Integer, List<Integer>>() {
             @Override
@@ -121,7 +119,6 @@ public class ParallelReduceTest extends RxJavaTest {
         assertFalse(pp.hasSubscribers());
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void error() {
         Flowable.<Integer>error(new TestException())
@@ -129,7 +126,7 @@ public class ParallelReduceTest extends RxJavaTest {
         .reduce(new Supplier<List<Integer>>() {
             @Override
             public List<Integer> get() throws Exception {
-                return new ArrayList<Integer>();
+                return new ArrayList<>();
             }
         }, new BiFunction<List<Integer>, Integer, List<Integer>>() {
             @Override
@@ -143,7 +140,6 @@ public class ParallelReduceTest extends RxJavaTest {
         .assertFailure(TestException.class);
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void doubleError() {
         List<Throwable> errors = TestHelper.trackPluginErrors();
@@ -152,7 +148,7 @@ public class ParallelReduceTest extends RxJavaTest {
             .reduce(new Supplier<List<Object>>() {
                 @Override
                 public List<Object> get() throws Exception {
-                    return new ArrayList<Object>();
+                    return new ArrayList<>();
                 }
             }, new BiFunction<List<Object>, Object, List<Object>>() {
                 @Override

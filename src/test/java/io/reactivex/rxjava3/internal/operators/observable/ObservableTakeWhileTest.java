@@ -104,7 +104,7 @@ public class ObservableTakeWhileTest extends RxJavaTest {
         Observable<String> source = Observable.unsafeCreate(new ObservableSource<String>() {
             @Override
             public void subscribe(Observer<? super String> observer) {
-                observer.onSubscribe(Disposables.empty());
+                observer.onSubscribe(Disposable.empty());
                 observer.onNext("one");
                 observer.onError(new Throwable("test failed"));
             }
@@ -223,7 +223,7 @@ public class ObservableTakeWhileTest extends RxJavaTest {
                 return t1 < 2;
             }
         });
-        TestObserver<Integer> to = new TestObserver<Integer>();
+        TestObserver<Integer> to = new TestObserver<>();
 
         source.subscribe(to);
 
@@ -236,7 +236,7 @@ public class ObservableTakeWhileTest extends RxJavaTest {
 
     @Test
     public void errorCauseIncludesLastValue() {
-        TestObserverEx<String> to = new TestObserverEx<String>();
+        TestObserverEx<String> to = new TestObserverEx<>();
         Observable.just("abc").takeWhile(new Predicate<String>() {
             @Override
             public boolean test(String t1) {
@@ -271,7 +271,7 @@ public class ObservableTakeWhileTest extends RxJavaTest {
         new Observable<Integer>() {
             @Override
             protected void subscribeActual(Observer<? super Integer> observer) {
-                observer.onSubscribe(Disposables.empty());
+                observer.onSubscribe(Disposable.empty());
                 observer.onComplete();
                 observer.onComplete();
             }

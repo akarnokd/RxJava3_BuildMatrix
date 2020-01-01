@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava3.internal.operators.flowable;
 
+import java.util.Objects;
 import java.util.concurrent.atomic.*;
 
 import org.reactivestreams.*;
@@ -22,7 +23,6 @@ import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.exceptions.*;
 import io.reactivex.rxjava3.functions.Function;
 import io.reactivex.rxjava3.internal.disposables.DisposableHelper;
-import io.reactivex.rxjava3.internal.functions.ObjectHelper;
 import io.reactivex.rxjava3.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.rxjava3.internal.util.BackpressureHelper;
 import io.reactivex.rxjava3.plugins.RxJavaPlugins;
@@ -38,7 +38,7 @@ public final class FlowableDebounce<T, U> extends AbstractFlowableWithUpstream<T
 
     @Override
     protected void subscribeActual(Subscriber<? super T> s) {
-        source.subscribe(new DebounceSubscriber<T, U>(new SerializedSubscriber<T>(s), debounceSelector));
+        source.subscribe(new DebounceSubscriber<>(new SerializedSubscriber<>(s), debounceSelector));
     }
 
     static final class DebounceSubscriber<T, U> extends AtomicLong
@@ -50,7 +50,7 @@ public final class FlowableDebounce<T, U> extends AbstractFlowableWithUpstream<T
 
         Subscription upstream;
 
-        final AtomicReference<Disposable> debouncer = new AtomicReference<Disposable>();
+        final AtomicReference<Disposable> debouncer = new AtomicReference<>();
 
         volatile long index;
 
@@ -88,7 +88,7 @@ public final class FlowableDebounce<T, U> extends AbstractFlowableWithUpstream<T
             Publisher<U> p;
 
             try {
-                p = ObjectHelper.requireNonNull(debounceSelector.apply(t), "The publisher supplied is null");
+                p = Objects.requireNonNull(debounceSelector.apply(t), "The publisher supplied is null");
             } catch (Throwable e) {
                 Exceptions.throwIfFatal(e);
                 cancel();
@@ -96,7 +96,7 @@ public final class FlowableDebounce<T, U> extends AbstractFlowableWithUpstream<T
                 return;
             }
 
-            DebounceInnerSubscriber<T, U> dis = new DebounceInnerSubscriber<T, U>(this, idx, t);
+            DebounceInnerSubscriber<T, U> dis = new DebounceInnerSubscriber<>(this, idx, t);
 
             if (debouncer.compareAndSet(d, dis)) {
                 p.subscribe(dis);

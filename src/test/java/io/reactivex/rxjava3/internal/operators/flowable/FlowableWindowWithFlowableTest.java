@@ -26,7 +26,7 @@ import org.reactivestreams.*;
 
 import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.exceptions.*;
-import io.reactivex.rxjava3.functions.Function;
+import io.reactivex.rxjava3.functions.*;
 import io.reactivex.rxjava3.internal.functions.Functions;
 import io.reactivex.rxjava3.internal.subscriptions.BooleanSubscription;
 import io.reactivex.rxjava3.plugins.RxJavaPlugins;
@@ -43,7 +43,7 @@ public class FlowableWindowWithFlowableTest extends RxJavaTest {
 
         final Subscriber<Object> subscriber = TestHelper.mockSubscriber();
 
-        final List<Subscriber<Object>> values = new ArrayList<Subscriber<Object>>();
+        final List<Subscriber<Object>> values = new ArrayList<>();
 
         Subscriber<Flowable<Integer>> wo = new DefaultSubscriber<Flowable<Integer>>() {
             @Override
@@ -100,7 +100,7 @@ public class FlowableWindowWithFlowableTest extends RxJavaTest {
 
         final Subscriber<Object> subscriber = TestHelper.mockSubscriber();
 
-        final List<Subscriber<Object>> values = new ArrayList<Subscriber<Object>>();
+        final List<Subscriber<Object>> values = new ArrayList<>();
 
         Subscriber<Flowable<Integer>> wo = new DefaultSubscriber<Flowable<Integer>>() {
             @Override
@@ -156,7 +156,7 @@ public class FlowableWindowWithFlowableTest extends RxJavaTest {
 
         final Subscriber<Object> subscriber = TestHelper.mockSubscriber();
 
-        final List<Subscriber<Object>> values = new ArrayList<Subscriber<Object>>();
+        final List<Subscriber<Object>> values = new ArrayList<>();
 
         Subscriber<Flowable<Integer>> wo = new DefaultSubscriber<Flowable<Integer>>() {
             @Override
@@ -206,7 +206,7 @@ public class FlowableWindowWithFlowableTest extends RxJavaTest {
 
         final Subscriber<Object> subscriber = TestHelper.mockSubscriber();
 
-        final List<Subscriber<Object>> values = new ArrayList<Subscriber<Object>>();
+        final List<Subscriber<Object>> values = new ArrayList<>();
 
         Subscriber<Flowable<Integer>> wo = new DefaultSubscriber<Flowable<Integer>>() {
             @Override
@@ -328,7 +328,6 @@ public class FlowableWindowWithFlowableTest extends RxJavaTest {
         }, false, 1, 1, 1);
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void boundaryDirectMissingBackpressure() {
         List<Throwable> errors = TestHelper.trackPluginErrors();
@@ -344,7 +343,6 @@ public class FlowableWindowWithFlowableTest extends RxJavaTest {
         }
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void boundaryDirectMissingBackpressureNoNullPointerException() {
         List<Throwable> errors = TestHelper.trackPluginErrors();
@@ -408,7 +406,7 @@ public class FlowableWindowWithFlowableTest extends RxJavaTest {
     public void mainAndBoundaryBothError() {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
-            final AtomicReference<Subscriber<? super Object>> ref = new AtomicReference<Subscriber<? super Object>>();
+            final AtomicReference<Subscriber<? super Object>> ref = new AtomicReference<>();
 
             TestSubscriberEx<Flowable<Object>> ts = Flowable.error(new TestException("main"))
             .window(new Flowable<Object>() {
@@ -416,6 +414,12 @@ public class FlowableWindowWithFlowableTest extends RxJavaTest {
                 protected void subscribeActual(Subscriber<? super Object> subscriber) {
                     subscriber.onSubscribe(new BooleanSubscription());
                     ref.set(subscriber);
+                }
+            })
+            .doOnNext(new Consumer<Flowable<Object>>() {
+                @Override
+                public void accept(Flowable<Object> w) throws Throwable {
+                    w.subscribe(Functions.emptyConsumer(), Functions.emptyConsumer()); // avoid abandonment
                 }
             })
             .to(TestHelper.<Flowable<Object>>testConsumer());
@@ -441,8 +445,8 @@ public class FlowableWindowWithFlowableTest extends RxJavaTest {
         for (int i = 0; i < TestHelper.RACE_LONG_LOOPS; i++) {
             List<Throwable> errors = TestHelper.trackPluginErrors();
             try {
-                final AtomicReference<Subscriber<? super Object>> refMain = new AtomicReference<Subscriber<? super Object>>();
-                final AtomicReference<Subscriber<? super Object>> ref = new AtomicReference<Subscriber<? super Object>>();
+                final AtomicReference<Subscriber<? super Object>> refMain = new AtomicReference<>();
+                final AtomicReference<Subscriber<? super Object>> ref = new AtomicReference<>();
 
                 TestSubscriberEx<Flowable<Object>> ts = new Flowable<Object>() {
                     @Override
@@ -491,8 +495,8 @@ public class FlowableWindowWithFlowableTest extends RxJavaTest {
     @Test
     public void mainNextBoundaryNextRace() {
         for (int i = 0; i < TestHelper.RACE_LONG_LOOPS; i++) {
-            final AtomicReference<Subscriber<? super Object>> refMain = new AtomicReference<Subscriber<? super Object>>();
-            final AtomicReference<Subscriber<? super Object>> ref = new AtomicReference<Subscriber<? super Object>>();
+            final AtomicReference<Subscriber<? super Object>> refMain = new AtomicReference<>();
+            final AtomicReference<Subscriber<? super Object>> ref = new AtomicReference<>();
 
             TestSubscriber<Flowable<Object>> ts = new Flowable<Object>() {
                 @Override
@@ -534,8 +538,8 @@ public class FlowableWindowWithFlowableTest extends RxJavaTest {
 
     @Test
     public void takeOneAnotherBoundary() {
-        final AtomicReference<Subscriber<? super Object>> refMain = new AtomicReference<Subscriber<? super Object>>();
-        final AtomicReference<Subscriber<? super Object>> ref = new AtomicReference<Subscriber<? super Object>>();
+        final AtomicReference<Subscriber<? super Object>> refMain = new AtomicReference<>();
+        final AtomicReference<Subscriber<? super Object>> ref = new AtomicReference<>();
 
         TestSubscriberEx<Flowable<Object>> ts = new Flowable<Object>() {
             @Override
@@ -566,8 +570,8 @@ public class FlowableWindowWithFlowableTest extends RxJavaTest {
     @Test
     public void disposeMainBoundaryCompleteRace() {
         for (int i = 0; i < TestHelper.RACE_LONG_LOOPS; i++) {
-            final AtomicReference<Subscriber<? super Object>> refMain = new AtomicReference<Subscriber<? super Object>>();
-            final AtomicReference<Subscriber<? super Object>> ref = new AtomicReference<Subscriber<? super Object>>();
+            final AtomicReference<Subscriber<? super Object>> refMain = new AtomicReference<>();
+            final AtomicReference<Subscriber<? super Object>> ref = new AtomicReference<>();
 
             final TestSubscriber<Flowable<Object>> ts = new Flowable<Object>() {
                  @Override
@@ -623,8 +627,8 @@ public class FlowableWindowWithFlowableTest extends RxJavaTest {
         final TestException ex = new TestException();
 
         for (int i = 0; i < TestHelper.RACE_LONG_LOOPS; i++) {
-           final AtomicReference<Subscriber<? super Object>> refMain = new AtomicReference<Subscriber<? super Object>>();
-           final AtomicReference<Subscriber<? super Object>> ref = new AtomicReference<Subscriber<? super Object>>();
+           final AtomicReference<Subscriber<? super Object>> refMain = new AtomicReference<>();
+           final AtomicReference<Subscriber<? super Object>> ref = new AtomicReference<>();
 
            final TestSubscriber<Flowable<Object>> ts = new Flowable<Object>() {
                @Override
@@ -673,5 +677,66 @@ public class FlowableWindowWithFlowableTest extends RxJavaTest {
 
             TestHelper.race(r1, r2);
         }
+    }
+
+    @Test
+    public void cancellingWindowCancelsUpstream() {
+        PublishProcessor<Integer> pp = PublishProcessor.create();
+
+        TestSubscriber<Integer> ts = pp.window(Flowable.just(1).concatWith(Flowable.<Integer>never()))
+        .take(1)
+        .flatMap(new Function<Flowable<Integer>, Publisher<Integer>>() {
+            @Override
+            public Publisher<Integer> apply(Flowable<Integer> w) throws Throwable {
+                return w.take(1);
+            }
+        })
+        .test();
+
+        assertTrue(pp.hasSubscribers());
+
+        pp.onNext(1);
+
+        ts
+        .assertResult(1);
+
+        assertFalse("Processor still has subscribers!", pp.hasSubscribers());
+    }
+
+    @Test
+    public void windowAbandonmentCancelsUpstream() {
+        PublishProcessor<Integer> pp = PublishProcessor.create();
+
+        final AtomicReference<Flowable<Integer>> inner = new AtomicReference<>();
+
+        TestSubscriber<Flowable<Integer>> ts = pp.window(Flowable.<Integer>never())
+        .doOnNext(new Consumer<Flowable<Integer>>() {
+            @Override
+            public void accept(Flowable<Integer> v) throws Throwable {
+                inner.set(v);
+            }
+        })
+        .test();
+
+        assertTrue(pp.hasSubscribers());
+
+        ts
+        .assertValueCount(1)
+        ;
+
+        pp.onNext(1);
+
+        assertTrue(pp.hasSubscribers());
+
+        ts.cancel();
+
+        ts
+        .assertValueCount(1)
+        .assertNoErrors()
+        .assertNotComplete();
+
+        assertFalse("Processor still has subscribers!", pp.hasSubscribers());
+
+        inner.get().test().assertResult();
     }
 }

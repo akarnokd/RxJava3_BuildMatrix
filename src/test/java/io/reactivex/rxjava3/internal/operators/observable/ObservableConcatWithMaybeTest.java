@@ -28,7 +28,7 @@ public class ObservableConcatWithMaybeTest extends RxJavaTest {
 
     @Test
     public void normalEmpty() {
-        final TestObserver<Integer> to = new TestObserver<Integer>();
+        final TestObserver<Integer> to = new TestObserver<>();
 
         Observable.range(1, 5)
         .concatWith(Maybe.<Integer>fromAction(new Action() {
@@ -44,7 +44,7 @@ public class ObservableConcatWithMaybeTest extends RxJavaTest {
 
     @Test
     public void normalNonEmpty() {
-        final TestObserver<Integer> to = new TestObserver<Integer>();
+        final TestObserver<Integer> to = new TestObserver<>();
 
         Observable.range(1, 5)
         .concatWith(Maybe.just(100))
@@ -55,7 +55,7 @@ public class ObservableConcatWithMaybeTest extends RxJavaTest {
 
     @Test
     public void mainError() {
-        final TestObserver<Integer> to = new TestObserver<Integer>();
+        final TestObserver<Integer> to = new TestObserver<>();
 
         Observable.<Integer>error(new TestException())
         .concatWith(Maybe.<Integer>fromAction(new Action() {
@@ -71,7 +71,7 @@ public class ObservableConcatWithMaybeTest extends RxJavaTest {
 
     @Test
     public void otherError() {
-        final TestObserver<Integer> to = new TestObserver<Integer>();
+        final TestObserver<Integer> to = new TestObserver<>();
 
         Observable.range(1, 5)
         .concatWith(Maybe.<Integer>error(new TestException()))
@@ -82,7 +82,7 @@ public class ObservableConcatWithMaybeTest extends RxJavaTest {
 
     @Test
     public void takeMain() {
-        final TestObserver<Integer> to = new TestObserver<Integer>();
+        final TestObserver<Integer> to = new TestObserver<>();
 
         Observable.range(1, 5)
         .concatWith(Maybe.<Integer>fromAction(new Action() {
@@ -117,7 +117,7 @@ public class ObservableConcatWithMaybeTest extends RxJavaTest {
         new Observable<Integer>() {
             @Override
             protected void subscribeActual(Observer<? super Integer> observer) {
-                Disposable bs1 = Disposables.empty();
+                Disposable bs1 = Disposable.empty();
                 observer.onSubscribe(bs1);
 
                 assertFalse(((Disposable)observer).isDisposed());
@@ -138,10 +138,10 @@ public class ObservableConcatWithMaybeTest extends RxJavaTest {
         new Observable<Integer>() {
             @Override
             protected void subscribeActual(Observer<? super Integer> observer) {
-                Disposable bs1 = Disposables.empty();
+                Disposable bs1 = Disposable.empty();
                 observer.onSubscribe(bs1);
 
-                Disposable bs2 = Disposables.empty();
+                Disposable bs2 = Disposable.empty();
                 observer.onSubscribe(bs2);
 
                 assertFalse(bs1.isDisposed());
@@ -159,10 +159,10 @@ public class ObservableConcatWithMaybeTest extends RxJavaTest {
         Flowable.empty().concatWith(new Maybe<Integer>() {
             @Override
             protected void subscribeActual(MaybeObserver<? super Integer> observer) {
-                Disposable bs1 = Disposables.empty();
+                Disposable bs1 = Disposable.empty();
                 observer.onSubscribe(bs1);
 
-                Disposable bs2 = Disposables.empty();
+                Disposable bs2 = Disposable.empty();
                 observer.onSubscribe(bs2);
 
                 assertFalse(bs1.isDisposed());

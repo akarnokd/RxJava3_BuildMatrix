@@ -92,7 +92,7 @@ public class FlowableToListTest extends RxJavaTest {
     @Test
     public void backpressureHonoredFlowable() {
         Flowable<List<Integer>> w = Flowable.just(1, 2, 3, 4, 5).toList().toFlowable();
-        TestSubscriber<List<Integer>> ts = new TestSubscriber<List<Integer>>(0L);
+        TestSubscriber<List<Integer>> ts = new TestSubscriber<>(0L);
 
         w.subscribe(ts);
 
@@ -113,7 +113,6 @@ public class FlowableToListTest extends RxJavaTest {
         ts.assertComplete();
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void capacityHintFlowable() {
         Flowable.range(1, 10)
@@ -182,7 +181,6 @@ public class FlowableToListTest extends RxJavaTest {
         }
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void capacityHint() {
         Flowable.range(1, 10)
@@ -198,7 +196,6 @@ public class FlowableToListTest extends RxJavaTest {
         TestHelper.checkDisposed(Flowable.just(1).toList());
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void error() {
         Flowable.error(new TestException())
@@ -208,7 +205,6 @@ public class FlowableToListTest extends RxJavaTest {
         .assertFailure(TestException.class);
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void errorSingle() {
         Flowable.error(new TestException())
@@ -217,7 +213,6 @@ public class FlowableToListTest extends RxJavaTest {
         .assertFailure(TestException.class);
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void collectionSupplierThrows() {
         Flowable.just(1)
@@ -232,7 +227,6 @@ public class FlowableToListTest extends RxJavaTest {
         .assertFailure(TestException.class);
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void collectionSupplierReturnsNull() {
         Flowable.just(1)
@@ -248,7 +242,6 @@ public class FlowableToListTest extends RxJavaTest {
         .assertErrorMessage(ExceptionHelper.nullWarning("The collectionSupplier returned a null Collection."));
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void singleCollectionSupplierThrows() {
         Flowable.just(1)
@@ -262,7 +255,6 @@ public class FlowableToListTest extends RxJavaTest {
         .assertFailure(TestException.class);
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void singleCollectionSupplierReturnsNull() {
         Flowable.just(1)

@@ -58,8 +58,9 @@ matrix:
     - env: JDK='Oracle JDK 12 target 12' RXJAVA_TARGET=12
       install: . ./install-jdk.sh -F 12 -L GPL
     # ------------------------------------------------------------
-    - env: JDK='Oracle JDK 11 target 6' RXJAVA_TARGET=1.6
-      install: . ./install-jdk.sh -F 11 -L GPL
+    # Target 6 no longer supported by RxJava
+    #- env: JDK='Oracle JDK 11 target 6' RXJAVA_TARGET=1.6
+    #  install: . ./install-jdk.sh -F 11 -L GPL
     - env: JDK='Oracle JDK 11 target 8' RXJAVA_TARGET=1.8
       install: . ./install-jdk.sh -F 11 -L GPL
     - env: JDK='Oracle JDK 11 target 9' RXJAVA_TARGET=1.9
@@ -69,8 +70,9 @@ matrix:
     - env: JDK='Oracle JDK 11 target 11' RXJAVA_TARGET=11
       install: . ./install-jdk.sh -F 11 -L GPL
     # ------------------------------------------------------------
-    - env: JDK='Oracle JDK 10 target 6' RXJAVA_TARGET=1.6
-      jdk: openjdk10
+    # Target 6 no longer supported by RxJava
+    #- env: JDK='Oracle JDK 10 target 6' RXJAVA_TARGET=1.6
+    #  jdk: openjdk10
     #      install: . ./install-jdk.sh -F 10 -L BCL
     - env: JDK='Oracle JDK 10 target 8' RXJAVA_TARGET=1.8
       jdk: openjdk10
@@ -82,15 +84,17 @@ matrix:
       #      install: . ./install-jdk.sh -F 10 -L BCL
       jdk: openjdk10
     # ------------------------------------------------------------
-    - env: JDK='Oracle JDK 9 target 6' RXJAVA_TARGET=1.6
-      jdk: oraclejdk9
+    # Target 6 no longer supported by RxJava
+    #- env: JDK='Oracle JDK 9 target 6' RXJAVA_TARGET=1.6
+    #  jdk: oraclejdk9
     - env: JDK='Oracle JDK 9 target 8' RXJAVA_TARGET=1.8
       jdk: oraclejdk9
     - env: JDK='Oracle JDK 9 target 9' RXJAVA_TARGET=1.9
       jdk: oraclejdk9
     # ------------------------------------------------------------
-    - env: JDK='Oracle JDK 8 target 6' RXJAVA_TARGET=1.6
-      jdk: oraclejdk8
+    # Target 6 no longer supported by RxJava
+    #- env: JDK='Oracle JDK 8 target 6' RXJAVA_TARGET=1.6
+    #  jdk: oraclejdk8
     - env: JDK='Oracle JDK 8 target 8' RXJAVA_TARGET=1.8
       jdk: oraclejdk8
 

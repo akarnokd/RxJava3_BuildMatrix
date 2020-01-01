@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava3.internal.operators.observable;
 
+import java.util.Objects;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.*;
 
@@ -21,7 +22,6 @@ import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.exceptions.Exceptions;
 import io.reactivex.rxjava3.functions.Function;
 import io.reactivex.rxjava3.internal.disposables.*;
-import io.reactivex.rxjava3.internal.functions.ObjectHelper;
 import io.reactivex.rxjava3.internal.operators.observable.ObservableTimeoutTimed.TimeoutSupport;
 import io.reactivex.rxjava3.plugins.RxJavaPlugins;
 
@@ -44,12 +44,12 @@ public final class ObservableTimeout<T, U, V> extends AbstractObservableWithUpst
     @Override
     protected void subscribeActual(Observer<? super T> observer) {
         if (other == null) {
-            TimeoutObserver<T> parent = new TimeoutObserver<T>(observer, itemTimeoutIndicator);
+            TimeoutObserver<T> parent = new TimeoutObserver<>(observer, itemTimeoutIndicator);
             observer.onSubscribe(parent);
             parent.startFirstTimeout(firstTimeoutIndicator);
             source.subscribe(parent);
         } else {
-            TimeoutFallbackObserver<T> parent = new TimeoutFallbackObserver<T>(observer, itemTimeoutIndicator, other);
+            TimeoutFallbackObserver<T> parent = new TimeoutFallbackObserver<>(observer, itemTimeoutIndicator, other);
             observer.onSubscribe(parent);
             parent.startFirstTimeout(firstTimeoutIndicator);
             source.subscribe(parent);
@@ -77,7 +77,7 @@ public final class ObservableTimeout<T, U, V> extends AbstractObservableWithUpst
             this.downstream = actual;
             this.itemTimeoutIndicator = itemTimeoutIndicator;
             this.task = new SequentialDisposable();
-            this.upstream = new AtomicReference<Disposable>();
+            this.upstream = new AtomicReference<>();
         }
 
         @Override
@@ -102,7 +102,7 @@ public final class ObservableTimeout<T, U, V> extends AbstractObservableWithUpst
             ObservableSource<?> itemTimeoutObservableSource;
 
             try {
-                itemTimeoutObservableSource = ObjectHelper.requireNonNull(
+                itemTimeoutObservableSource = Objects.requireNonNull(
                         itemTimeoutIndicator.apply(t),
                         "The itemTimeoutIndicator returned a null ObservableSource.");
             } catch (Throwable ex) {
@@ -206,7 +206,7 @@ public final class ObservableTimeout<T, U, V> extends AbstractObservableWithUpst
             this.task = new SequentialDisposable();
             this.fallback = fallback;
             this.index = new AtomicLong();
-            this.upstream = new AtomicReference<Disposable>();
+            this.upstream = new AtomicReference<>();
         }
 
         @Override
@@ -231,7 +231,7 @@ public final class ObservableTimeout<T, U, V> extends AbstractObservableWithUpst
             ObservableSource<?> itemTimeoutObservableSource;
 
             try {
-                itemTimeoutObservableSource = ObjectHelper.requireNonNull(
+                itemTimeoutObservableSource = Objects.requireNonNull(
                         itemTimeoutIndicator.apply(t),
                         "The itemTimeoutIndicator returned a null ObservableSource.");
             } catch (Throwable ex) {

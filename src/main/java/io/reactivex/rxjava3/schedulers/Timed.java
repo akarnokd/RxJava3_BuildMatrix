@@ -13,10 +13,10 @@
 
 package io.reactivex.rxjava3.schedulers;
 
+import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
 import io.reactivex.rxjava3.annotations.NonNull;
-import io.reactivex.rxjava3.internal.functions.ObjectHelper;
 
 /**
  * Holds onto a value along with time information.
@@ -29,16 +29,16 @@ public final class Timed<T> {
     final TimeUnit unit;
 
     /**
-     * Constructs a Timed instance with the given value and time information.
+     * Constructs a {@code Timed} instance with the given value and time information.
      * @param value the value to hold
      * @param time the time to hold
      * @param unit the time unit, not null
-     * @throws NullPointerException if unit is null
+     * @throws NullPointerException if unit is {@code null}
      */
     public Timed(@NonNull T value, long time, @NonNull TimeUnit unit) {
         this.value = value;
         this.time = time;
-        this.unit = ObjectHelper.requireNonNull(unit, "unit is null");
+        this.unit = Objects.requireNonNull(unit, "unit is null");
     }
 
     /**
@@ -69,7 +69,7 @@ public final class Timed<T> {
 
     /**
      * Returns the contained time value in the time unit specified.
-     * @param unit the time unt
+     * @param unit the time unit
      * @return the converted time
      */
     public long time(@NonNull TimeUnit unit) {
@@ -80,9 +80,9 @@ public final class Timed<T> {
     public boolean equals(Object other) {
         if (other instanceof Timed) {
             Timed<?> o = (Timed<?>) other;
-            return ObjectHelper.equals(value, o.value)
+            return Objects.equals(value, o.value)
                     && time == o.time
-                    && ObjectHelper.equals(unit, o.unit);
+                    && Objects.equals(unit, o.unit);
         }
         return false;
     }

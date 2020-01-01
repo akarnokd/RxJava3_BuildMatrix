@@ -45,7 +45,6 @@ public class ObservableNullTests extends RxJavaTest {
         Observable.ambArray((Observable<Object>[])null);
     }
 
-    @SuppressWarnings("unchecked")
     @Test(expected = NullPointerException.class)
     public void ambVarargsOneIsNull() {
         Observable.ambArray(Observable.never(), null).blockingLast();
@@ -66,7 +65,6 @@ public class ObservableNullTests extends RxJavaTest {
         }).test().assertError(NullPointerException.class);
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void ambIterableOneIsNull() {
         Observable.amb(Arrays.asList(Observable.never(), null))
@@ -99,7 +97,6 @@ public class ObservableNullTests extends RxJavaTest {
         }, 128).blockingLast();
     }
 
-    @SuppressWarnings("unchecked")
     @Test(expected = NullPointerException.class)
     public void combineLatestIterableOneIsNull() {
         Observable.combineLatest(Arrays.asList(Observable.never(), null), new Function<Object[], Object>() {
@@ -110,13 +107,11 @@ public class ObservableNullTests extends RxJavaTest {
         }, 128).blockingLast();
     }
 
-    @SuppressWarnings("unchecked")
     @Test(expected = NullPointerException.class)
     public void combineLatestIterableFunctionNull() {
         Observable.combineLatest(Arrays.asList(just1), null, 128);
     }
 
-    @SuppressWarnings("unchecked")
     @Test(expected = NullPointerException.class)
     public void combineLatestIterableFunctionReturnsNull() {
         Observable.combineLatest(Arrays.asList(just1), new Function<Object[], Object>() {
@@ -152,7 +147,6 @@ public class ObservableNullTests extends RxJavaTest {
         }, 128).blockingLast();
     }
 
-    @SuppressWarnings("unchecked")
     @Test(expected = NullPointerException.class)
     public void combineLatestDelayErrorIterableOneIsNull() {
         Observable.combineLatestDelayError(Arrays.asList(Observable.never(), null), new Function<Object[], Object>() {
@@ -163,13 +157,11 @@ public class ObservableNullTests extends RxJavaTest {
         }, 128).blockingLast();
     }
 
-    @SuppressWarnings("unchecked")
     @Test(expected = NullPointerException.class)
     public void combineLatestDelayErrorIterableFunctionNull() {
         Observable.combineLatestDelayError(Arrays.asList(just1), null, 128);
     }
 
-    @SuppressWarnings("unchecked")
     @Test(expected = NullPointerException.class)
     public void combineLatestDelayErrorIterableFunctionReturnsNull() {
         Observable.combineLatestDelayError(Arrays.asList(just1), new Function<Object[], Object>() {
@@ -195,7 +187,6 @@ public class ObservableNullTests extends RxJavaTest {
         }).blockingLast();
     }
 
-    @SuppressWarnings("unchecked")
     @Test(expected = NullPointerException.class)
     public void concatIterableOneIsNull() {
         Observable.concat(Arrays.asList(just1, null)).blockingLast();
@@ -211,7 +202,6 @@ public class ObservableNullTests extends RxJavaTest {
         Observable.concatArray((Observable<Object>[])null);
     }
 
-    @SuppressWarnings("unchecked")
     @Test(expected = NullPointerException.class)
     public void concatArrayOneIsNull() {
         Observable.concatArray(just1, null).blockingLast();
@@ -289,10 +279,10 @@ public class ObservableNullTests extends RxJavaTest {
 
     @Test
     public void fromFutureReturnsNull() {
-        FutureTask<Object> f = new FutureTask<Object>(Functions.EMPTY_RUNNABLE, null);
+        FutureTask<Object> f = new FutureTask<>(Functions.EMPTY_RUNNABLE, null);
         f.run();
 
-        TestObserver<Object> to = new TestObserver<Object>();
+        TestObserver<Object> to = new TestObserver<>();
         Observable.fromFuture(f).subscribe(to);
         to.assertNoValues();
         to.assertNotComplete();
@@ -306,24 +296,24 @@ public class ObservableNullTests extends RxJavaTest {
 
     @Test(expected = NullPointerException.class)
     public void fromFutureTimedUnitNull() {
-        Observable.fromFuture(new FutureTask<Object>(Functions.EMPTY_RUNNABLE, null), 1, null);
+        Observable.fromFuture(new FutureTask<>(Functions.EMPTY_RUNNABLE, null), 1, null);
     }
 
     @Test(expected = NullPointerException.class)
     public void fromFutureTimedSchedulerNull() {
-        Observable.fromFuture(new FutureTask<Object>(Functions.EMPTY_RUNNABLE, null), 1, TimeUnit.SECONDS, null);
+        Observable.fromFuture(new FutureTask<>(Functions.EMPTY_RUNNABLE, null), 1, TimeUnit.SECONDS, null);
     }
 
     @Test(expected = NullPointerException.class)
     public void fromFutureTimedReturnsNull() {
-        FutureTask<Object> f = new FutureTask<Object>(Functions.EMPTY_RUNNABLE, null);
+        FutureTask<Object> f = new FutureTask<>(Functions.EMPTY_RUNNABLE, null);
         f.run();
         Observable.fromFuture(f, 1, TimeUnit.SECONDS).blockingLast();
     }
 
     @Test(expected = NullPointerException.class)
     public void fromFutureSchedulerNull() {
-        FutureTask<Object> f = new FutureTask<Object>(Functions.EMPTY_RUNNABLE, null);
+        FutureTask<Object> f = new FutureTask<>(Functions.EMPTY_RUNNABLE, null);
         Observable.fromFuture(f, null);
     }
 
@@ -520,7 +510,6 @@ public class ObservableNullTests extends RxJavaTest {
         }, 128, 128).blockingLast();
     }
 
-    @SuppressWarnings("unchecked")
     @Test(expected = NullPointerException.class)
     public void mergeIterableOneIsNull() {
         Observable.merge(Arrays.asList(just1, null), 128, 128).blockingLast();
@@ -531,7 +520,6 @@ public class ObservableNullTests extends RxJavaTest {
         Observable.mergeArray(128, 128, (Observable<Object>[])null);
     }
 
-    @SuppressWarnings("unchecked")
     @Test(expected = NullPointerException.class)
     public void mergeArrayOneIsNull() {
         Observable.mergeArray(128, 128, just1, null).blockingLast();
@@ -552,7 +540,6 @@ public class ObservableNullTests extends RxJavaTest {
         }, 128, 128).blockingLast();
     }
 
-    @SuppressWarnings("unchecked")
     @Test(expected = NullPointerException.class)
     public void mergeDelayErrorIterableOneIsNull() {
         Observable.mergeDelayError(Arrays.asList(just1, null), 128, 128).blockingLast();
@@ -563,7 +550,6 @@ public class ObservableNullTests extends RxJavaTest {
         Observable.mergeArrayDelayError(128, 128, (Observable<Object>[])null);
     }
 
-    @SuppressWarnings("unchecked")
     @Test(expected = NullPointerException.class)
     public void mergeDelayErrorArrayOneIsNull() {
         Observable.mergeArrayDelayError(128, 128, just1, null).blockingLast();
@@ -683,13 +669,11 @@ public class ObservableNullTests extends RxJavaTest {
         }).blockingLast();
     }
 
-    @SuppressWarnings("unchecked")
     @Test(expected = NullPointerException.class)
     public void zipIterableFunctionNull() {
         Observable.zip(Arrays.asList(just1, just1), null);
     }
 
-    @SuppressWarnings("unchecked")
     @Test(expected = NullPointerException.class)
     public void zipIterableFunctionReturnsNull() {
         Observable.zip(Arrays.asList(just1, just1), new Function<Object[], Object>() {
@@ -725,13 +709,11 @@ public class ObservableNullTests extends RxJavaTest {
         }, true, 128).blockingLast();
     }
 
-    @SuppressWarnings("unchecked")
     @Test(expected = NullPointerException.class)
     public void zipIterable2FunctionNull() {
         Observable.zip(Arrays.asList(just1, just1), null, true, 128);
     }
 
-    @SuppressWarnings("unchecked")
     @Test(expected = NullPointerException.class)
     public void zipIterable2FunctionReturnsNull() {
         Observable.zip(Arrays.asList(just1, just1), new Function<Object[], Object>() {
@@ -2385,7 +2367,7 @@ public class ObservableNullTests extends RxJavaTest {
         }, new Supplier<Map<Integer, Collection<Integer>>>() {
             @Override
             public Map<Integer, Collection<Integer>> get() {
-                return new HashMap<Integer, Collection<Integer>>();
+                return new HashMap<>();
             }
         }, null);
     }
@@ -2405,7 +2387,7 @@ public class ObservableNullTests extends RxJavaTest {
         }, new Supplier<Map<Integer, Collection<Integer>>>() {
             @Override
             public Map<Integer, Collection<Integer>> get() {
-                return new HashMap<Integer, Collection<Integer>>();
+                return new HashMap<>();
             }
         }, new Function<Integer, Collection<Integer>>() {
             @Override

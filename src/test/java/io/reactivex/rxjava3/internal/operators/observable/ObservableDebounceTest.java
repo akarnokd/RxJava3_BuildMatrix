@@ -55,7 +55,7 @@ public class ObservableDebounceTest extends RxJavaTest {
         Observable<String> source = Observable.unsafeCreate(new ObservableSource<String>() {
             @Override
             public void subscribe(Observer<? super String> observer) {
-                observer.onSubscribe(Disposables.empty());
+                observer.onSubscribe(Disposable.empty());
                 publishNext(observer, 100, "one");    // Should be skipped since "two" will arrive before the timeout expires.
                 publishNext(observer, 400, "two");    // Should be published since "three" will arrive after the timeout expires.
                 publishNext(observer, 900, "three");   // Should be skipped since onComplete will arrive before the timeout expires.
@@ -81,7 +81,7 @@ public class ObservableDebounceTest extends RxJavaTest {
         Observable<String> source = Observable.unsafeCreate(new ObservableSource<String>() {
             @Override
             public void subscribe(Observer<? super String> observer) {
-                observer.onSubscribe(Disposables.empty());
+                observer.onSubscribe(Disposable.empty());
                 // all should be skipped since they are happening faster than the 200ms timeout
                 publishNext(observer, 100, "a");    // Should be skipped
                 publishNext(observer, 200, "b");    // Should be skipped
@@ -111,7 +111,7 @@ public class ObservableDebounceTest extends RxJavaTest {
         Observable<String> source = Observable.unsafeCreate(new ObservableSource<String>() {
             @Override
             public void subscribe(Observer<? super String> observer) {
-                observer.onSubscribe(Disposables.empty());
+                observer.onSubscribe(Disposable.empty());
                 Exception error = new TestException();
                 publishNext(observer, 100, "one");    // Should be published since "two" will arrive after the timeout expires.
                 publishNext(observer, 600, "two");    // Should be skipped since onError will arrive before the timeout expires.
@@ -288,7 +288,7 @@ public class ObservableDebounceTest extends RxJavaTest {
     @Test
     public void debounceWithTimeBackpressure() throws InterruptedException {
         TestScheduler scheduler = new TestScheduler();
-        TestObserverEx<Integer> observer = new TestObserverEx<Integer>();
+        TestObserverEx<Integer> observer = new TestObserverEx<>();
 
         Observable.merge(
                 Observable.just(1),
@@ -317,7 +317,7 @@ public class ObservableDebounceTest extends RxJavaTest {
 
         TestHelper.checkDisposed(PublishSubject.create().debounce(Functions.justFunction(Observable.never())));
 
-        Disposable d = new ObservableDebounceTimed.DebounceEmitter<Integer>(1, 1, null);
+        Disposable d = new ObservableDebounceTimed.DebounceEmitter<>(1, 1, null);
         assertFalse(d.isDisposed());
 
         d.dispose();
@@ -332,7 +332,7 @@ public class ObservableDebounceTest extends RxJavaTest {
             new Observable<Integer>() {
                 @Override
                 protected void subscribeActual(Observer<? super Integer> observer) {
-                    observer.onSubscribe(Disposables.empty());
+                    observer.onSubscribe(Disposable.empty());
                     observer.onComplete();
                     observer.onNext(1);
                     observer.onError(new TestException());
@@ -395,7 +395,7 @@ public class ObservableDebounceTest extends RxJavaTest {
 
     @Test
     public void disposeInOnNext() {
-        final TestObserver<Integer> to = new TestObserver<Integer>();
+        final TestObserver<Integer> to = new TestObserver<>();
 
         BehaviorSubject.createDefault(1)
         .debounce(new Function<Integer, ObservableSource<Object>>() {
@@ -413,12 +413,12 @@ public class ObservableDebounceTest extends RxJavaTest {
 
     @Test
     public void disposedInOnComplete() {
-        final TestObserver<Integer> to = new TestObserver<Integer>();
+        final TestObserver<Integer> to = new TestObserver<>();
 
         new Observable<Integer>() {
             @Override
             protected void subscribeActual(Observer<? super Integer> observer) {
-                observer.onSubscribe(Disposables.empty());
+                observer.onSubscribe(Disposable.empty());
                 to.dispose();
                 observer.onComplete();
             }
@@ -430,7 +430,7 @@ public class ObservableDebounceTest extends RxJavaTest {
 
     @Test
     public void emitLate() {
-        final AtomicReference<Observer<? super Integer>> ref = new AtomicReference<Observer<? super Integer>>();
+        final AtomicReference<Observer<? super Integer>> ref = new AtomicReference<>();
 
         TestObserver<Integer> to = Observable.range(1, 2)
         .debounce(new Function<Integer, ObservableSource<Integer>>() {
@@ -442,7 +442,7 @@ public class ObservableDebounceTest extends RxJavaTest {
                 return new Observable<Integer>() {
                     @Override
                     protected void subscribeActual(Observer<? super Integer> observer) {
-                        observer.onSubscribe(Disposables.empty());
+                        observer.onSubscribe(Disposable.empty());
                         ref.set(observer);
                     }
                 };
@@ -469,13 +469,13 @@ public class ObservableDebounceTest extends RxJavaTest {
 
     @Test
     public void timedDisposedIgnoredBySource() {
-        final TestObserver<Integer> to = new TestObserver<Integer>();
+        final TestObserver<Integer> to = new TestObserver<>();
 
         new Observable<Integer>() {
             @Override
             protected void subscribeActual(
                     Observer<? super Integer> observer) {
-                observer.onSubscribe(Disposables.empty());
+                observer.onSubscribe(Disposable.empty());
                 to.dispose();
                 observer.onNext(1);
                 observer.onComplete();
@@ -487,13 +487,13 @@ public class ObservableDebounceTest extends RxJavaTest {
 
     @Test
     public void timedLateEmit() {
-        TestObserver<Integer> to = new TestObserver<Integer>();
-        DebounceTimedObserver<Integer> sub = new DebounceTimedObserver<Integer>(
+        TestObserver<Integer> to = new TestObserver<>();
+        DebounceTimedObserver<Integer> sub = new DebounceTimedObserver<>(
                 to, 1, TimeUnit.SECONDS, new TestScheduler().createWorker());
 
-        sub.onSubscribe(Disposables.empty());
+        sub.onSubscribe(Disposable.empty());
 
-        DebounceEmitter<Integer> de = new DebounceEmitter<Integer>(1, 50, sub);
+        DebounceEmitter<Integer> de = new DebounceEmitter<>(1, 50, sub);
         de.run();
         de.run();
 

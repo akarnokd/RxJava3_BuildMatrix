@@ -13,11 +13,11 @@
 
 package io.reactivex.rxjava3.internal.observers;
 
+import io.reactivex.rxjava3.disposables.Disposable;
 import org.junit.Test;
 
 import io.reactivex.rxjava3.annotations.Nullable;
 import io.reactivex.rxjava3.core.RxJavaTest;
-import io.reactivex.rxjava3.disposables.Disposables;
 import io.reactivex.rxjava3.observers.TestObserver;
 import io.reactivex.rxjava3.testsupport.TestObserverEx;
 
@@ -25,7 +25,7 @@ public class BasicFuseableObserverTest extends RxJavaTest {
 
     @Test(expected = UnsupportedOperationException.class)
     public void offer() {
-        TestObserverEx<Integer> to = new TestObserverEx<Integer>();
+        TestObserverEx<Integer> to = new TestObserverEx<>();
         BasicFuseableObserver<Integer, Integer> o = new BasicFuseableObserver<Integer, Integer>(to) {
             @Nullable
             @Override
@@ -48,7 +48,7 @@ public class BasicFuseableObserverTest extends RxJavaTest {
             }
         };
 
-        o.onSubscribe(Disposables.disposed());
+        o.onSubscribe(Disposable.disposed());
 
         to.assertNotSubscribed();
 
@@ -57,7 +57,7 @@ public class BasicFuseableObserverTest extends RxJavaTest {
 
     @Test(expected = UnsupportedOperationException.class)
     public void offer2() {
-        BasicFuseableObserver<Integer, Integer> o = new BasicFuseableObserver<Integer, Integer>(new TestObserver<Integer>()) {
+        BasicFuseableObserver<Integer, Integer> o = new BasicFuseableObserver<Integer, Integer>(new TestObserver<>()) {
             @Nullable
             @Override
             public Integer poll() throws Exception {

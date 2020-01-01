@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava3.internal.operators.mixed;
 
+import java.util.Objects;
 import java.util.concurrent.atomic.*;
 
 import org.reactivestreams.*;
@@ -22,7 +23,6 @@ import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.exceptions.*;
 import io.reactivex.rxjava3.functions.Function;
 import io.reactivex.rxjava3.internal.disposables.DisposableHelper;
-import io.reactivex.rxjava3.internal.functions.ObjectHelper;
 import io.reactivex.rxjava3.internal.fuseable.SimplePlainQueue;
 import io.reactivex.rxjava3.internal.queue.SpscArrayQueue;
 import io.reactivex.rxjava3.internal.subscriptions.SubscriptionHelper;
@@ -58,7 +58,7 @@ public final class FlowableConcatMapMaybe<T, R> extends Flowable<R> {
 
     @Override
     protected void subscribeActual(Subscriber<? super R> s) {
-        source.subscribe(new ConcatMapMaybeSubscriber<T, R>(s, mapper, prefetch, errorMode));
+        source.subscribe(new ConcatMapMaybeSubscriber<>(s, mapper, prefetch, errorMode));
     }
 
     static final class ConcatMapMaybeSubscriber<T, R>
@@ -113,8 +113,8 @@ public final class FlowableConcatMapMaybe<T, R> extends Flowable<R> {
             this.errorMode = errorMode;
             this.requested = new AtomicLong();
             this.errors = new AtomicThrowable();
-            this.inner = new ConcatMapMaybeObserver<R>(this);
-            this.queue = new SpscArrayQueue<T>(prefetch);
+            this.inner = new ConcatMapMaybeObserver<>(this);
+            this.queue = new SpscArrayQueue<>(prefetch);
         }
 
         @Override
@@ -251,7 +251,7 @@ public final class FlowableConcatMapMaybe<T, R> extends Flowable<R> {
                         MaybeSource<? extends R> ms;
 
                         try {
-                            ms = ObjectHelper.requireNonNull(mapper.apply(v), "The mapper returned a null MaybeSource");
+                            ms = Objects.requireNonNull(mapper.apply(v), "The mapper returned a null MaybeSource");
                         } catch (Throwable ex) {
                             Exceptions.throwIfFatal(ex);
                             upstream.cancel();

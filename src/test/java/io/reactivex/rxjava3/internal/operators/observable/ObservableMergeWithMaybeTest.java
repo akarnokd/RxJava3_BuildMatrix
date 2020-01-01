@@ -178,11 +178,11 @@ public class ObservableMergeWithMaybeTest extends RxJavaTest {
     public void onErrorMainOverflow() {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
-            final AtomicReference<Observer<?>> observerRef = new AtomicReference<Observer<?>>();
+            final AtomicReference<Observer<?>> observerRef = new AtomicReference<>();
             TestObserver<Integer> to = new Observable<Integer>() {
                 @Override
                 protected void subscribeActual(Observer<? super Integer> observer) {
-                    observer.onSubscribe(Disposables.empty());
+                    observer.onSubscribe(Disposable.empty());
                     observerRef.set(observer);
                 }
             }
@@ -234,7 +234,7 @@ public class ObservableMergeWithMaybeTest extends RxJavaTest {
         new Observable<Integer>() {
             @Override
             protected void subscribeActual(Observer<? super Integer> observer) {
-                observer.onSubscribe(Disposables.empty());
+                observer.onSubscribe(Disposable.empty());
 
                 assertFalse(((Disposable)observer).isDisposed());
 

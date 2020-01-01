@@ -18,10 +18,10 @@ import static org.junit.Assert.*;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 
+import io.reactivex.rxjava3.disposables.Disposable;
 import org.junit.Test;
 
 import io.reactivex.rxjava3.core.*;
-import io.reactivex.rxjava3.disposables.Disposables;
 import io.reactivex.rxjava3.exceptions.*;
 import io.reactivex.rxjava3.functions.Function;
 import io.reactivex.rxjava3.internal.functions.Functions;
@@ -157,7 +157,7 @@ public class ObservableConcatMapSingleTest extends RxJavaTest {
             new Observable<Integer>() {
                 @Override
                 protected void subscribeActual(Observer<? super Integer> observer) {
-                    observer.onSubscribe(Disposables.empty());
+                    observer.onSubscribe(Disposable.empty());
                     observer.onNext(1);
                     observer.onError(new TestException("outer"));
                 }
@@ -180,7 +180,7 @@ public class ObservableConcatMapSingleTest extends RxJavaTest {
         try {
             final PublishSubject<Integer> ps = PublishSubject.create();
 
-            final AtomicReference<SingleObserver<? super Integer>> obs = new AtomicReference<SingleObserver<? super Integer>>();
+            final AtomicReference<SingleObserver<? super Integer>> obs = new AtomicReference<>();
 
             TestObserverEx<Integer> to = ps.concatMapSingle(
                     new Function<Integer, SingleSource<Integer>>() {
@@ -191,7 +191,7 @@ public class ObservableConcatMapSingleTest extends RxJavaTest {
                                     @Override
                                     protected void subscribeActual(
                                             SingleObserver<? super Integer> observer) {
-                                        observer.onSubscribe(Disposables.empty());
+                                        observer.onSubscribe(Disposable.empty());
                                         obs.set(observer);
                                     }
                             };
@@ -313,12 +313,12 @@ public class ObservableConcatMapSingleTest extends RxJavaTest {
 
     @Test
     public void cancelNoConcurrentClean() {
-        TestObserver<Integer> to = new TestObserver<Integer>();
+        TestObserver<Integer> to = new TestObserver<>();
         ConcatMapSingleMainObserver<Integer, Integer> operator =
-                new ConcatMapSingleMainObserver<Integer, Integer>(
+                new ConcatMapSingleMainObserver<>(
                         to, Functions.justFunction(Single.<Integer>never()), 16, ErrorMode.IMMEDIATE);
 
-        operator.onSubscribe(Disposables.empty());
+        operator.onSubscribe(Disposable.empty());
 
         operator.queue.offer(1);
 
@@ -339,7 +339,6 @@ public class ObservableConcatMapSingleTest extends RxJavaTest {
     public void checkUnboundedInnerQueue() {
         SingleSubject<Integer> ss = SingleSubject.create();
 
-        @SuppressWarnings("unchecked")
         TestObserver<Integer> to = Observable
                 .fromArray(ss, Single.just(2), Single.just(3), Single.just(4))
                 .concatMapSingle(Functions.<Single<Integer>>identity(), 2)

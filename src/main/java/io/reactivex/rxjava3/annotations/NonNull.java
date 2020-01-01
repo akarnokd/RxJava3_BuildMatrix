@@ -19,10 +19,10 @@ import static java.lang.annotation.RetentionPolicy.CLASS;
 import java.lang.annotation.*;
 
 /**
- * Indicates that a field/parameter/variable/return type is never null.
+ * Indicates that a field/parameter/variable/type parameter/return type is never null.
  */
 @Documented
-@Target(value = {FIELD, METHOD, PARAMETER, LOCAL_VARIABLE})
+@Target(value = {FIELD, METHOD, PARAMETER, LOCAL_VARIABLE, TYPE_PARAMETER, TYPE_USE})
 @Retention(value = CLASS)
 public @interface NonNull { }
 

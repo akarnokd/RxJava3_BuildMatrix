@@ -21,12 +21,12 @@ import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
+import io.reactivex.rxjava3.disposables.Disposable;
 import org.junit.Test;
 import org.mockito.Mockito;
 import org.reactivestreams.Subscription;
 
 import io.reactivex.rxjava3.core.*;
-import io.reactivex.rxjava3.disposables.Disposables;
 import io.reactivex.rxjava3.functions.Function;
 import io.reactivex.rxjava3.internal.functions.Functions;
 import io.reactivex.rxjava3.observers.TestObserver;
@@ -37,12 +37,12 @@ public class ObservableOnErrorResumeNextTest extends RxJavaTest {
 
     @Test
     public void resumeNextWithSynchronousExecution() {
-        final AtomicReference<Throwable> receivedException = new AtomicReference<Throwable>();
+        final AtomicReference<Throwable> receivedException = new AtomicReference<>();
         Observable<String> w = Observable.unsafeCreate(new ObservableSource<String>() {
 
             @Override
             public void subscribe(Observer<? super String> observer) {
-                observer.onSubscribe(Disposables.empty());
+                observer.onSubscribe(Disposable.empty());
                 observer.onNext("one");
                 observer.onError(new Throwable("injected failure"));
                 observer.onNext("two");
@@ -77,7 +77,7 @@ public class ObservableOnErrorResumeNextTest extends RxJavaTest {
 
     @Test
     public void resumeNextWithAsyncExecution() {
-        final AtomicReference<Throwable> receivedException = new AtomicReference<Throwable>();
+        final AtomicReference<Throwable> receivedException = new AtomicReference<>();
         Subscription s = mock(Subscription.class);
         TestObservable w = new TestObservable(s, "one");
         Function<Throwable, Observable<String>> resume = new Function<Throwable, Observable<String>>() {
@@ -174,7 +174,7 @@ public class ObservableOnErrorResumeNextTest extends RxJavaTest {
 
         Observer<String> observer = TestHelper.mockObserver();
 
-        TestObserver<String> to = new TestObserver<String>(observer);
+        TestObserver<String> to = new TestObserver<>(observer);
         o.subscribe(to);
         to.awaitDone(5, TimeUnit.SECONDS);
 
@@ -199,7 +199,7 @@ public class ObservableOnErrorResumeNextTest extends RxJavaTest {
         @Override
         public void subscribe(final Observer<? super String> observer) {
             System.out.println("TestObservable subscribed to ...");
-            observer.onSubscribe(Disposables.empty());
+            observer.onSubscribe(Disposable.empty());
             t = new Thread(new Runnable() {
 
                 @Override
@@ -226,7 +226,7 @@ public class ObservableOnErrorResumeNextTest extends RxJavaTest {
 
     @Test
     public void backpressure() {
-        TestObserver<Integer> to = new TestObserver<Integer>();
+        TestObserver<Integer> to = new TestObserver<>();
         Observable.range(0, 100000)
                 .onErrorResumeNext(new Function<Throwable, Observable<Integer>>() {
 

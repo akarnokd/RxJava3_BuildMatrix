@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava3.internal.operators.maybe;
 
+import java.util.Objects;
 import java.util.concurrent.atomic.*;
 
 import io.reactivex.rxjava3.core.*;
@@ -20,7 +21,6 @@ import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.exceptions.Exceptions;
 import io.reactivex.rxjava3.functions.Function;
 import io.reactivex.rxjava3.internal.disposables.DisposableHelper;
-import io.reactivex.rxjava3.internal.functions.ObjectHelper;
 import io.reactivex.rxjava3.plugins.RxJavaPlugins;
 
 public final class MaybeZipArray<T, R> extends Maybe<R> {
@@ -40,11 +40,11 @@ public final class MaybeZipArray<T, R> extends Maybe<R> {
         int n = sources.length;
 
         if (n == 1) {
-            sources[0].subscribe(new MaybeMap.MapMaybeObserver<T, R>(observer, new SingletonArrayFunc()));
+            sources[0].subscribe(new MaybeMap.MapMaybeObserver<>(observer, new SingletonArrayFunc()));
             return;
         }
 
-        ZipCoordinator<T, R> parent = new ZipCoordinator<T, R>(observer, n, zipper);
+        ZipCoordinator<T, R> parent = new ZipCoordinator<>(observer, n, zipper);
 
         observer.onSubscribe(parent);
 
@@ -82,7 +82,7 @@ public final class MaybeZipArray<T, R> extends Maybe<R> {
             this.zipper = zipper;
             ZipMaybeObserver<T>[] o = new ZipMaybeObserver[n];
             for (int i = 0; i < n; i++) {
-                o[i] = new ZipMaybeObserver<T>(this, i);
+                o[i] = new ZipMaybeObserver<>(this, i);
             }
             this.observers = o;
             this.values = new Object[n];
@@ -108,7 +108,7 @@ public final class MaybeZipArray<T, R> extends Maybe<R> {
                 R v;
 
                 try {
-                    v = ObjectHelper.requireNonNull(zipper.apply(values), "The zipper returned a null value");
+                    v = Objects.requireNonNull(zipper.apply(values), "The zipper returned a null value");
                 } catch (Throwable ex) {
                     Exceptions.throwIfFatal(ex);
                     downstream.onError(ex);
@@ -190,7 +190,7 @@ public final class MaybeZipArray<T, R> extends Maybe<R> {
     final class SingletonArrayFunc implements Function<T, R> {
         @Override
         public R apply(T t) throws Throwable {
-            return ObjectHelper.requireNonNull(zipper.apply(new Object[] { t }), "The zipper returned a null value");
+            return Objects.requireNonNull(zipper.apply(new Object[] { t }), "The zipper returned a null value");
         }
     }
 }

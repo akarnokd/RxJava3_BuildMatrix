@@ -64,7 +64,7 @@ public class HalfSerializerObserverTest extends RxJavaTest {
 
         a[0] = observer;
 
-        observer.onSubscribe(Disposables.empty());
+        observer.onSubscribe(Disposable.empty());
 
         HalfSerializer.onNext(observer, 1, wip, error);
 
@@ -108,7 +108,7 @@ public class HalfSerializerObserverTest extends RxJavaTest {
 
         a[0] = observer;
 
-        observer.onSubscribe(Disposables.empty());
+        observer.onSubscribe(Disposable.empty());
 
         HalfSerializer.onNext(observer, 1, wip, error);
 
@@ -152,7 +152,7 @@ public class HalfSerializerObserverTest extends RxJavaTest {
 
         a[0] = observer;
 
-        observer.onSubscribe(Disposables.empty());
+        observer.onSubscribe(Disposable.empty());
 
         HalfSerializer.onNext(observer, 1, wip, error);
 
@@ -194,7 +194,7 @@ public class HalfSerializerObserverTest extends RxJavaTest {
 
         a[0] = observer;
 
-        observer.onSubscribe(Disposables.empty());
+        observer.onSubscribe(Disposable.empty());
 
         HalfSerializer.onError(observer, new TestException(), wip, error);
 
@@ -208,8 +208,8 @@ public class HalfSerializerObserverTest extends RxJavaTest {
             final AtomicInteger wip = new AtomicInteger();
             final AtomicThrowable error = new AtomicThrowable();
 
-            final TestObserver<Integer> to = new TestObserver<Integer>();
-            to.onSubscribe(Disposables.empty());
+            final TestObserver<Integer> to = new TestObserver<>();
+            to.onSubscribe(Disposable.empty());
 
             Runnable r1 = new Runnable() {
                 @Override
@@ -240,9 +240,9 @@ public class HalfSerializerObserverTest extends RxJavaTest {
             final AtomicInteger wip = new AtomicInteger();
             final AtomicThrowable error = new AtomicThrowable();
 
-            final TestObserverEx<Integer> to = new TestObserverEx<Integer>();
+            final TestObserverEx<Integer> to = new TestObserverEx<>();
 
-            to.onSubscribe(Disposables.empty());
+            to.onSubscribe(Disposable.empty());
 
             final TestException ex = new TestException();
 

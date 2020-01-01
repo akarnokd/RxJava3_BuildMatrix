@@ -21,10 +21,10 @@ import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import io.reactivex.rxjava3.disposables.Disposable;
 import org.junit.*;
 
 import io.reactivex.rxjava3.core.*;
-import io.reactivex.rxjava3.disposables.Disposables;
 import io.reactivex.rxjava3.exceptions.*;
 import io.reactivex.rxjava3.functions.*;
 import io.reactivex.rxjava3.internal.functions.Functions;
@@ -202,7 +202,7 @@ public class ObservableDoOnEachTest extends RxJavaTest {
 
     @Test
     public void onErrorThrows() {
-        TestObserverEx<Object> to = new TestObserverEx<Object>();
+        TestObserverEx<Object> to = new TestObserverEx<>();
 
         Observable.error(new TestException())
         .doOnError(new Consumer<Throwable>() {
@@ -232,7 +232,7 @@ public class ObservableDoOnEachTest extends RxJavaTest {
             Observable.wrap(new ObservableSource<Object>() {
                 @Override
                 public void subscribe(Observer<? super Object> observer) {
-                    observer.onSubscribe(Disposables.empty());
+                    observer.onSubscribe(Disposable.empty());
                     observer.onNext(1);
                     observer.onNext(2);
                     observer.onError(new IOException());
@@ -262,7 +262,7 @@ public class ObservableDoOnEachTest extends RxJavaTest {
             Observable.wrap(new ObservableSource<Object>() {
                 @Override
                 public void subscribe(Observer<? super Object> observer) {
-                    observer.onSubscribe(Disposables.empty());
+                    observer.onSubscribe(Disposable.empty());
                     observer.onError(new TestException());
                 }
             })
@@ -289,7 +289,7 @@ public class ObservableDoOnEachTest extends RxJavaTest {
             Observable.wrap(new ObservableSource<Object>() {
                 @Override
                 public void subscribe(Observer<? super Object> observer) {
-                    observer.onSubscribe(Disposables.empty());
+                    observer.onSubscribe(Disposable.empty());
                     observer.onComplete();
                 }
             })
@@ -313,7 +313,7 @@ public class ObservableDoOnEachTest extends RxJavaTest {
         Observable.wrap(new ObservableSource<Object>() {
             @Override
             public void subscribe(Observer<? super Object> observer) {
-                observer.onSubscribe(Disposables.empty());
+                observer.onSubscribe(Disposable.empty());
                 observer.onComplete();
             }
         })
@@ -335,7 +335,7 @@ public class ObservableDoOnEachTest extends RxJavaTest {
             Observable.wrap(new ObservableSource<Object>() {
                 @Override
                 public void subscribe(Observer<? super Object> observer) {
-                    observer.onSubscribe(Disposables.empty());
+                    observer.onSubscribe(Disposable.empty());
                     observer.onNext(1);
                     observer.onNext(2);
                     observer.onError(new IOException());
@@ -366,7 +366,7 @@ public class ObservableDoOnEachTest extends RxJavaTest {
             Observable.wrap(new ObservableSource<Object>() {
                 @Override
                 public void subscribe(Observer<? super Object> observer) {
-                    observer.onSubscribe(Disposables.empty());
+                    observer.onSubscribe(Disposable.empty());
                     observer.onError(new TestException());
                 }
             })
@@ -410,7 +410,7 @@ public class ObservableDoOnEachTest extends RxJavaTest {
             Observable.wrap(new ObservableSource<Object>() {
                 @Override
                 public void subscribe(Observer<? super Object> observer) {
-                    observer.onSubscribe(Disposables.empty());
+                    observer.onSubscribe(Disposable.empty());
                     observer.onComplete();
                 }
             })
@@ -435,7 +435,7 @@ public class ObservableDoOnEachTest extends RxJavaTest {
         Observable.wrap(new ObservableSource<Object>() {
             @Override
             public void subscribe(Observer<? super Object> observer) {
-                observer.onSubscribe(Disposables.empty());
+                observer.onSubscribe(Disposable.empty());
                 observer.onComplete();
             }
         })
@@ -472,7 +472,7 @@ public class ObservableDoOnEachTest extends RxJavaTest {
     @Test
     @Ignore("Fusion not supported yet") // TODO decide/implement fusion
     public void fused() {
-        TestObserverEx<Integer> to = new TestObserverEx<Integer>(QueueFuseable.ANY);
+        TestObserverEx<Integer> to = new TestObserverEx<>(QueueFuseable.ANY);
 
         final int[] call = { 0, 0 };
 
@@ -502,7 +502,7 @@ public class ObservableDoOnEachTest extends RxJavaTest {
     @Test
     @Ignore("Fusion not supported yet") // TODO decide/implement fusion
     public void fusedOnErrorCrash() {
-        TestObserverEx<Integer> to = new TestObserverEx<Integer>(QueueFuseable.ANY);
+        TestObserverEx<Integer> to = new TestObserverEx<>(QueueFuseable.ANY);
 
         final int[] call = { 0 };
 
@@ -531,7 +531,7 @@ public class ObservableDoOnEachTest extends RxJavaTest {
     @Test
     @Ignore("Fusion not supported yet") // TODO decide/implement fusion
     public void fusedConditional() {
-        TestObserverEx<Integer> to = new TestObserverEx<Integer>(QueueFuseable.ANY);
+        TestObserverEx<Integer> to = new TestObserverEx<>(QueueFuseable.ANY);
 
         final int[] call = { 0, 0 };
 
@@ -562,7 +562,7 @@ public class ObservableDoOnEachTest extends RxJavaTest {
     @Test
     @Ignore("Fusion not supported yet") // TODO decide/implement fusion
     public void fusedOnErrorCrashConditional() {
-        TestObserverEx<Integer> to = new TestObserverEx<Integer>(QueueFuseable.ANY);
+        TestObserverEx<Integer> to = new TestObserverEx<>(QueueFuseable.ANY);
 
         final int[] call = { 0 };
 
@@ -592,13 +592,13 @@ public class ObservableDoOnEachTest extends RxJavaTest {
     @Test
     @Ignore("Fusion not supported yet") // TODO decide/implement fusion
     public void fusedAsync() {
-        TestObserverEx<Integer> to = new TestObserverEx<Integer>(QueueFuseable.ANY);
+        TestObserverEx<Integer> to = new TestObserverEx<>(QueueFuseable.ANY);
 
         final int[] call = { 0, 0 };
 
-        UnicastSubject<Integer> up = UnicastSubject.create();
+        UnicastSubject<Integer> us = UnicastSubject.create();
 
-        up
+        us
         .doOnNext(new Consumer<Integer>() {
             @Override
             public void accept(Integer v) throws Exception {
@@ -613,7 +613,7 @@ public class ObservableDoOnEachTest extends RxJavaTest {
         })
         .subscribe(to);
 
-        TestHelper.emit(up, 1, 2, 3, 4, 5);
+        TestHelper.emit(us, 1, 2, 3, 4, 5);
 
         to.assertFuseable()
         .assertFusionMode(QueueFuseable.ASYNC)
@@ -626,13 +626,13 @@ public class ObservableDoOnEachTest extends RxJavaTest {
     @Test
     @Ignore("Fusion not supported yet") // TODO decide/implement fusion
     public void fusedAsyncConditional() {
-        TestObserverEx<Integer> to = new TestObserverEx<Integer>(QueueFuseable.ANY);
+        TestObserverEx<Integer> to = new TestObserverEx<>(QueueFuseable.ANY);
 
         final int[] call = { 0, 0 };
 
-        UnicastSubject<Integer> up = UnicastSubject.create();
+        UnicastSubject<Integer> us = UnicastSubject.create();
 
-        up
+        us
         .doOnNext(new Consumer<Integer>() {
             @Override
             public void accept(Integer v) throws Exception {
@@ -648,7 +648,7 @@ public class ObservableDoOnEachTest extends RxJavaTest {
         .filter(Functions.alwaysTrue())
         .subscribe(to);
 
-        TestHelper.emit(up, 1, 2, 3, 4, 5);
+        TestHelper.emit(us, 1, 2, 3, 4, 5);
 
         to.assertFuseable()
         .assertFusionMode(QueueFuseable.ASYNC)
@@ -661,13 +661,13 @@ public class ObservableDoOnEachTest extends RxJavaTest {
     @Test
     @Ignore("Fusion not supported yet") // TODO decide/implement fusion
     public void fusedAsyncConditional2() {
-        TestObserverEx<Integer> to = new TestObserverEx<Integer>(QueueFuseable.ANY);
+        TestObserverEx<Integer> to = new TestObserverEx<>(QueueFuseable.ANY);
 
         final int[] call = { 0, 0 };
 
-        UnicastSubject<Integer> up = UnicastSubject.create();
+        UnicastSubject<Integer> us = UnicastSubject.create();
 
-        up.hide()
+        us.hide()
         .doOnNext(new Consumer<Integer>() {
             @Override
             public void accept(Integer v) throws Exception {
@@ -683,7 +683,7 @@ public class ObservableDoOnEachTest extends RxJavaTest {
         .filter(Functions.alwaysTrue())
         .subscribe(to);
 
-        TestHelper.emit(up, 1, 2, 3, 4, 5);
+        TestHelper.emit(us, 1, 2, 3, 4, 5);
 
         to.assertFuseable()
         .assertFusionMode(QueueFuseable.NONE)
@@ -695,7 +695,7 @@ public class ObservableDoOnEachTest extends RxJavaTest {
 
     @Test
     public void dispose() {
-        TestHelper.checkDisposed(Observable.just(1).doOnEach(new TestObserver<Integer>()));
+        TestHelper.checkDisposed(Observable.just(1).doOnEach(new TestObserver<>()));
     }
 
     @Test
@@ -703,7 +703,7 @@ public class ObservableDoOnEachTest extends RxJavaTest {
         TestHelper.checkDoubleOnSubscribeObservable(new Function<Observable<Object>, ObservableSource<Object>>() {
             @Override
             public ObservableSource<Object> apply(Observable<Object> o) throws Exception {
-                return o.doOnEach(new TestObserver<Object>());
+                return o.doOnEach(new TestObserver<>());
             }
         });
     }

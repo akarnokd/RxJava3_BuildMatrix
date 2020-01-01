@@ -13,10 +13,10 @@
 
 package io.reactivex.rxjava3.internal.operators.observable;
 
+import io.reactivex.rxjava3.disposables.Disposable;
 import org.junit.Test;
 
 import io.reactivex.rxjava3.core.*;
-import io.reactivex.rxjava3.disposables.Disposables;
 import io.reactivex.rxjava3.exceptions.*;
 import io.reactivex.rxjava3.functions.*;
 import io.reactivex.rxjava3.internal.functions.Functions;
@@ -27,7 +27,7 @@ import io.reactivex.rxjava3.testsupport.*;
 public class ObservableMapNotificationTest extends RxJavaTest {
     @Test
     public void just() {
-        TestObserver<Object> to = new TestObserver<Object>();
+        TestObserver<Object> to = new TestObserver<>();
         Observable.just(1)
         .flatMap(
                 new Function<Integer, Observable<Object>>() {
@@ -67,7 +67,7 @@ public class ObservableMapNotificationTest extends RxJavaTest {
                         Functions.justFunction(Observable.just(2)),
                         Functions.justSupplier(Observable.just(3))
                 );
-                mn.onSubscribe(Disposables.empty());
+                mn.onSubscribe(Disposable.empty());
             }
         });
     }

@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava3.internal.operators.flowable;
 
+import java.util.Objects;
 import java.util.concurrent.*;
 
 import org.reactivestreams.*;
@@ -41,9 +42,9 @@ public final class FlowableBlockingSubscribe {
      * @param <T> the value type
      */
     public static <T> void subscribe(Publisher<? extends T> o, Subscriber<? super T> subscriber) {
-        final BlockingQueue<Object> queue = new LinkedBlockingQueue<Object>();
+        final BlockingQueue<Object> queue = new LinkedBlockingQueue<>();
 
-        BlockingSubscriber<T> bs = new BlockingSubscriber<T>(queue);
+        BlockingSubscriber<T> bs = new BlockingSubscriber<>(queue);
 
         o.subscribe(bs);
 
@@ -81,7 +82,7 @@ public final class FlowableBlockingSubscribe {
      */
     public static <T> void subscribe(Publisher<? extends T> o) {
         BlockingIgnoringReceiver callback = new BlockingIgnoringReceiver();
-        LambdaSubscriber<T> ls = new LambdaSubscriber<T>(Functions.emptyConsumer(),
+        LambdaSubscriber<T> ls = new LambdaSubscriber<>(Functions.emptyConsumer(),
         callback, callback, Functions.REQUEST_MAX);
 
         o.subscribe(ls);
@@ -103,9 +104,9 @@ public final class FlowableBlockingSubscribe {
      */
     public static <T> void subscribe(Publisher<? extends T> o, final Consumer<? super T> onNext,
             final Consumer<? super Throwable> onError, final Action onComplete) {
-        ObjectHelper.requireNonNull(onNext, "onNext is null");
-        ObjectHelper.requireNonNull(onError, "onError is null");
-        ObjectHelper.requireNonNull(onComplete, "onComplete is null");
+        Objects.requireNonNull(onNext, "onNext is null");
+        Objects.requireNonNull(onError, "onError is null");
+        Objects.requireNonNull(onComplete, "onComplete is null");
         subscribe(o, new LambdaSubscriber<T>(onNext, onError, onComplete, Functions.REQUEST_MAX));
     }
 
@@ -120,9 +121,9 @@ public final class FlowableBlockingSubscribe {
      */
     public static <T> void subscribe(Publisher<? extends T> o, final Consumer<? super T> onNext,
         final Consumer<? super Throwable> onError, final Action onComplete, int bufferSize) {
-        ObjectHelper.requireNonNull(onNext, "onNext is null");
-        ObjectHelper.requireNonNull(onError, "onError is null");
-        ObjectHelper.requireNonNull(onComplete, "onComplete is null");
+        Objects.requireNonNull(onNext, "onNext is null");
+        Objects.requireNonNull(onError, "onError is null");
+        Objects.requireNonNull(onComplete, "onComplete is null");
         ObjectHelper.verifyPositive(bufferSize, "number > 0 required");
         subscribe(o, new BoundedSubscriber<T>(onNext, onError, onComplete, Functions.boundedConsumer(bufferSize),
                 bufferSize));

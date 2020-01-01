@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava3.internal.operators.mixed;
 
+import java.util.Objects;
 import java.util.concurrent.atomic.*;
 
 import io.reactivex.rxjava3.core.*;
@@ -20,7 +21,6 @@ import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.exceptions.Exceptions;
 import io.reactivex.rxjava3.functions.Function;
 import io.reactivex.rxjava3.internal.disposables.DisposableHelper;
-import io.reactivex.rxjava3.internal.functions.ObjectHelper;
 import io.reactivex.rxjava3.internal.fuseable.SimplePlainQueue;
 import io.reactivex.rxjava3.internal.queue.SpscLinkedArrayQueue;
 import io.reactivex.rxjava3.internal.util.*;
@@ -56,7 +56,7 @@ public final class ObservableConcatMapMaybe<T, R> extends Observable<R> {
     @Override
     protected void subscribeActual(Observer<? super R> observer) {
         if (!ScalarXMapZHelper.tryAsMaybe(source, mapper, observer)) {
-            source.subscribe(new ConcatMapMaybeMainObserver<T, R>(observer, mapper, prefetch, errorMode));
+            source.subscribe(new ConcatMapMaybeMainObserver<>(observer, mapper, prefetch, errorMode));
         }
     }
 
@@ -102,8 +102,8 @@ public final class ObservableConcatMapMaybe<T, R> extends Observable<R> {
             this.mapper = mapper;
             this.errorMode = errorMode;
             this.errors = new AtomicThrowable();
-            this.inner = new ConcatMapMaybeObserver<R>(this);
-            this.queue = new SpscLinkedArrayQueue<T>(prefetch);
+            this.inner = new ConcatMapMaybeObserver<>(this);
+            this.queue = new SpscLinkedArrayQueue<>(prefetch);
         }
 
         @Override
@@ -224,7 +224,7 @@ public final class ObservableConcatMapMaybe<T, R> extends Observable<R> {
                         MaybeSource<? extends R> ms;
 
                         try {
-                            ms = ObjectHelper.requireNonNull(mapper.apply(v), "The mapper returned a null MaybeSource");
+                            ms = Objects.requireNonNull(mapper.apply(v), "The mapper returned a null MaybeSource");
                         } catch (Throwable ex) {
                             Exceptions.throwIfFatal(ex);
                             upstream.dispose();

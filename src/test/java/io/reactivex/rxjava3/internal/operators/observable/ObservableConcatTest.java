@@ -63,7 +63,7 @@ public class ObservableConcatTest extends RxJavaTest {
 
         final Observable<String> odds = Observable.fromArray(o);
         final Observable<String> even = Observable.fromArray(e);
-        final List<Observable<String>> list = new ArrayList<Observable<String>>();
+        final List<Observable<String>> list = new ArrayList<>();
         list.add(odds);
         list.add(even);
         Observable<String> concat = Observable.concat(Observable.fromIterable(list));
@@ -86,7 +86,7 @@ public class ObservableConcatTest extends RxJavaTest {
 
             @Override
             public void subscribe(Observer<? super Observable<String>> observer) {
-                observer.onSubscribe(Disposables.empty());
+                observer.onSubscribe(Disposable.empty());
                 // simulate what would happen in an Observable
                 observer.onNext(odds);
                 observer.onNext(even);
@@ -108,8 +108,8 @@ public class ObservableConcatTest extends RxJavaTest {
     public void simpleAsyncConcat() {
         Observer<String> observer = TestHelper.mockObserver();
 
-        TestObservable<String> o1 = new TestObservable<String>("one", "two", "three");
-        TestObservable<String> o2 = new TestObservable<String>("four", "five", "six");
+        TestObservable<String> o1 = new TestObservable<>("one", "two", "three");
+        TestObservable<String> o2 = new TestObservable<>("four", "five", "six");
 
         Observable.concat(Observable.unsafeCreate(o1), Observable.unsafeCreate(o2)).subscribe(observer);
 
@@ -148,12 +148,12 @@ public class ObservableConcatTest extends RxJavaTest {
     public void nestedAsyncConcat() throws InterruptedException {
         Observer<String> observer = TestHelper.mockObserver();
 
-        final TestObservable<String> o1 = new TestObservable<String>("one", "two", "three");
-        final TestObservable<String> o2 = new TestObservable<String>("four", "five", "six");
-        final TestObservable<String> o3 = new TestObservable<String>("seven", "eight", "nine");
+        final TestObservable<String> o1 = new TestObservable<>("one", "two", "three");
+        final TestObservable<String> o2 = new TestObservable<>("four", "five", "six");
+        final TestObservable<String> o3 = new TestObservable<>("seven", "eight", "nine");
         final CountDownLatch allowThird = new CountDownLatch(1);
 
-        final AtomicReference<Thread> parent = new AtomicReference<Thread>();
+        final AtomicReference<Thread> parent = new AtomicReference<>();
         final CountDownLatch parentHasStarted = new CountDownLatch(1);
         final CountDownLatch parentHasFinished = new CountDownLatch(1);
 
@@ -161,7 +161,7 @@ public class ObservableConcatTest extends RxJavaTest {
 
             @Override
             public void subscribe(final Observer<? super Observable<String>> observer) {
-                final Disposable d = Disposables.empty();
+                final Disposable d = Disposable.empty();
                 observer.onSubscribe(d);
                 parent.set(new Thread(new Runnable() {
 
@@ -271,8 +271,8 @@ public class ObservableConcatTest extends RxJavaTest {
         final Observable<String> even = Observable.fromArray(e);
         final CountDownLatch callOnce = new CountDownLatch(1);
         final CountDownLatch okToContinue = new CountDownLatch(1);
-        @SuppressWarnings("unchecked")
-        TestObservable<Observable<String>> observableOfObservables = new TestObservable<Observable<String>>(callOnce, okToContinue, odds, even);
+
+        TestObservable<Observable<String>> observableOfObservables = new TestObservable<>(callOnce, okToContinue, odds, even);
         Observable<String> concatF = Observable.concat(Observable.unsafeCreate(observableOfObservables));
         concatF.subscribe(observer);
         try {
@@ -304,14 +304,13 @@ public class ObservableConcatTest extends RxJavaTest {
 
     @Test
     public void concatConcurrentWithInfinity() {
-        final TestObservable<String> w1 = new TestObservable<String>("one", "two", "three");
+        final TestObservable<String> w1 = new TestObservable<>("one", "two", "three");
         //This Observable will send "hello" MAX_VALUE time.
-        final TestObservable<String> w2 = new TestObservable<String>("hello", Integer.MAX_VALUE);
+        final TestObservable<String> w2 = new TestObservable<>("hello", Integer.MAX_VALUE);
 
         Observer<String> observer = TestHelper.mockObserver();
 
-        @SuppressWarnings("unchecked")
-        TestObservable<Observable<String>> observableOfObservables = new TestObservable<Observable<String>>(Observable.unsafeCreate(w1), Observable.unsafeCreate(w2));
+        TestObservable<Observable<String>> observableOfObservables = new TestObservable<>(Observable.unsafeCreate(w1), Observable.unsafeCreate(w2));
         Observable<String> concatF = Observable.concat(Observable.unsafeCreate(observableOfObservables));
 
         concatF.take(50).subscribe(observer);
@@ -339,8 +338,8 @@ public class ObservableConcatTest extends RxJavaTest {
         final CountDownLatch okToContinueW1 = new CountDownLatch(1);
         final CountDownLatch okToContinueW2 = new CountDownLatch(1);
 
-        final TestObservable<String> w1 = new TestObservable<String>(null, okToContinueW1, "one", "two", "three");
-        final TestObservable<String> w2 = new TestObservable<String>(null, okToContinueW2, "four", "five", "six");
+        final TestObservable<String> w1 = new TestObservable<>(null, okToContinueW1, "one", "two", "three");
+        final TestObservable<String> w2 = new TestObservable<>(null, okToContinueW2, "four", "five", "six");
 
         Observer<String> observer = TestHelper.mockObserver();
 
@@ -348,7 +347,7 @@ public class ObservableConcatTest extends RxJavaTest {
 
             @Override
             public void subscribe(Observer<? super Observable<String>> observer) {
-                observer.onSubscribe(Disposables.empty());
+                observer.onSubscribe(Disposable.empty());
                 // simulate what would happen in an Observable
                 observer.onNext(Observable.unsafeCreate(w1));
                 observer.onNext(Observable.unsafeCreate(w2));
@@ -390,11 +389,11 @@ public class ObservableConcatTest extends RxJavaTest {
     public void concatUnsubscribe() {
         final CountDownLatch callOnce = new CountDownLatch(1);
         final CountDownLatch okToContinue = new CountDownLatch(1);
-        final TestObservable<String> w1 = new TestObservable<String>("one", "two", "three");
-        final TestObservable<String> w2 = new TestObservable<String>(callOnce, okToContinue, "four", "five", "six");
+        final TestObservable<String> w1 = new TestObservable<>("one", "two", "three");
+        final TestObservable<String> w2 = new TestObservable<>(callOnce, okToContinue, "four", "five", "six");
 
         Observer<String> observer = TestHelper.mockObserver();
-        TestObserver<String> to = new TestObserver<String>(observer);
+        TestObserver<String> to = new TestObserver<>(observer);
 
         final Observable<String> concat = Observable.concat(Observable.unsafeCreate(w1), Observable.unsafeCreate(w2));
 
@@ -432,14 +431,13 @@ public class ObservableConcatTest extends RxJavaTest {
     public void concatUnsubscribeConcurrent() {
         final CountDownLatch callOnce = new CountDownLatch(1);
         final CountDownLatch okToContinue = new CountDownLatch(1);
-        final TestObservable<String> w1 = new TestObservable<String>("one", "two", "three");
-        final TestObservable<String> w2 = new TestObservable<String>(callOnce, okToContinue, "four", "five", "six");
+        final TestObservable<String> w1 = new TestObservable<>("one", "two", "three");
+        final TestObservable<String> w2 = new TestObservable<>(callOnce, okToContinue, "four", "five", "six");
 
         Observer<String> observer = TestHelper.mockObserver();
-        TestObserver<String> to = new TestObserver<String>(observer);
+        TestObserver<String> to = new TestObserver<>(observer);
 
-        @SuppressWarnings("unchecked")
-        TestObservable<Observable<String>> observableOfObservables = new TestObservable<Observable<String>>(Observable.unsafeCreate(w1), Observable.unsafeCreate(w2));
+        TestObservable<Observable<String>> observableOfObservables = new TestObservable<>(Observable.unsafeCreate(w1), Observable.unsafeCreate(w2));
         Observable<String> concatF = Observable.concat(Observable.unsafeCreate(observableOfObservables));
 
         concatF.subscribe(to);
@@ -493,10 +491,12 @@ public class ObservableConcatTest extends RxJavaTest {
         private final T seed;
         private final int size;
 
+        @SafeVarargs
         TestObservable(T... values) {
             this(null, null, values);
         }
 
+        @SafeVarargs
         TestObservable(CountDownLatch once, CountDownLatch okToContinue, T... values) {
             this.values = Arrays.asList(values);
             this.size = this.values.size();
@@ -617,7 +617,7 @@ public class ObservableConcatTest extends RxJavaTest {
 
         result.subscribe(o);
 
-        List<Integer> list = new ArrayList<Integer>(n);
+        List<Integer> list = new ArrayList<>(n);
         for (int i = 0; i < n; i++) {
             list.add(i);
         }
@@ -642,7 +642,7 @@ public class ObservableConcatTest extends RxJavaTest {
 
         result.subscribe(o);
 
-        List<Integer> list = new ArrayList<Integer>(n);
+        List<Integer> list = new ArrayList<>(n);
         for (int i = 0; i < n / 2; i++) {
             list.add(i);
         }
@@ -666,7 +666,7 @@ public class ObservableConcatTest extends RxJavaTest {
 
             @Override
             public void subscribe(Observer<? super String> observer) {
-                observer.onSubscribe(Disposables.empty());
+                observer.onSubscribe(Disposable.empty());
                 observer.onNext("hello");
                 observer.onComplete();
                 observer.onComplete();
@@ -674,7 +674,7 @@ public class ObservableConcatTest extends RxJavaTest {
 
         });
 
-        TestObserverEx<String> to = new TestObserverEx<String>();
+        TestObserverEx<String> to = new TestObserverEx<>();
         Observable.concat(o, o).subscribe(to);
         to.awaitDone(500, TimeUnit.MILLISECONDS);
         to.assertTerminated();
@@ -745,7 +745,7 @@ public class ObservableConcatTest extends RxJavaTest {
             if (i % 1000 == 0) {
                 System.out.println("concatMapRangeAsyncLoop > " + i);
             }
-            TestObserverEx<Integer> to = new TestObserverEx<Integer>();
+            TestObserverEx<Integer> to = new TestObserverEx<>();
 
             Observable.range(0, 1000)
             .concatMap(new Function<Integer, Observable<Integer>>() {
@@ -780,7 +780,6 @@ public class ObservableConcatTest extends RxJavaTest {
         .assertResult(1, 2, 3, 4);
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void concatArrayDelayError() {
         Observable.concatArrayDelayError(Observable.just(1), Observable.just(2),
@@ -789,7 +788,6 @@ public class ObservableConcatTest extends RxJavaTest {
         .assertResult(1, 2, 3, 4);
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void concatArrayDelayErrorWithError() {
         Observable.concatArrayDelayError(Observable.just(1), Observable.just(2),
@@ -799,7 +797,6 @@ public class ObservableConcatTest extends RxJavaTest {
         .assertFailure(TestException.class, 1, 2, 3, 4);
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void concatIterableDelayError() {
         Observable.concatDelayError(
@@ -809,7 +806,6 @@ public class ObservableConcatTest extends RxJavaTest {
         .assertResult(1, 2, 3, 4);
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void concatIterableDelayErrorWithError() {
         Observable.concatDelayError(
@@ -888,13 +884,11 @@ public class ObservableConcatTest extends RxJavaTest {
         .assertResult(1, 2, 3, 4, 5, 1, 2, 3, 4, 5);
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void emptyArray() {
         assertSame(Observable.empty(), Observable.concatArrayDelayError());
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void singleElementArray() {
         assertSame(Observable.never(), Observable.concatArrayDelayError(Observable.never()));
@@ -925,13 +919,11 @@ public class ObservableConcatTest extends RxJavaTest {
 
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void concatArrayEmpty() {
         assertSame(Observable.empty(), Observable.concatArray());
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void concatArraySingleElement() {
         assertSame(Observable.never(), Observable.concatArray(Observable.never()));
@@ -962,7 +954,6 @@ public class ObservableConcatTest extends RxJavaTest {
 
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void noSubsequentSubscription() {
         final int[] calls = { 0 };
@@ -983,7 +974,6 @@ public class ObservableConcatTest extends RxJavaTest {
         assertEquals(1, calls[0]);
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void noSubsequentSubscriptionDelayError() {
         final int[] calls = { 0 };
@@ -1004,7 +994,6 @@ public class ObservableConcatTest extends RxJavaTest {
         assertEquals(1, calls[0]);
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void noSubsequentSubscriptionIterable() {
         final int[] calls = { 0 };
@@ -1025,7 +1014,6 @@ public class ObservableConcatTest extends RxJavaTest {
         assertEquals(1, calls[0]);
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void noSubsequentSubscriptionDelayErrorIterable() {
         final int[] calls = { 0 };
@@ -1075,7 +1063,6 @@ public class ObservableConcatTest extends RxJavaTest {
     }
 
     @Test
-    @SuppressWarnings("unchecked")
     public void concatReportsDisposedOnCompleteDelayError() {
         final Disposable[] disposable = { null };
 
@@ -1132,7 +1119,6 @@ public class ObservableConcatTest extends RxJavaTest {
     }
 
     @Test
-    @SuppressWarnings("unchecked")
     public void concatReportsDisposedOnErrorDelayError() {
         final Disposable[] disposable = { null };
 
@@ -1160,7 +1146,6 @@ public class ObservableConcatTest extends RxJavaTest {
         assertTrue(disposable[0].isDisposed());
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void noCancelPreviousArray() {
         final AtomicInteger counter = new AtomicInteger();
@@ -1179,7 +1164,6 @@ public class ObservableConcatTest extends RxJavaTest {
         assertEquals(0, counter.get());
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void noCancelPreviousIterable() {
         final AtomicInteger counter = new AtomicInteger();

@@ -62,8 +62,7 @@ public final class CompositeException extends RuntimeException {
      * @throws IllegalArgumentException if <code>errors</code> is empty.
      */
     public CompositeException(@NonNull Iterable<? extends Throwable> errors) {
-        Set<Throwable> deDupedExceptions = new LinkedHashSet<Throwable>();
-        List<Throwable> localExceptions = new ArrayList<Throwable>();
+        Set<Throwable> deDupedExceptions = new LinkedHashSet<>();
         if (errors != null) {
             for (Throwable ex : errors) {
                 if (ex instanceof CompositeException) {
@@ -81,7 +80,7 @@ public final class CompositeException extends RuntimeException {
         if (deDupedExceptions.isEmpty()) {
             throw new IllegalArgumentException("errors is empty");
         }
-        localExceptions.addAll(deDupedExceptions);
+        List<Throwable> localExceptions = new ArrayList<>(deDupedExceptions);
         this.exceptions = Collections.unmodifiableList(localExceptions);
         this.message = exceptions.size() + " exceptions occurred. ";
     }
@@ -108,7 +107,7 @@ public final class CompositeException extends RuntimeException {
         if (cause == null) {
             String separator = System.getProperty("line.separator");
             if (exceptions.size() > 1) {
-                Map<Throwable, Boolean> seenCauses = new IdentityHashMap<Throwable, Boolean>();
+                Map<Throwable, Boolean> seenCauses = new IdentityHashMap<>();
 
                 StringBuilder aggregateMessage = new StringBuilder();
                 aggregateMessage.append("Multiple exceptions (").append(exceptions.size()).append(")").append(separator);

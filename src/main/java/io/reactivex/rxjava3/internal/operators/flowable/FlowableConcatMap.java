@@ -12,6 +12,7 @@
  */
 package io.reactivex.rxjava3.internal.operators.flowable;
 
+import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.reactivestreams.*;
@@ -19,7 +20,6 @@ import org.reactivestreams.*;
 import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.exceptions.Exceptions;
 import io.reactivex.rxjava3.functions.*;
-import io.reactivex.rxjava3.internal.functions.ObjectHelper;
 import io.reactivex.rxjava3.internal.fuseable.*;
 import io.reactivex.rxjava3.internal.queue.SpscArrayQueue;
 import io.reactivex.rxjava3.internal.subscriptions.*;
@@ -46,11 +46,11 @@ public final class FlowableConcatMap<T, R> extends AbstractFlowableWithUpstream<
             int prefetch, ErrorMode errorMode) {
         switch (errorMode) {
         case BOUNDARY:
-            return new ConcatMapDelayed<T, R>(s, mapper, prefetch, false);
+            return new ConcatMapDelayed<>(s, mapper, prefetch, false);
         case END:
-            return new ConcatMapDelayed<T, R>(s, mapper, prefetch, true);
+            return new ConcatMapDelayed<>(s, mapper, prefetch, true);
         default:
-            return new ConcatMapImmediate<T, R>(s, mapper, prefetch);
+            return new ConcatMapImmediate<>(s, mapper, prefetch);
         }
     }
 
@@ -100,7 +100,7 @@ public final class FlowableConcatMap<T, R> extends AbstractFlowableWithUpstream<
             this.mapper = mapper;
             this.prefetch = prefetch;
             this.limit = prefetch - (prefetch >> 2);
-            this.inner = new ConcatMapInner<R>(this);
+            this.inner = new ConcatMapInner<>(this);
             this.errors = new AtomicThrowable();
         }
 
@@ -133,7 +133,7 @@ public final class FlowableConcatMap<T, R> extends AbstractFlowableWithUpstream<
                     }
                 }
 
-                queue = new SpscArrayQueue<T>(prefetch);
+                queue = new SpscArrayQueue<>(prefetch);
 
                 subscribeActual();
 
@@ -277,7 +277,7 @@ public final class FlowableConcatMap<T, R> extends AbstractFlowableWithUpstream<
                             Publisher<? extends R> p;
 
                             try {
-                                p = ObjectHelper.requireNonNull(mapper.apply(v), "The mapper returned a null Publisher");
+                                p = Objects.requireNonNull(mapper.apply(v), "The mapper returned a null Publisher");
                             } catch (Throwable e) {
                                 Exceptions.throwIfFatal(e);
 
@@ -328,7 +328,7 @@ public final class FlowableConcatMap<T, R> extends AbstractFlowableWithUpstream<
                                     continue;
                                 } else {
                                     active = true;
-                                    inner.setSubscription(new WeakScalarSubscription<R>(vr, inner));
+                                    inner.setSubscription(new WeakScalarSubscription<>(vr, inner));
                                 }
 
                             } else {
@@ -479,7 +479,7 @@ public final class FlowableConcatMap<T, R> extends AbstractFlowableWithUpstream<
                             Publisher<? extends R> p;
 
                             try {
-                                p = ObjectHelper.requireNonNull(mapper.apply(v), "The mapper returned a null Publisher");
+                                p = Objects.requireNonNull(mapper.apply(v), "The mapper returned a null Publisher");
                             } catch (Throwable e) {
                                 Exceptions.throwIfFatal(e);
 
@@ -527,7 +527,7 @@ public final class FlowableConcatMap<T, R> extends AbstractFlowableWithUpstream<
                                     continue;
                                 } else {
                                     active = true;
-                                    inner.setSubscription(new WeakScalarSubscription<R>(vr, inner));
+                                    inner.setSubscription(new WeakScalarSubscription<>(vr, inner));
                                 }
                             } else {
                                 active = true;

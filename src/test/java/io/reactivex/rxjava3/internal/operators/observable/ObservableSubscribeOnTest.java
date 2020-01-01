@@ -36,14 +36,14 @@ public class ObservableSubscribeOnTest extends RxJavaTest {
         final CountDownLatch latch = new CountDownLatch(1);
         final CountDownLatch doneLatch = new CountDownLatch(1);
 
-        TestObserver<Integer> to = new TestObserver<Integer>();
+        TestObserver<Integer> to = new TestObserver<>();
 
         Observable
         .unsafeCreate(new ObservableSource<Integer>() {
             @Override
             public void subscribe(
                     final Observer<? super Integer> observer) {
-                observer.onSubscribe(Disposables.empty());
+                observer.onSubscribe(Disposable.empty());
                 scheduled.countDown();
                 try {
                     try {
@@ -74,12 +74,12 @@ public class ObservableSubscribeOnTest extends RxJavaTest {
 
     @Test
     public void onError() {
-        TestObserverEx<String> to = new TestObserverEx<String>();
+        TestObserverEx<String> to = new TestObserverEx<>();
         Observable.unsafeCreate(new ObservableSource<String>() {
 
             @Override
             public void subscribe(Observer<? super String> observer) {
-                observer.onSubscribe(Disposables.empty());
+                observer.onSubscribe(Disposable.empty());
                 observer.onError(new RuntimeException("fail"));
             }
 
@@ -147,13 +147,13 @@ public class ObservableSubscribeOnTest extends RxJavaTest {
 
     @Test
     public void unsubscribeInfiniteStream() throws InterruptedException {
-        TestObserver<Integer> to = new TestObserver<Integer>();
+        TestObserver<Integer> to = new TestObserver<>();
         final AtomicInteger count = new AtomicInteger();
         Observable.unsafeCreate(new ObservableSource<Integer>() {
 
             @Override
             public void subscribe(Observer<? super Integer> sub) {
-                Disposable d = Disposables.empty();
+                Disposable d = Disposable.empty();
                 sub.onSubscribe(d);
                 for (int i = 1; !d.isDisposed(); i++) {
                     count.incrementAndGet();
@@ -174,7 +174,7 @@ public class ObservableSubscribeOnTest extends RxJavaTest {
     public void cancelBeforeActualSubscribe() {
         TestScheduler test = new TestScheduler();
 
-        TestObserverEx<Integer> to = new TestObserverEx<Integer>();
+        TestObserverEx<Integer> to = new TestObserverEx<>();
 
         Observable.just(1).hide()
                 .subscribeOn(test).subscribe(to);

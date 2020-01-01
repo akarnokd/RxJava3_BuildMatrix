@@ -209,7 +209,7 @@ public class ObservableUsingTest extends RxJavaTest {
         Supplier<Disposable> resourceFactory = new Supplier<Disposable>() {
             @Override
             public Disposable get() {
-                return Disposables.fromRunnable(unsubscribe);
+                return Disposable.fromRunnable(unsubscribe);
             }
         };
 
@@ -232,7 +232,7 @@ public class ObservableUsingTest extends RxJavaTest {
 
     @Test
     public void usingDisposesEagerlyBeforeCompletion() {
-        final List<String> events = new ArrayList<String>();
+        final List<String> events = new ArrayList<>();
         Supplier<Resource> resourceFactory = createResourceFactory(events);
         final Action completion = createOnCompletedAction(events);
         final Action unsub = createUnsubAction(events);
@@ -259,7 +259,7 @@ public class ObservableUsingTest extends RxJavaTest {
 
     @Test
     public void usingDoesNotDisposesEagerlyBeforeCompletion() {
-        final List<String> events = new ArrayList<String>();
+        final List<String> events = new ArrayList<>();
         Supplier<Resource> resourceFactory = createResourceFactory(events);
         final Action completion = createOnCompletedAction(events);
         final Action unsub = createUnsubAction(events);
@@ -286,7 +286,7 @@ public class ObservableUsingTest extends RxJavaTest {
 
     @Test
     public void usingDisposesEagerlyBeforeError() {
-        final List<String> events = new ArrayList<String>();
+        final List<String> events = new ArrayList<>();
         Supplier<Resource> resourceFactory = createResourceFactory(events);
         final Consumer<Throwable> onError = createOnErrorAction(events);
         final Action unsub = createUnsubAction(events);
@@ -314,7 +314,7 @@ public class ObservableUsingTest extends RxJavaTest {
 
     @Test
     public void usingDoesNotDisposesEagerlyBeforeError() {
-        final List<String> events = new ArrayList<String>();
+        final List<String> events = new ArrayList<>();
         final Supplier<Resource> resourceFactory = createResourceFactory(events);
         final Consumer<Throwable> onError = createOnErrorAction(events);
         final Action unsub = createUnsubAction(events);
@@ -533,12 +533,12 @@ public class ObservableUsingTest extends RxJavaTest {
 
     @Test
     public void eagerDisposedOnComplete() {
-        final TestObserver<Integer> to = new TestObserver<Integer>();
+        final TestObserver<Integer> to = new TestObserver<>();
 
         Observable.using(Functions.justSupplier(1), Functions.justFunction(new Observable<Integer>() {
             @Override
             protected void subscribeActual(Observer<? super Integer> observer) {
-                observer.onSubscribe(Disposables.empty());
+                observer.onSubscribe(Disposable.empty());
                 to.dispose();
                 observer.onComplete();
             }
@@ -548,12 +548,12 @@ public class ObservableUsingTest extends RxJavaTest {
 
     @Test
     public void eagerDisposedOnError() {
-        final TestObserver<Integer> to = new TestObserver<Integer>();
+        final TestObserver<Integer> to = new TestObserver<>();
 
         Observable.using(Functions.justSupplier(1), Functions.justFunction(new Observable<Integer>() {
             @Override
             protected void subscribeActual(Observer<? super Integer> observer) {
-                observer.onSubscribe(Disposables.empty());
+                observer.onSubscribe(Disposable.empty());
                 to.dispose();
                 observer.onError(new TestException());
             }

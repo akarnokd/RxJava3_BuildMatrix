@@ -30,7 +30,7 @@ public class ResourceSingleObserverTest extends RxJavaTest {
     static final class TestResourceSingleObserver<T> extends ResourceSingleObserver<T> {
         T value;
 
-        final List<Throwable> errors = new ArrayList<Throwable>();
+        final List<Throwable> errors = new ArrayList<>();
 
         int start;
 
@@ -58,17 +58,17 @@ public class ResourceSingleObserverTest extends RxJavaTest {
 
     @Test(expected = NullPointerException.class)
     public void nullResource() {
-        TestResourceSingleObserver<Integer> rso = new TestResourceSingleObserver<Integer>();
+        TestResourceSingleObserver<Integer> rso = new TestResourceSingleObserver<>();
         rso.add(null);
     }
 
     @Test
     public void addResources() {
-        TestResourceSingleObserver<Integer> rso = new TestResourceSingleObserver<Integer>();
+        TestResourceSingleObserver<Integer> rso = new TestResourceSingleObserver<>();
 
         assertFalse(rso.isDisposed());
 
-        Disposable d = Disposables.empty();
+        Disposable d = Disposable.empty();
 
         rso.add(d);
 
@@ -89,11 +89,11 @@ public class ResourceSingleObserverTest extends RxJavaTest {
 
     @Test
     public void onSuccessCleansUp() {
-        TestResourceSingleObserver<Integer> rso = new TestResourceSingleObserver<Integer>();
+        TestResourceSingleObserver<Integer> rso = new TestResourceSingleObserver<>();
 
         assertFalse(rso.isDisposed());
 
-        Disposable d = Disposables.empty();
+        Disposable d = Disposable.empty();
 
         rso.add(d);
 
@@ -108,11 +108,11 @@ public class ResourceSingleObserverTest extends RxJavaTest {
 
     @Test
     public void onErrorCleansUp() {
-        TestResourceSingleObserver<Integer> rso = new TestResourceSingleObserver<Integer>();
+        TestResourceSingleObserver<Integer> rso = new TestResourceSingleObserver<>();
 
         assertFalse(rso.isDisposed());
 
-        Disposable d = Disposables.empty();
+        Disposable d = Disposable.empty();
 
         rso.add(d);
 
@@ -127,7 +127,7 @@ public class ResourceSingleObserverTest extends RxJavaTest {
 
     @Test
     public void normal() {
-        TestResourceSingleObserver<Integer> rso = new TestResourceSingleObserver<Integer>();
+        TestResourceSingleObserver<Integer> rso = new TestResourceSingleObserver<>();
 
         assertFalse(rso.isDisposed());
         assertEquals(0, rso.start);
@@ -144,7 +144,7 @@ public class ResourceSingleObserverTest extends RxJavaTest {
 
     @Test
     public void error() {
-        TestResourceSingleObserver<Integer> rso = new TestResourceSingleObserver<Integer>();
+        TestResourceSingleObserver<Integer> rso = new TestResourceSingleObserver<>();
 
         assertFalse(rso.isDisposed());
         assertEquals(0, rso.start);
@@ -167,11 +167,11 @@ public class ResourceSingleObserverTest extends RxJavaTest {
         List<Throwable> error = TestHelper.trackPluginErrors();
 
         try {
-            TestResourceSingleObserver<Integer> rso = new TestResourceSingleObserver<Integer>();
+            TestResourceSingleObserver<Integer> rso = new TestResourceSingleObserver<>();
 
-            rso.onSubscribe(Disposables.empty());
+            rso.onSubscribe(Disposable.empty());
 
-            Disposable d = Disposables.empty();
+            Disposable d = Disposable.empty();
 
             rso.onSubscribe(d);
 
@@ -187,10 +187,10 @@ public class ResourceSingleObserverTest extends RxJavaTest {
 
     @Test
     public void dispose() {
-        TestResourceSingleObserver<Integer> rso = new TestResourceSingleObserver<Integer>();
+        TestResourceSingleObserver<Integer> rso = new TestResourceSingleObserver<>();
         rso.dispose();
 
-        Disposable d = Disposables.empty();
+        Disposable d = Disposable.empty();
 
         rso.onSubscribe(d);
 

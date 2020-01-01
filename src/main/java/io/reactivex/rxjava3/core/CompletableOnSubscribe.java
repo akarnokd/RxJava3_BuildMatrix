@@ -19,11 +19,12 @@ import io.reactivex.rxjava3.annotations.NonNull;
  * an instance of a {@link CompletableEmitter} instance that allows pushing
  * an event in a cancellation-safe manner.
  */
+@FunctionalInterface
 public interface CompletableOnSubscribe {
 
     /**
-     * Called for each CompletableObserver that subscribes.
-     * @param emitter the safe emitter instance, never null
+     * Called for each {@link CompletableObserver} that subscribes.
+     * @param emitter the safe emitter instance, never {@code null}
      * @throws Throwable on error
      */
     void subscribe(@NonNull CompletableEmitter emitter) throws Throwable;

@@ -16,7 +16,7 @@ import java.util.*;
 
 import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.core.Observer;
-import io.reactivex.rxjava3.disposables.Disposables;
+import io.reactivex.rxjava3.disposables.Disposable;
 
 /**
  * Creates {@link Observable} of a number of items followed by either an error or
@@ -36,7 +36,7 @@ public final class Burst<T> extends Observable<T> {
 
     @Override
     protected void subscribeActual(final Observer<? super T> observer) {
-        observer.onSubscribe(Disposables.empty());
+        observer.onSubscribe(Disposable.empty());
         for (T item: items) {
             observer.onNext(item);
         }
@@ -47,13 +47,13 @@ public final class Burst<T> extends Observable<T> {
         }
     }
 
-    @SuppressWarnings("unchecked")
     public static <T> Builder<T> item(T item) {
         return items(item);
     }
 
+    @SafeVarargs
     public static <T> Builder<T> items(T... items) {
-        return new Builder<T>(Arrays.asList(items));
+        return new Builder<>(Arrays.asList(items));
     }
 
     public static final class Builder<T> {
@@ -71,7 +71,7 @@ public final class Burst<T> extends Observable<T> {
         }
 
         public Observable<T> create() {
-            return new Burst<T>(error, items);
+            return new Burst<>(error, items);
         }
 
     }

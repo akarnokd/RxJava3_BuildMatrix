@@ -37,7 +37,7 @@ import io.reactivex.rxjava3.testsupport.*;
 public class FlowablePublishFunctionTest extends RxJavaTest {
     @Test
     public void concatTakeFirstLastCompletes() {
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+        TestSubscriber<Integer> ts = new TestSubscriber<>();
 
         Flowable.range(1, 3).publish(new Function<Flowable<Integer>, Flowable<Integer>>() {
             @Override
@@ -210,7 +210,7 @@ public class FlowablePublishFunctionTest extends RxJavaTest {
 
     @Test
     public void overflowMissingBackpressureException() {
-        TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>(0);
+        TestSubscriberEx<Integer> ts = new TestSubscriberEx<>(0);
 
         PublishProcessor<Integer> pp = PublishProcessor.create();
 
@@ -236,11 +236,11 @@ public class FlowablePublishFunctionTest extends RxJavaTest {
 
     @Test
     public void overflowMissingBackpressureExceptionDelayed() {
-        TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>(0);
+        TestSubscriberEx<Integer> ts = new TestSubscriberEx<>(0);
 
         PublishProcessor<Integer> pp = PublishProcessor.create();
 
-        new FlowablePublishMulticast<Integer, Integer>(pp, new Function<Flowable<Integer>, Flowable<Integer>>() {
+        new FlowablePublishMulticast<>(pp, new Function<Flowable<Integer>, Flowable<Integer>>() {
             @Override
             public Flowable<Integer> apply(Flowable<Integer> f) {
                 return f;
@@ -349,7 +349,7 @@ public class FlowablePublishFunctionTest extends RxJavaTest {
 
     @Test
     public void error() {
-        new FlowablePublishMulticast<Integer, Integer>(Flowable.just(1).concatWith(Flowable.<Integer>error(new TestException())),
+        new FlowablePublishMulticast<>(Flowable.just(1).concatWith(Flowable.<Integer>error(new TestException())),
                 Functions.<Flowable<Integer>>identity(), 16, true)
         .test()
         .assertFailure(TestException.class, 1);
@@ -428,7 +428,7 @@ public class FlowablePublishFunctionTest extends RxJavaTest {
     @Test
     public void sourceSubscriptionDelayed() {
         for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
-            final TestSubscriber<Integer> ts1 = new TestSubscriber<Integer>(0L);
+            final TestSubscriber<Integer> ts1 = new TestSubscriber<>(0L);
 
             Flowable.just(1)
             .publish(new Function<Flowable<Integer>, Publisher<Integer>>() {
@@ -464,7 +464,6 @@ public class FlowablePublishFunctionTest extends RxJavaTest {
     public void longFlow() {
         Flowable.range(1, 1000000)
         .publish(new Function<Flowable<Integer>, Publisher<Integer>>() {
-            @SuppressWarnings("unchecked")
             @Override
             public Publisher<Integer> apply(Flowable<Integer> v) throws Exception {
                 return Flowable.mergeArray(
@@ -491,7 +490,6 @@ public class FlowablePublishFunctionTest extends RxJavaTest {
     public void longFlow2() {
         Flowable.range(1, 100000)
         .publish(new Function<Flowable<Integer>, Publisher<Integer>>() {
-            @SuppressWarnings("unchecked")
             @Override
             public Publisher<Integer> apply(Flowable<Integer> v) throws Exception {
                 return Flowable.mergeArray(
@@ -519,7 +517,6 @@ public class FlowablePublishFunctionTest extends RxJavaTest {
     public void longFlowHidden() {
         Flowable.range(1, 1000000).hide()
         .publish(new Function<Flowable<Integer>, Publisher<Integer>>() {
-            @SuppressWarnings("unchecked")
             @Override
             public Publisher<Integer> apply(Flowable<Integer> v) throws Exception {
                 return Flowable.mergeArray(

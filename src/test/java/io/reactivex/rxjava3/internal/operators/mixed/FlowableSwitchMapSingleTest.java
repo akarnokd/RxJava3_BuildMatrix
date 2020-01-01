@@ -18,11 +18,11 @@ import static org.junit.Assert.*;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 
+import io.reactivex.rxjava3.disposables.Disposable;
 import org.junit.Test;
 import org.reactivestreams.*;
 
 import io.reactivex.rxjava3.core.*;
-import io.reactivex.rxjava3.disposables.Disposables;
 import io.reactivex.rxjava3.exceptions.*;
 import io.reactivex.rxjava3.functions.*;
 import io.reactivex.rxjava3.internal.functions.Functions;
@@ -255,7 +255,7 @@ public class FlowableSwitchMapSingleTest extends RxJavaTest {
 
     @Test
     public void disposeBeforeSwitchInOnNext() {
-        final TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+        final TestSubscriber<Integer> ts = new TestSubscriber<>();
 
         Flowable.just(1)
         .switchMapSingle(new Function<Integer, SingleSource<Integer>>() {
@@ -272,7 +272,7 @@ public class FlowableSwitchMapSingleTest extends RxJavaTest {
 
     @Test
     public void disposeOnNextAfterFirst() {
-        final TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+        final TestSubscriber<Integer> ts = new TestSubscriber<>();
 
         Flowable.just(1, 2)
         .switchMapSingle(new Function<Integer, SingleSource<Integer>>() {
@@ -352,7 +352,7 @@ public class FlowableSwitchMapSingleTest extends RxJavaTest {
     public void innerErrorAfterTermination() {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
-            final AtomicReference<SingleObserver<? super Integer>> moRef = new AtomicReference<SingleObserver<? super Integer>>();
+            final AtomicReference<SingleObserver<? super Integer>> moRef = new AtomicReference<>();
 
             TestSubscriberEx<Integer> ts = new Flowable<Integer>() {
                 @Override
@@ -370,7 +370,7 @@ public class FlowableSwitchMapSingleTest extends RxJavaTest {
                         @Override
                         protected void subscribeActual(
                                 SingleObserver<? super Integer> observer) {
-                            observer.onSubscribe(Disposables.empty());
+                            observer.onSubscribe(Disposable.empty());
                             moRef.set(observer);
                         }
                     };

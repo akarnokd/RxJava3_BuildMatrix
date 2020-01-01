@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava3.internal.operators.mixed;
 
+import java.util.Objects;
 import java.util.concurrent.atomic.*;
 
 import org.reactivestreams.*;
@@ -22,7 +23,6 @@ import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.exceptions.*;
 import io.reactivex.rxjava3.functions.Function;
 import io.reactivex.rxjava3.internal.disposables.DisposableHelper;
-import io.reactivex.rxjava3.internal.functions.ObjectHelper;
 import io.reactivex.rxjava3.internal.fuseable.SimplePlainQueue;
 import io.reactivex.rxjava3.internal.queue.SpscArrayQueue;
 import io.reactivex.rxjava3.internal.subscriptions.SubscriptionHelper;
@@ -58,7 +58,7 @@ public final class FlowableConcatMapSingle<T, R> extends Flowable<R> {
 
     @Override
     protected void subscribeActual(Subscriber<? super R> s) {
-        source.subscribe(new ConcatMapSingleSubscriber<T, R>(s, mapper, prefetch, errorMode));
+        source.subscribe(new ConcatMapSingleSubscriber<>(s, mapper, prefetch, errorMode));
     }
 
     static final class ConcatMapSingleSubscriber<T, R>
@@ -113,8 +113,8 @@ public final class FlowableConcatMapSingle<T, R> extends Flowable<R> {
             this.errorMode = errorMode;
             this.requested = new AtomicLong();
             this.errors = new AtomicThrowable();
-            this.inner = new ConcatMapSingleObserver<R>(this);
-            this.queue = new SpscArrayQueue<T>(prefetch);
+            this.inner = new ConcatMapSingleObserver<>(this);
+            this.queue = new SpscArrayQueue<>(prefetch);
         }
 
         @Override
@@ -246,7 +246,7 @@ public final class FlowableConcatMapSingle<T, R> extends Flowable<R> {
                         SingleSource<? extends R> ss;
 
                         try {
-                            ss = ObjectHelper.requireNonNull(mapper.apply(v), "The mapper returned a null SingleSource");
+                            ss = Objects.requireNonNull(mapper.apply(v), "The mapper returned a null SingleSource");
                         } catch (Throwable ex) {
                             Exceptions.throwIfFatal(ex);
                             upstream.cancel();

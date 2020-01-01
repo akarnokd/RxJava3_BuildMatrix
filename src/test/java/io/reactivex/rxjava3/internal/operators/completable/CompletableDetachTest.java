@@ -64,8 +64,8 @@ public class CompletableDetachTest extends RxJavaTest {
 
     @Test
     public void cancelDetaches() throws Exception {
-        Disposable d = Disposables.empty();
-        final WeakReference<Disposable> wr = new WeakReference<Disposable>(d);
+        Disposable d = Disposable.empty();
+        final WeakReference<Disposable> wr = new WeakReference<>(d);
 
         TestObserver<Void> to = new Completable() {
             @Override
@@ -90,8 +90,8 @@ public class CompletableDetachTest extends RxJavaTest {
 
     @Test
     public void completeDetaches() throws Exception {
-        Disposable d = Disposables.empty();
-        final WeakReference<Disposable> wr = new WeakReference<Disposable>(d);
+        Disposable d = Disposable.empty();
+        final WeakReference<Disposable> wr = new WeakReference<>(d);
 
         TestObserver<Void> to = new Completable() {
             @Override
@@ -116,8 +116,8 @@ public class CompletableDetachTest extends RxJavaTest {
 
     @Test
     public void errorDetaches() throws Exception {
-        Disposable d = Disposables.empty();
-        final WeakReference<Disposable> wr = new WeakReference<Disposable>(d);
+        Disposable d = Disposable.empty();
+        final WeakReference<Disposable> wr = new WeakReference<>(d);
 
         TestObserver<Void> to = new Completable() {
             @Override

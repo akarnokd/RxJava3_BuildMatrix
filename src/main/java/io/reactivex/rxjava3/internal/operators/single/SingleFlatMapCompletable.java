@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava3.internal.operators.single;
 
+import java.util.Objects;
 import java.util.concurrent.atomic.AtomicReference;
 
 import io.reactivex.rxjava3.core.*;
@@ -20,7 +21,6 @@ import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.exceptions.Exceptions;
 import io.reactivex.rxjava3.functions.Function;
 import io.reactivex.rxjava3.internal.disposables.DisposableHelper;
-import io.reactivex.rxjava3.internal.functions.ObjectHelper;
 
 /**
  * Maps the success value of the source SingleSource into a Completable.
@@ -39,7 +39,7 @@ public final class SingleFlatMapCompletable<T> extends Completable {
 
     @Override
     protected void subscribeActual(CompletableObserver observer) {
-        FlatMapCompletableObserver<T> parent = new FlatMapCompletableObserver<T>(observer, mapper);
+        FlatMapCompletableObserver<T> parent = new FlatMapCompletableObserver<>(observer, mapper);
         observer.onSubscribe(parent);
         source.subscribe(parent);
     }
@@ -80,7 +80,7 @@ public final class SingleFlatMapCompletable<T> extends Completable {
             CompletableSource cs;
 
             try {
-                cs = ObjectHelper.requireNonNull(mapper.apply(value), "The mapper returned a null CompletableSource");
+                cs = Objects.requireNonNull(mapper.apply(value), "The mapper returned a null CompletableSource");
             } catch (Throwable ex) {
                 Exceptions.throwIfFatal(ex);
                 onError(ex);

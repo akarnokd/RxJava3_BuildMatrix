@@ -25,11 +25,11 @@ package io.reactivex.rxjava3.internal.subscriptions;
  * the License for the specific language governing permissions and limitations under the License.
  */
 
+import java.util.Objects;
 import java.util.concurrent.atomic.*;
 
 import org.reactivestreams.Subscription;
 
-import io.reactivex.rxjava3.internal.functions.ObjectHelper;
 import io.reactivex.rxjava3.internal.util.BackpressureHelper;
 
 /**
@@ -63,7 +63,7 @@ public class SubscriptionArbiter extends AtomicInteger implements Subscription {
 
     public SubscriptionArbiter(boolean cancelOnReplace) {
         this.cancelOnReplace = cancelOnReplace;
-        missedSubscription = new AtomicReference<Subscription>();
+        missedSubscription = new AtomicReference<>();
         missedRequested = new AtomicLong();
         missedProduced = new AtomicLong();
     }
@@ -78,7 +78,7 @@ public class SubscriptionArbiter extends AtomicInteger implements Subscription {
             return;
         }
 
-        ObjectHelper.requireNonNull(s, "s is null");
+        Objects.requireNonNull(s, "s is null");
 
         if (get() == 0 && compareAndSet(0, 1)) {
             Subscription a = actual;

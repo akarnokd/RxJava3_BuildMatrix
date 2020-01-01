@@ -20,11 +20,11 @@ import static org.mockito.Mockito.*;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
+import io.reactivex.rxjava3.disposables.Disposable;
 import org.junit.Test;
 import org.mockito.Mockito;
 
 import io.reactivex.rxjava3.core.*;
-import io.reactivex.rxjava3.disposables.Disposables;
 import io.reactivex.rxjava3.exceptions.TestException;
 import io.reactivex.rxjava3.functions.Function;
 import io.reactivex.rxjava3.observers.TestObserver;
@@ -37,7 +37,7 @@ public class ObservableOnErrorReturnTest extends RxJavaTest {
     public void resumeNext() {
         TestObservable f = new TestObservable("one");
         Observable<String> w = Observable.unsafeCreate(f);
-        final AtomicReference<Throwable> capturedException = new AtomicReference<Throwable>();
+        final AtomicReference<Throwable> capturedException = new AtomicReference<>();
 
         Observable<String> observable = w.onErrorReturn(new Function<Throwable, String>() {
 
@@ -72,7 +72,7 @@ public class ObservableOnErrorReturnTest extends RxJavaTest {
     public void functionThrowsError() {
         TestObservable f = new TestObservable("one");
         Observable<String> w = Observable.unsafeCreate(f);
-        final AtomicReference<Throwable> capturedException = new AtomicReference<Throwable>();
+        final AtomicReference<Throwable> capturedException = new AtomicReference<>();
 
         Observable<String> observable = w.onErrorReturn(new Function<Throwable, String>() {
 
@@ -130,7 +130,7 @@ public class ObservableOnErrorReturnTest extends RxJavaTest {
         });
 
         Observer<String> observer = TestHelper.mockObserver();
-        TestObserver<String> to = new TestObserver<String>(observer);
+        TestObserver<String> to = new TestObserver<>(observer);
         observable.subscribe(to);
         to.awaitDone(5, TimeUnit.SECONDS);
 
@@ -144,7 +144,7 @@ public class ObservableOnErrorReturnTest extends RxJavaTest {
 
     @Test
     public void backpressure() {
-        TestObserver<Integer> to = new TestObserver<Integer>();
+        TestObserver<Integer> to = new TestObserver<>();
         Observable.range(0, 100000)
                 .onErrorReturn(new Function<Throwable, Integer>() {
 
@@ -188,7 +188,7 @@ public class ObservableOnErrorReturnTest extends RxJavaTest {
 
         @Override
         public void subscribe(final Observer<? super String> observer) {
-            observer.onSubscribe(Disposables.empty());
+            observer.onSubscribe(Disposable.empty());
             System.out.println("TestObservable subscribed to ...");
             t = new Thread(new Runnable() {
 

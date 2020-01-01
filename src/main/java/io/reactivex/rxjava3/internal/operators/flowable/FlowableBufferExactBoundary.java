@@ -14,6 +14,7 @@
 package io.reactivex.rxjava3.internal.operators.flowable;
 
 import java.util.Collection;
+import java.util.Objects;
 
 import org.reactivestreams.*;
 
@@ -21,7 +22,6 @@ import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.exceptions.Exceptions;
 import io.reactivex.rxjava3.functions.Supplier;
-import io.reactivex.rxjava3.internal.functions.ObjectHelper;
 import io.reactivex.rxjava3.internal.queue.MpscLinkedQueue;
 import io.reactivex.rxjava3.internal.subscribers.QueueDrainSubscriber;
 import io.reactivex.rxjava3.internal.subscriptions.*;
@@ -41,7 +41,7 @@ extends AbstractFlowableWithUpstream<T, U> {
 
     @Override
     protected void subscribeActual(Subscriber<? super U> s) {
-        source.subscribe(new BufferExactBoundarySubscriber<T, U, B>(new SerializedSubscriber<U>(s), bufferSupplier, boundary));
+        source.subscribe(new BufferExactBoundarySubscriber<>(new SerializedSubscriber<>(s), bufferSupplier, boundary));
     }
 
     static final class BufferExactBoundarySubscriber<T, U extends Collection<? super T>, B>
@@ -58,7 +58,7 @@ extends AbstractFlowableWithUpstream<T, U> {
 
         BufferExactBoundarySubscriber(Subscriber<? super U> actual, Supplier<U> bufferSupplier,
                                              Publisher<B> boundary) {
-            super(actual, new MpscLinkedQueue<U>());
+            super(actual, new MpscLinkedQueue<>());
             this.bufferSupplier = bufferSupplier;
             this.boundary = boundary;
         }
@@ -73,7 +73,7 @@ extends AbstractFlowableWithUpstream<T, U> {
             U b;
 
             try {
-                b = ObjectHelper.requireNonNull(bufferSupplier.get(), "The buffer supplied is null");
+                b = Objects.requireNonNull(bufferSupplier.get(), "The buffer supplied is null");
             } catch (Throwable e) {
                 Exceptions.throwIfFatal(e);
                 cancelled = true;
@@ -84,7 +84,7 @@ extends AbstractFlowableWithUpstream<T, U> {
 
             buffer = b;
 
-            BufferBoundarySubscriber<T, U, B> bs = new BufferBoundarySubscriber<T, U, B>(this);
+            BufferBoundarySubscriber<T, U, B> bs = new BufferBoundarySubscriber<>(this);
             other = bs;
 
             downstream.onSubscribe(this);
@@ -153,7 +153,7 @@ extends AbstractFlowableWithUpstream<T, U> {
             U next;
 
             try {
-                next = ObjectHelper.requireNonNull(bufferSupplier.get(), "The buffer supplied is null");
+                next = Objects.requireNonNull(bufferSupplier.get(), "The buffer supplied is null");
             } catch (Throwable e) {
                 Exceptions.throwIfFatal(e);
                 cancel();

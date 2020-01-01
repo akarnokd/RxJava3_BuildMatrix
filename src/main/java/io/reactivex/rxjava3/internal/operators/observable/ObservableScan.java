@@ -18,8 +18,9 @@ import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.exceptions.Exceptions;
 import io.reactivex.rxjava3.functions.BiFunction;
 import io.reactivex.rxjava3.internal.disposables.DisposableHelper;
-import io.reactivex.rxjava3.internal.functions.ObjectHelper;
 import io.reactivex.rxjava3.plugins.RxJavaPlugins;
+
+import java.util.Objects;
 
 public final class ObservableScan<T> extends AbstractObservableWithUpstream<T, T> {
     final BiFunction<T, T, T> accumulator;
@@ -30,7 +31,7 @@ public final class ObservableScan<T> extends AbstractObservableWithUpstream<T, T
 
     @Override
     public void subscribeActual(Observer<? super T> t) {
-        source.subscribe(new ScanObserver<T>(t, accumulator));
+        source.subscribe(new ScanObserver<>(t, accumulator));
     }
 
     static final class ScanObserver<T> implements Observer<T>, Disposable {
@@ -80,7 +81,7 @@ public final class ObservableScan<T> extends AbstractObservableWithUpstream<T, T
                 T u;
 
                 try {
-                    u = ObjectHelper.requireNonNull(accumulator.apply(v, t), "The value returned by the accumulator is null");
+                    u = Objects.requireNonNull(accumulator.apply(v, t), "The value returned by the accumulator is null");
                 } catch (Throwable e) {
                     Exceptions.throwIfFatal(e);
                     upstream.dispose();

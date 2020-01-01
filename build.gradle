@@ -81,7 +81,7 @@ if (jdk14dir != null) {
 
 // use animal sniffer only with target 6 or 7
 // javac 9+ may generate Java 7+ API calls on its own
-def sniff = "1.6".equals(targetStr) || "1.7".equals(targetStr)
+def sniff = "1.8".equals(targetStr)
 if (!sniff) {
     println("AnimalSniffer can't be used due to target version " + targetStr)
 }
@@ -119,7 +119,7 @@ repositories {
 
 dependencies {
     if (sniff) {
-        signature "org.codehaus.mojo.signature:java16:1.1@signature"
+        signature "org.codehaus.mojo.signature:java18:1.0@signature"
     }
 
     api "org.reactivestreams:reactive-streams:$reactiveStreamsVersion"
@@ -191,7 +191,7 @@ jar {
             'Import-Package': '!org.junit,!junit.framework,!org.mockito.*,!org.testng.*,*',
             'Bundle-DocURL': 'https://github.com/ReactiveX/RxJava',
             'Eclipse-ExtensibleAPI': 'true',
-            'Automatic-Module-Name': 'io.reactivex.rxjava'
+            'Automatic-Module-Name': 'io.reactivex.rxjava3'
     )
 }
 

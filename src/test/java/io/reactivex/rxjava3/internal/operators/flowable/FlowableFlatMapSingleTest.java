@@ -361,7 +361,7 @@ public class FlowableFlatMapSingleTest extends RxJavaTest {
             .flatMapSingle(Functions.justFunction(new Single<Integer>() {
                 @Override
                 protected void subscribeActual(SingleObserver<? super Integer> observer) {
-                    observer.onSubscribe(Disposables.empty());
+                    observer.onSubscribe(Disposable.empty());
                     observer.onError(new TestException("First"));
                     observer.onError(new TestException("Second"));
                 }
@@ -408,7 +408,7 @@ public class FlowableFlatMapSingleTest extends RxJavaTest {
 
     @Test
     public void disposeInner() {
-        final TestSubscriber<Object> ts = new TestSubscriber<Object>();
+        final TestSubscriber<Object> ts = new TestSubscriber<>();
 
         Flowable.just(1).flatMapSingle(new Function<Integer, SingleSource<Object>>() {
             @Override
@@ -416,7 +416,7 @@ public class FlowableFlatMapSingleTest extends RxJavaTest {
                 return new Single<Object>() {
                     @Override
                     protected void subscribeActual(SingleObserver<? super Object> observer) {
-                        observer.onSubscribe(Disposables.empty());
+                        observer.onSubscribe(Disposable.empty());
 
                         assertFalse(((Disposable)observer).isDisposed());
 

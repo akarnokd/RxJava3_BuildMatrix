@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava3.internal.operators.mixed;
 
+import java.util.Objects;
 import java.util.concurrent.atomic.*;
 
 import io.reactivex.rxjava3.core.*;
@@ -20,7 +21,6 @@ import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.exceptions.Exceptions;
 import io.reactivex.rxjava3.functions.Function;
 import io.reactivex.rxjava3.internal.disposables.DisposableHelper;
-import io.reactivex.rxjava3.internal.functions.ObjectHelper;
 import io.reactivex.rxjava3.internal.util.AtomicThrowable;
 import io.reactivex.rxjava3.plugins.RxJavaPlugins;
 
@@ -52,7 +52,7 @@ public final class ObservableSwitchMapSingle<T, R> extends Observable<R> {
     @Override
     protected void subscribeActual(Observer<? super R> observer) {
         if (!ScalarXMapZHelper.tryAsSingle(source, mapper, observer)) {
-            source.subscribe(new SwitchMapSingleMainObserver<T, R>(observer, mapper, delayErrors));
+            source.subscribe(new SwitchMapSingleMainObserver<>(observer, mapper, delayErrors));
         }
     }
 
@@ -72,7 +72,7 @@ public final class ObservableSwitchMapSingle<T, R> extends Observable<R> {
         final AtomicReference<SwitchMapSingleObserver<R>> inner;
 
         static final SwitchMapSingleObserver<Object> INNER_DISPOSED =
-                new SwitchMapSingleObserver<Object>(null);
+                new SwitchMapSingleObserver<>(null);
 
         Disposable upstream;
 
@@ -87,7 +87,7 @@ public final class ObservableSwitchMapSingle<T, R> extends Observable<R> {
             this.mapper = mapper;
             this.delayErrors = delayErrors;
             this.errors = new AtomicThrowable();
-            this.inner = new AtomicReference<SwitchMapSingleObserver<R>>();
+            this.inner = new AtomicReference<>();
         }
 
         @Override
@@ -109,7 +109,7 @@ public final class ObservableSwitchMapSingle<T, R> extends Observable<R> {
             SingleSource<? extends R> ss;
 
             try {
-                ss = ObjectHelper.requireNonNull(mapper.apply(t), "The mapper returned a null SingleSource");
+                ss = Objects.requireNonNull(mapper.apply(t), "The mapper returned a null SingleSource");
             } catch (Throwable ex) {
                 Exceptions.throwIfFatal(ex);
                 upstream.dispose();
@@ -118,7 +118,7 @@ public final class ObservableSwitchMapSingle<T, R> extends Observable<R> {
                 return;
             }
 
-            SwitchMapSingleObserver<R> observer = new SwitchMapSingleObserver<R>(this);
+            SwitchMapSingleObserver<R> observer = new SwitchMapSingleObserver<>(this);
 
             for (;;) {
                 current = inner.get();

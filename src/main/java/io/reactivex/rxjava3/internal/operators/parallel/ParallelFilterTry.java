@@ -17,11 +17,12 @@ import org.reactivestreams.*;
 
 import io.reactivex.rxjava3.exceptions.*;
 import io.reactivex.rxjava3.functions.*;
-import io.reactivex.rxjava3.internal.functions.ObjectHelper;
 import io.reactivex.rxjava3.internal.fuseable.ConditionalSubscriber;
 import io.reactivex.rxjava3.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.rxjava3.parallel.*;
 import io.reactivex.rxjava3.plugins.RxJavaPlugins;
+
+import java.util.Objects;
 
 /**
  * Filters each 'rail' of the source ParallelFlowable with a predicate function.
@@ -56,9 +57,9 @@ public final class ParallelFilterTry<T> extends ParallelFlowable<T> {
         for (int i = 0; i < n; i++) {
             Subscriber<? super T> a = subscribers[i];
             if (a instanceof ConditionalSubscriber) {
-                parents[i] = new ParallelFilterConditionalSubscriber<T>((ConditionalSubscriber<? super T>)a, predicate, errorHandler);
+                parents[i] = new ParallelFilterConditionalSubscriber<>((ConditionalSubscriber<? super T>)a, predicate, errorHandler);
             } else {
-                parents[i] = new ParallelFilterSubscriber<T>(a, predicate, errorHandler);
+                parents[i] = new ParallelFilterSubscriber<>(a, predicate, errorHandler);
             }
         }
 
@@ -136,7 +137,7 @@ public final class ParallelFilterTry<T> extends ParallelFlowable<T> {
                         ParallelFailureHandling h;
 
                         try {
-                            h = ObjectHelper.requireNonNull(errorHandler.apply(++retries, ex), "The errorHandler returned a null item");
+                            h = Objects.requireNonNull(errorHandler.apply(++retries, ex), "The errorHandler returned a null ParallelFailureHandling");
                         } catch (Throwable exc) {
                             Exceptions.throwIfFatal(exc);
                             cancel();
@@ -225,7 +226,7 @@ public final class ParallelFilterTry<T> extends ParallelFlowable<T> {
                         ParallelFailureHandling h;
 
                         try {
-                            h = ObjectHelper.requireNonNull(errorHandler.apply(++retries, ex), "The errorHandler returned a null item");
+                            h = Objects.requireNonNull(errorHandler.apply(++retries, ex), "The errorHandler returned a null ParallelFailureHandling");
                         } catch (Throwable exc) {
                             Exceptions.throwIfFatal(exc);
                             cancel();

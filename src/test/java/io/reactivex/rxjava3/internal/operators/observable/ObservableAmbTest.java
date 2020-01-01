@@ -92,7 +92,6 @@ public class ObservableAmbTest extends RxJavaTest {
         Observable<String> observable3 = createObservable(new String[] {
                 "3", "33", "333", "3333" }, 3000, null);
 
-        @SuppressWarnings("unchecked")
         Observable<String> o = Observable.ambArray(observable1,
                 observable2, observable3);
 
@@ -121,7 +120,6 @@ public class ObservableAmbTest extends RxJavaTest {
         Observable<String> observable3 = createObservable(new String[] {},
                 3000, new IOException("fake exception"));
 
-        @SuppressWarnings("unchecked")
         Observable<String> o = Observable.ambArray(observable1,
                 observable2, observable3);
 
@@ -148,7 +146,6 @@ public class ObservableAmbTest extends RxJavaTest {
         Observable<String> observable3 = createObservable(new String[] {
                 "3" }, 3000, null);
 
-        @SuppressWarnings("unchecked")
         Observable<String> o = Observable.ambArray(observable1,
                 observable2, observable3);
 
@@ -161,7 +158,6 @@ public class ObservableAmbTest extends RxJavaTest {
         inOrder.verifyNoMoreInteractions();
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void subscriptionOnlyHappensOnce() throws InterruptedException {
         final AtomicLong count = new AtomicLong();
@@ -178,7 +174,7 @@ public class ObservableAmbTest extends RxJavaTest {
         //this stream emits second
         Observable<Integer> o2 = Observable.just(1).doOnSubscribe(incrementer)
                 .delay(100, TimeUnit.MILLISECONDS).subscribeOn(Schedulers.computation());
-        TestObserver<Integer> to = new TestObserver<Integer>();
+        TestObserver<Integer> to = new TestObserver<>();
         Observable.ambArray(o1, o2).subscribe(to);
         to.awaitDone(5, TimeUnit.SECONDS);
         to.assertNoErrors();
@@ -205,14 +201,13 @@ public class ObservableAmbTest extends RxJavaTest {
         assertEquals(1, result);
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void ambCancelsOthers() {
         PublishSubject<Integer> source1 = PublishSubject.create();
         PublishSubject<Integer> source2 = PublishSubject.create();
         PublishSubject<Integer> source3 = PublishSubject.create();
 
-        TestObserver<Integer> to = new TestObserver<Integer>();
+        TestObserver<Integer> to = new TestObserver<>();
 
         Observable.ambArray(source1, source2, source3).subscribe(to);
 
@@ -228,13 +223,11 @@ public class ObservableAmbTest extends RxJavaTest {
 
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void ambArrayEmpty() {
         assertSame(Observable.empty(), Observable.ambArray());
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void ambArraySingleElement() {
         assertSame(Observable.never(), Observable.ambArray(Observable.never()));
@@ -265,7 +258,6 @@ public class ObservableAmbTest extends RxJavaTest {
         .assertResult(1);
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void disposed() {
         TestHelper.checkDisposed(Observable.ambArray(Observable.never(), Observable.never()));
@@ -277,7 +269,6 @@ public class ObservableAmbTest extends RxJavaTest {
             final PublishSubject<Integer> ps1 = PublishSubject.create();
             final PublishSubject<Integer> ps2 = PublishSubject.create();
 
-            @SuppressWarnings("unchecked")
             TestObserverEx<Integer> to = Observable.ambArray(ps1, ps2).to(TestHelper.<Integer>testConsumer());
 
             Runnable r1 = new Runnable() {
@@ -308,7 +299,6 @@ public class ObservableAmbTest extends RxJavaTest {
             final PublishSubject<Integer> ps1 = PublishSubject.create();
             final PublishSubject<Integer> ps2 = PublishSubject.create();
 
-            @SuppressWarnings("unchecked")
             TestObserver<Integer> to = Observable.ambArray(ps1, ps2).test();
 
             Runnable r1 = new Runnable() {
@@ -336,7 +326,6 @@ public class ObservableAmbTest extends RxJavaTest {
             final PublishSubject<Integer> ps1 = PublishSubject.create();
             final PublishSubject<Integer> ps2 = PublishSubject.create();
 
-            @SuppressWarnings("unchecked")
             TestObserver<Integer> to = Observable.ambArray(ps1, ps2).test();
 
             final Throwable ex = new TestException();
@@ -374,21 +363,18 @@ public class ObservableAmbTest extends RxJavaTest {
         Observable.just(1).ambWith(error).test().assertValue(1).assertComplete();
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void ambIterableOrder() {
         Observable<Integer> error = Observable.error(new RuntimeException());
         Observable.amb(Arrays.asList(Observable.just(1), error)).test().assertValue(1).assertComplete();
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void ambArrayOrder() {
         Observable<Integer> error = Observable.error(new RuntimeException());
         Observable.ambArray(Observable.just(1), error).test().assertValue(1).assertComplete();
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void noWinnerSuccessDispose() throws Exception {
         for (int i = 0; i < TestHelper.RACE_LONG_LOOPS; i++) {
@@ -414,7 +400,6 @@ public class ObservableAmbTest extends RxJavaTest {
         }
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void noWinnerErrorDispose() throws Exception {
         final TestException ex = new TestException();
@@ -441,7 +426,6 @@ public class ObservableAmbTest extends RxJavaTest {
         }
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void noWinnerCompleteDispose() throws Exception {
         for (int i = 0; i < TestHelper.RACE_LONG_LOOPS; i++) {
@@ -467,7 +451,6 @@ public class ObservableAmbTest extends RxJavaTest {
         }
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void observableSourcesInIterable() {
         ObservableSource<Integer> source = new ObservableSource<Integer>() {

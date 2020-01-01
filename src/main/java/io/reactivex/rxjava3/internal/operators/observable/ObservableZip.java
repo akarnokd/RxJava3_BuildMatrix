@@ -14,6 +14,7 @@
 package io.reactivex.rxjava3.internal.operators.observable;
 
 import java.util.Arrays;
+import java.util.Objects;
 import java.util.concurrent.atomic.*;
 
 import io.reactivex.rxjava3.core.*;
@@ -21,7 +22,6 @@ import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.exceptions.Exceptions;
 import io.reactivex.rxjava3.functions.Function;
 import io.reactivex.rxjava3.internal.disposables.*;
-import io.reactivex.rxjava3.internal.functions.ObjectHelper;
 import io.reactivex.rxjava3.internal.queue.SpscLinkedArrayQueue;
 
 public final class ObservableZip<T, R> extends Observable<R> {
@@ -68,7 +68,7 @@ public final class ObservableZip<T, R> extends Observable<R> {
             return;
         }
 
-        ZipCoordinator<T, R> zc = new ZipCoordinator<T, R>(observer, zipper, count, delayError);
+        ZipCoordinator<T, R> zc = new ZipCoordinator<>(observer, zipper, count, delayError);
         zc.subscribe(sources, bufferSize);
     }
 
@@ -98,7 +98,7 @@ public final class ObservableZip<T, R> extends Observable<R> {
             ZipObserver<T, R>[] s = observers;
             int len = s.length;
             for (int i = 0; i < len; i++) {
-                s[i] = new ZipObserver<T, R>(this, bufferSize);
+                s[i] = new ZipObserver<>(this, bufferSize);
             }
             // this makes sure the contents of the observers array is visible
             this.lazySet(0);
@@ -195,7 +195,7 @@ public final class ObservableZip<T, R> extends Observable<R> {
 
                     R v;
                     try {
-                        v = ObjectHelper.requireNonNull(zipper.apply(os.clone()), "The zipper returned a null value");
+                        v = Objects.requireNonNull(zipper.apply(os.clone()), "The zipper returned a null value");
                     } catch (Throwable ex) {
                         Exceptions.throwIfFatal(ex);
                         cancel();
@@ -263,11 +263,11 @@ public final class ObservableZip<T, R> extends Observable<R> {
         volatile boolean done;
         Throwable error;
 
-        final AtomicReference<Disposable> upstream = new AtomicReference<Disposable>();
+        final AtomicReference<Disposable> upstream = new AtomicReference<>();
 
         ZipObserver(ZipCoordinator<T, R> parent, int bufferSize) {
             this.parent = parent;
-            this.queue = new SpscLinkedArrayQueue<T>(bufferSize);
+            this.queue = new SpscLinkedArrayQueue<>(bufferSize);
         }
 
         @Override

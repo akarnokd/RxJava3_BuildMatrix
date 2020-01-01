@@ -47,7 +47,6 @@ public class FlowableNullTests extends RxJavaTest {
         Flowable.ambArray((Publisher<Object>[])null);
     }
 
-    @SuppressWarnings("unchecked")
     @Test(expected = NullPointerException.class)
     public void ambVarargsOneIsNull() {
         Flowable.ambArray(Flowable.never(), null).blockingLast();
@@ -68,7 +67,6 @@ public class FlowableNullTests extends RxJavaTest {
         }).test().assertError(NullPointerException.class);
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void ambIterableOneIsNull() {
         Flowable.amb(Arrays.asList(Flowable.never(), null))
@@ -101,7 +99,6 @@ public class FlowableNullTests extends RxJavaTest {
         }).blockingLast();
     }
 
-    @SuppressWarnings("unchecked")
     @Test(expected = NullPointerException.class)
     public void combineLatestIterableOneIsNull() {
         Flowable.combineLatestDelayError(Arrays.asList(Flowable.never(), null), new Function<Object[], Object>() {
@@ -112,13 +109,11 @@ public class FlowableNullTests extends RxJavaTest {
         }).blockingLast();
     }
 
-    @SuppressWarnings("unchecked")
     @Test(expected = NullPointerException.class)
     public void combineLatestIterableFunctionNull() {
         Flowable.combineLatestDelayError(Arrays.asList(just1), null);
     }
 
-    @SuppressWarnings("unchecked")
     @Test(expected = NullPointerException.class)
     public void combineLatestIterableFunctionReturnsNull() {
         Flowable.combineLatestDelayError(Arrays.asList(just1), new Function<Object[], Object>() {
@@ -144,7 +139,6 @@ public class FlowableNullTests extends RxJavaTest {
         }).blockingLast();
     }
 
-    @SuppressWarnings("unchecked")
     @Test(expected = NullPointerException.class)
     public void concatIterableOneIsNull() {
         Flowable.concat(Arrays.asList(just1, null)).blockingLast();
@@ -161,7 +155,6 @@ public class FlowableNullTests extends RxJavaTest {
         Flowable.concatArray((Publisher<Object>[])null);
     }
 
-    @SuppressWarnings("unchecked")
     @Test(expected = NullPointerException.class)
     public void concatArrayOneIsNull() {
         Flowable.concatArray(just1, null).blockingLast();
@@ -239,10 +232,10 @@ public class FlowableNullTests extends RxJavaTest {
 
     @Test
     public void fromFutureReturnsNull() {
-        FutureTask<Object> f = new FutureTask<Object>(Functions.EMPTY_RUNNABLE, null);
+        FutureTask<Object> f = new FutureTask<>(Functions.EMPTY_RUNNABLE, null);
         f.run();
 
-        TestSubscriber<Object> ts = new TestSubscriber<Object>();
+        TestSubscriber<Object> ts = new TestSubscriber<>();
         Flowable.fromFuture(f).subscribe(ts);
         ts.assertNoValues();
         ts.assertNotComplete();
@@ -256,24 +249,24 @@ public class FlowableNullTests extends RxJavaTest {
 
     @Test(expected = NullPointerException.class)
     public void fromFutureTimedUnitNull() {
-        Flowable.fromFuture(new FutureTask<Object>(Functions.EMPTY_RUNNABLE, null), 1, null);
+        Flowable.fromFuture(new FutureTask<>(Functions.EMPTY_RUNNABLE, null), 1, null);
     }
 
     @Test(expected = NullPointerException.class)
     public void fromFutureTimedSchedulerNull() {
-        Flowable.fromFuture(new FutureTask<Object>(Functions.EMPTY_RUNNABLE, null), 1, TimeUnit.SECONDS, null);
+        Flowable.fromFuture(new FutureTask<>(Functions.EMPTY_RUNNABLE, null), 1, TimeUnit.SECONDS, null);
     }
 
     @Test(expected = NullPointerException.class)
     public void fromFutureTimedReturnsNull() {
-      FutureTask<Object> f = new FutureTask<Object>(Functions.EMPTY_RUNNABLE, null);
+      FutureTask<Object> f = new FutureTask<>(Functions.EMPTY_RUNNABLE, null);
         f.run();
         Flowable.fromFuture(f, 1, TimeUnit.SECONDS).blockingLast();
     }
 
     @Test(expected = NullPointerException.class)
     public void fromFutureSchedulerNull() {
-        Flowable.fromFuture(new FutureTask<Object>(Functions.EMPTY_RUNNABLE, null), null);
+        Flowable.fromFuture(new FutureTask<>(Functions.EMPTY_RUNNABLE, null), null);
     }
 
     @Test(expected = NullPointerException.class)
@@ -480,7 +473,6 @@ public class FlowableNullTests extends RxJavaTest {
         }, 128, 128).blockingLast();
     }
 
-    @SuppressWarnings("unchecked")
     @Test(expected = NullPointerException.class)
     public void mergeIterableOneIsNull() {
         Flowable.merge(Arrays.asList(just1, null), 128, 128).blockingLast();
@@ -491,7 +483,6 @@ public class FlowableNullTests extends RxJavaTest {
         Flowable.mergeArray(128, 128, (Publisher<Object>[])null);
     }
 
-    @SuppressWarnings("unchecked")
     @Test(expected = NullPointerException.class)
     public void mergeArrayOneIsNull() {
         Flowable.mergeArray(128, 128, just1, null).blockingLast();
@@ -512,7 +503,6 @@ public class FlowableNullTests extends RxJavaTest {
         }, 128, 128).blockingLast();
     }
 
-    @SuppressWarnings("unchecked")
     @Test(expected = NullPointerException.class)
     public void mergeDelayErrorIterableOneIsNull() {
         Flowable.mergeDelayError(Arrays.asList(just1, null), 128, 128).blockingLast();
@@ -523,7 +513,6 @@ public class FlowableNullTests extends RxJavaTest {
         Flowable.mergeArrayDelayError(128, 128, (Publisher<Object>[])null);
     }
 
-    @SuppressWarnings("unchecked")
     @Test(expected = NullPointerException.class)
     public void mergeDelayErrorArrayOneIsNull() {
         Flowable.mergeArrayDelayError(128, 128, just1, null).blockingLast();
@@ -634,13 +623,11 @@ public class FlowableNullTests extends RxJavaTest {
         }).blockingLast();
     }
 
-    @SuppressWarnings("unchecked")
     @Test(expected = NullPointerException.class)
     public void zipIterableFunctionNull() {
         Flowable.zip(Arrays.asList(just1, just1), null);
     }
 
-    @SuppressWarnings("unchecked")
     @Test(expected = NullPointerException.class)
     public void zipIterableFunctionReturnsNull() {
         Flowable.zip(Arrays.asList(just1, just1), new Function<Object[], Object>() {
@@ -676,13 +663,11 @@ public class FlowableNullTests extends RxJavaTest {
         }, true, 128).blockingLast();
     }
 
-    @SuppressWarnings("unchecked")
     @Test(expected = NullPointerException.class)
     public void zipIterable2FunctionNull() {
         Flowable.zip(Arrays.asList(just1, just1), null, true, 128);
     }
 
-    @SuppressWarnings("unchecked")
     @Test(expected = NullPointerException.class)
     public void zipIterable2FunctionReturnsNull() {
         Flowable.zip(Arrays.asList(just1, just1), new Function<Object[], Object>() {
@@ -2392,7 +2377,7 @@ public class FlowableNullTests extends RxJavaTest {
         }, new Supplier<Map<Integer, Collection<Integer>>>() {
             @Override
             public Map<Integer, Collection<Integer>> get() {
-                return new HashMap<Integer, Collection<Integer>>();
+                return new HashMap<>();
             }
         }, null);
     }
@@ -2412,7 +2397,7 @@ public class FlowableNullTests extends RxJavaTest {
         }, new Supplier<Map<Integer, Collection<Integer>>>() {
             @Override
             public Map<Integer, Collection<Integer>> get() {
-                return new HashMap<Integer, Collection<Integer>>();
+                return new HashMap<>();
             }
         }, new Function<Integer, Collection<Integer>>() {
             @Override
@@ -2679,7 +2664,6 @@ public class FlowableNullTests extends RxJavaTest {
         just1.subscribe((FlowableSubscriber<Object>)null);
     }
 
-    @SuppressWarnings("unchecked")
     @Test(expected = NullPointerException.class)
     public void combineLatestDelayErrorIterableFunctionReturnsNull() {
         Flowable.combineLatestDelayError(Arrays.asList(just1), new Function<Object[], Object>() {
@@ -2690,7 +2674,6 @@ public class FlowableNullTests extends RxJavaTest {
         }, 128).blockingLast();
     }
 
-    @SuppressWarnings("unchecked")
     @Test(expected = NullPointerException.class)
     public void combineLatestDelayErrorIterableFunctionNull() {
         Flowable.combineLatestDelayError(Arrays.asList(just1), null, 128);
@@ -2731,7 +2714,6 @@ public class FlowableNullTests extends RxJavaTest {
         just1.doOnCancel(null);
     }
 
-    @SuppressWarnings("unchecked")
     @Test(expected = NullPointerException.class)
     public void combineLatestDelayErrorIterableOneIsNull() {
         Flowable.combineLatestDelayError(Arrays.asList(Flowable.never(), null), new Function<Object[], Object>() {

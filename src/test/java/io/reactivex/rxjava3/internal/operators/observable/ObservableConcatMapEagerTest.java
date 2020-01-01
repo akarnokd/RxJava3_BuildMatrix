@@ -197,7 +197,7 @@ public class ObservableConcatMapEagerTest extends RxJavaTest {
 
     @Before
     public void before() {
-        to = new TestObserver<Object>();
+        to = new TestObserver<>();
     }
 
     @Test
@@ -218,7 +218,6 @@ public class ObservableConcatMapEagerTest extends RxJavaTest {
         to.assertComplete();
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void eagerness2() {
         final AtomicInteger count = new AtomicInteger();
@@ -238,7 +237,6 @@ public class ObservableConcatMapEagerTest extends RxJavaTest {
         to.assertComplete();
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void eagerness3() {
         final AtomicInteger count = new AtomicInteger();
@@ -258,7 +256,6 @@ public class ObservableConcatMapEagerTest extends RxJavaTest {
         to.assertComplete();
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void eagerness4() {
         final AtomicInteger count = new AtomicInteger();
@@ -278,7 +275,6 @@ public class ObservableConcatMapEagerTest extends RxJavaTest {
         to.assertComplete();
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void eagerness5() {
         final AtomicInteger count = new AtomicInteger();
@@ -298,7 +294,6 @@ public class ObservableConcatMapEagerTest extends RxJavaTest {
         to.assertComplete();
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void eagerness6() {
         final AtomicInteger count = new AtomicInteger();
@@ -318,7 +313,6 @@ public class ObservableConcatMapEagerTest extends RxJavaTest {
         to.assertComplete();
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void eagerness7() {
         final AtomicInteger count = new AtomicInteger();
@@ -338,7 +332,6 @@ public class ObservableConcatMapEagerTest extends RxJavaTest {
         to.assertComplete();
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void eagerness8() {
         final AtomicInteger count = new AtomicInteger();
@@ -358,7 +351,6 @@ public class ObservableConcatMapEagerTest extends RxJavaTest {
         to.assertComplete();
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void eagerness9() {
         final AtomicInteger count = new AtomicInteger();
@@ -387,7 +379,6 @@ public class ObservableConcatMapEagerTest extends RxJavaTest {
         to.assertNotComplete();
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void innerError() {
         // TODO verify: concatMapEager subscribes first then consumes the sources is okay
@@ -404,7 +395,6 @@ public class ObservableConcatMapEagerTest extends RxJavaTest {
         to.assertNotComplete();
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void innerEmpty() {
         Observable.concatArrayEager(Observable.empty(), Observable.empty()).subscribe(to);
@@ -503,7 +493,6 @@ public class ObservableConcatMapEagerTest extends RxJavaTest {
         }
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void capacityHint() {
         Observable<Integer> source = Observable.just(1);
@@ -540,7 +529,6 @@ public class ObservableConcatMapEagerTest extends RxJavaTest {
         to.assertComplete();
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void badCapacityHint() throws Exception {
         Observable<Integer> source = Observable.just(1);
@@ -564,7 +552,6 @@ public class ObservableConcatMapEagerTest extends RxJavaTest {
 
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void concatEagerIterable() {
         Observable.concatEager(Arrays.asList(Observable.just(1), Observable.just(2)))
@@ -723,7 +710,7 @@ public class ObservableConcatMapEagerTest extends RxJavaTest {
 
     @Test
     public void mapperCancels() {
-        final TestObserver<Integer> to = new TestObserver<Integer>();
+        final TestObserver<Integer> to = new TestObserver<>();
 
         Observable.just(1).hide()
         .concatMapEager(new Function<Integer, ObservableSource<Integer>>() {
@@ -837,7 +824,7 @@ public class ObservableConcatMapEagerTest extends RxJavaTest {
     public void maxConcurrencyOf2() {
         List<Integer>[] list = new ArrayList[100];
         for (int i = 0; i < 100; i++) {
-            List<Integer> lst = new ArrayList<Integer>();
+            List<Integer> lst = new ArrayList<>();
             list[i] = lst;
             for (int k = 1; k <= 10; k++) {
                 lst.add((i) * 10 + k);
@@ -873,7 +860,6 @@ public class ObservableConcatMapEagerTest extends RxJavaTest {
         PublishSubject<Integer> ps2 = PublishSubject.create();
         PublishSubject<Integer> ps3 = PublishSubject.create();
 
-        @SuppressWarnings("unchecked")
         TestObserver<Integer> to = Observable.concatArrayEagerDelayError(ps1, ps2, ps3)
         .test();
 
@@ -907,7 +893,6 @@ public class ObservableConcatMapEagerTest extends RxJavaTest {
         PublishSubject<Integer> ps2 = PublishSubject.create();
         PublishSubject<Integer> ps3 = PublishSubject.create();
 
-        @SuppressWarnings("unchecked")
         TestObserver<Integer> to = Observable.concatArrayEagerDelayError(2, 2, ps1, ps2, ps3)
         .test();
 
@@ -943,7 +928,6 @@ public class ObservableConcatMapEagerTest extends RxJavaTest {
         PublishSubject<Integer> ps2 = PublishSubject.create();
         PublishSubject<Integer> ps3 = PublishSubject.create();
 
-        @SuppressWarnings("unchecked")
         TestObserver<Integer> to = Observable.concatArrayEagerDelayError(2, 2, ps1, ps2, ps3)
         .test();
 

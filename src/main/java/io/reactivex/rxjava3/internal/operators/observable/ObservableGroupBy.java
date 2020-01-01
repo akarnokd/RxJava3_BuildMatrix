@@ -23,7 +23,6 @@ import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.exceptions.Exceptions;
 import io.reactivex.rxjava3.functions.Function;
 import io.reactivex.rxjava3.internal.disposables.*;
-import io.reactivex.rxjava3.internal.functions.ObjectHelper;
 import io.reactivex.rxjava3.internal.queue.SpscLinkedArrayQueue;
 import io.reactivex.rxjava3.observables.GroupedObservable;
 
@@ -45,7 +44,7 @@ public final class ObservableGroupBy<T, K, V> extends AbstractObservableWithUpst
 
     @Override
     public void subscribeActual(Observer<? super GroupedObservable<K, V>> t) {
-        source.subscribe(new GroupByObserver<T, K, V>(t, keySelector, valueSelector, bufferSize, delayError));
+        source.subscribe(new GroupByObserver<>(t, keySelector, valueSelector, bufferSize, delayError));
     }
 
     public static final class GroupByObserver<T, K, V> extends AtomicInteger implements Observer<T>, Disposable {
@@ -71,7 +70,7 @@ public final class ObservableGroupBy<T, K, V> extends AbstractObservableWithUpst
             this.valueSelector = valueSelector;
             this.bufferSize = bufferSize;
             this.delayError = delayError;
-            this.groups = new ConcurrentHashMap<Object, GroupedUnicast<K, V>>();
+            this.groups = new ConcurrentHashMap<>();
             this.lazySet(1);
         }
 
@@ -115,7 +114,7 @@ public final class ObservableGroupBy<T, K, V> extends AbstractObservableWithUpst
 
             V v;
             try {
-                v = ObjectHelper.requireNonNull(valueSelector.apply(t), "The value supplied is null");
+                v = Objects.requireNonNull(valueSelector.apply(t), "The value supplied is null");
             } catch (Throwable e) {
                 Exceptions.throwIfFatal(e);
                 upstream.dispose();
@@ -140,7 +139,7 @@ public final class ObservableGroupBy<T, K, V> extends AbstractObservableWithUpst
 
         @Override
         public void onError(Throwable t) {
-            List<GroupedUnicast<K, V>> list = new ArrayList<GroupedUnicast<K, V>>(groups.values());
+            List<GroupedUnicast<K, V>> list = new ArrayList<>(groups.values());
             groups.clear();
 
             for (GroupedUnicast<K, V> e : list) {
@@ -152,7 +151,7 @@ public final class ObservableGroupBy<T, K, V> extends AbstractObservableWithUpst
 
         @Override
         public void onComplete() {
-            List<GroupedUnicast<K, V>> list = new ArrayList<GroupedUnicast<K, V>>(groups.values());
+            List<GroupedUnicast<K, V>> list = new ArrayList<>(groups.values());
             groups.clear();
 
             for (GroupedUnicast<K, V> e : list) {
@@ -192,8 +191,8 @@ public final class ObservableGroupBy<T, K, V> extends AbstractObservableWithUpst
         final State<T, K> state;
 
         public static <T, K> GroupedUnicast<K, T> createWith(K key, int bufferSize, GroupByObserver<?, K, T> parent, boolean delayError) {
-            State<T, K> state = new State<T, K>(bufferSize, parent, key, delayError);
-            return new GroupedUnicast<K, T>(key, state);
+            State<T, K> state = new State<>(bufferSize, parent, key, delayError);
+            return new GroupedUnicast<>(key, state);
         }
 
         protected GroupedUnicast(K key, State<T, K> state) {
@@ -233,7 +232,7 @@ public final class ObservableGroupBy<T, K, V> extends AbstractObservableWithUpst
 
         final AtomicBoolean cancelled = new AtomicBoolean();
 
-        final AtomicReference<Observer<? super T>> actual = new AtomicReference<Observer<? super T>>();
+        final AtomicReference<Observer<? super T>> actual = new AtomicReference<>();
 
         final AtomicInteger once = new AtomicInteger();
 
@@ -243,7 +242,7 @@ public final class ObservableGroupBy<T, K, V> extends AbstractObservableWithUpst
         static final int ABANDONED_HAS_SUBSCRIBER = ABANDONED | HAS_SUBSCRIBER;
 
         State(int bufferSize, GroupByObserver<?, K, T> parent, K key, boolean delayError) {
-            this.queue = new SpscLinkedArrayQueue<T>(bufferSize);
+            this.queue = new SpscLinkedArrayQueue<>(bufferSize);
             this.parent = parent;
             this.key = key;
             this.delayError = delayError;

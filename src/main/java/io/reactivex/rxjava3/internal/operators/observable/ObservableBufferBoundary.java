@@ -22,7 +22,6 @@ import io.reactivex.rxjava3.disposables.*;
 import io.reactivex.rxjava3.exceptions.Exceptions;
 import io.reactivex.rxjava3.functions.*;
 import io.reactivex.rxjava3.internal.disposables.DisposableHelper;
-import io.reactivex.rxjava3.internal.functions.ObjectHelper;
 import io.reactivex.rxjava3.internal.queue.SpscLinkedArrayQueue;
 import io.reactivex.rxjava3.internal.util.AtomicThrowable;
 import io.reactivex.rxjava3.plugins.RxJavaPlugins;
@@ -44,7 +43,7 @@ extends AbstractObservableWithUpstream<T, U> {
     @Override
     protected void subscribeActual(Observer<? super U> t) {
         BufferBoundaryObserver<T, U, Open, Close> parent =
-            new BufferBoundaryObserver<T, U, Open, Close>(
+            new BufferBoundaryObserver<>(
                 t, bufferOpen, bufferClose, bufferSupplier
             );
         t.onSubscribe(parent);
@@ -89,10 +88,10 @@ extends AbstractObservableWithUpstream<T, U> {
             this.bufferSupplier = bufferSupplier;
             this.bufferOpen = bufferOpen;
             this.bufferClose = bufferClose;
-            this.queue = new SpscLinkedArrayQueue<C>(bufferSize());
+            this.queue = new SpscLinkedArrayQueue<>(bufferSize());
             this.observers = new CompositeDisposable();
-            this.upstream = new AtomicReference<Disposable>();
-            this.buffers = new LinkedHashMap<Long, C>();
+            this.upstream = new AtomicReference<>();
+            this.buffers = new LinkedHashMap<>();
             this.errors = new AtomicThrowable();
         }
 
@@ -100,7 +99,7 @@ extends AbstractObservableWithUpstream<T, U> {
         public void onSubscribe(Disposable d) {
             if (DisposableHelper.setOnce(this.upstream, d)) {
 
-                BufferOpenObserver<Open> open = new BufferOpenObserver<Open>(this);
+                BufferOpenObserver<Open> open = new BufferOpenObserver<>(this);
                 observers.add(open);
 
                 bufferOpen.subscribe(open);
@@ -172,8 +171,8 @@ extends AbstractObservableWithUpstream<T, U> {
             ObservableSource<? extends Close> p;
             C buf;
             try {
-                buf = ObjectHelper.requireNonNull(bufferSupplier.get(), "The bufferSupplier returned a null Collection");
-                p = ObjectHelper.requireNonNull(bufferClose.apply(token), "The bufferClose returned a null ObservableSource");
+                buf = Objects.requireNonNull(bufferSupplier.get(), "The bufferSupplier returned a null Collection");
+                p = Objects.requireNonNull(bufferClose.apply(token), "The bufferClose returned a null ObservableSource");
             } catch (Throwable ex) {
                 Exceptions.throwIfFatal(ex);
                 DisposableHelper.dispose(upstream);
@@ -191,7 +190,7 @@ extends AbstractObservableWithUpstream<T, U> {
                 bufs.put(idx, buf);
             }
 
-            BufferCloseObserver<T, C> bc = new BufferCloseObserver<T, C>(this, idx);
+            BufferCloseObserver<T, C> bc = new BufferCloseObserver<>(this, idx);
             observers.add(bc);
             p.subscribe(bc);
         }

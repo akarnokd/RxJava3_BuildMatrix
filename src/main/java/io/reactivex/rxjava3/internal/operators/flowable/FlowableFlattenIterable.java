@@ -13,7 +13,7 @@
 
 package io.reactivex.rxjava3.internal.operators.flowable;
 
-import java.util.Iterator;
+import java.util.*;
 import java.util.concurrent.atomic.*;
 
 import org.reactivestreams.*;
@@ -22,7 +22,6 @@ import io.reactivex.rxjava3.annotations.Nullable;
 import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.exceptions.*;
 import io.reactivex.rxjava3.functions.*;
-import io.reactivex.rxjava3.internal.functions.ObjectHelper;
 import io.reactivex.rxjava3.internal.fuseable.*;
 import io.reactivex.rxjava3.internal.queue.SpscArrayQueue;
 import io.reactivex.rxjava3.internal.subscriptions.*;
@@ -77,7 +76,20 @@ public final class FlowableFlattenIterable<T, R> extends AbstractFlowableWithUps
 
             return;
         }
-        source.subscribe(new FlattenIterableSubscriber<T, R>(s, mapper, prefetch));
+        source.subscribe(new FlattenIterableSubscriber<>(s, mapper, prefetch));
+    }
+
+    /**
+     * Create a {@link Subscriber} with the given parameters.
+     * @param <T> the upstream value type
+     * @param <R> the {@link Iterable} and output value type
+     * @param downstream the downstream {@code Subscriber} to wrap
+     * @param mapper the mapper function
+     * @param prefetch the number of items to prefetch
+     * @return the new {@code Subscriber}
+     */
+    public static <T, R> Subscriber<T> subscribe(Subscriber<? super R> downstream, Function<? super T, ? extends Iterable<? extends R>> mapper, int prefetch) {
+        return new FlattenIterableSubscriber<>(downstream, mapper, prefetch);
     }
 
     static final class FlattenIterableSubscriber<T, R>
@@ -118,7 +130,7 @@ public final class FlowableFlattenIterable<T, R> extends AbstractFlowableWithUps
             this.mapper = mapper;
             this.prefetch = prefetch;
             this.limit = prefetch - (prefetch >> 2);
-            this.error = new AtomicReference<Throwable>();
+            this.error = new AtomicReference<>();
             this.requested = new AtomicLong();
         }
 
@@ -153,7 +165,7 @@ public final class FlowableFlattenIterable<T, R> extends AbstractFlowableWithUps
                     }
                 }
 
-                queue = new SpscArrayQueue<T>(prefetch);
+                queue = new SpscArrayQueue<>(prefetch);
 
                 downstream.onSubscribe(this);
 
@@ -297,7 +309,7 @@ public final class FlowableFlattenIterable<T, R> extends AbstractFlowableWithUps
                         R v;
 
                         try {
-                            v = ObjectHelper.requireNonNull(it.next(), "The iterator returned a null value");
+                            v = Objects.requireNonNull(it.next(), "The iterator returned a null value");
                         } catch (Throwable ex) {
                             Exceptions.throwIfFatal(ex);
                             current = null;
@@ -432,7 +444,7 @@ public final class FlowableFlattenIterable<T, R> extends AbstractFlowableWithUps
                     current = it;
                 }
 
-                R r = ObjectHelper.requireNonNull(it.next(), "The iterator returned a null value");
+                R r = Objects.requireNonNull(it.next(), "The iterator returned a null value");
 
                 if (!it.hasNext()) {
                     current = null;

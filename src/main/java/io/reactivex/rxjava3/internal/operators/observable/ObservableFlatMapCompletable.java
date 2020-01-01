@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava3.internal.operators.observable;
 
+import java.util.Objects;
 import java.util.concurrent.atomic.AtomicReference;
 
 import io.reactivex.rxjava3.annotations.Nullable;
@@ -21,7 +22,6 @@ import io.reactivex.rxjava3.disposables.*;
 import io.reactivex.rxjava3.exceptions.Exceptions;
 import io.reactivex.rxjava3.functions.Function;
 import io.reactivex.rxjava3.internal.disposables.DisposableHelper;
-import io.reactivex.rxjava3.internal.functions.ObjectHelper;
 import io.reactivex.rxjava3.internal.observers.BasicIntQueueDisposable;
 import io.reactivex.rxjava3.internal.util.AtomicThrowable;
 
@@ -44,7 +44,7 @@ public final class ObservableFlatMapCompletable<T> extends AbstractObservableWit
 
     @Override
     protected void subscribeActual(Observer<? super T> observer) {
-        source.subscribe(new FlatMapCompletableMainObserver<T>(observer, mapper, delayErrors));
+        source.subscribe(new FlatMapCompletableMainObserver<>(observer, mapper, delayErrors));
     }
 
     static final class FlatMapCompletableMainObserver<T> extends BasicIntQueueDisposable<T>
@@ -88,7 +88,7 @@ public final class ObservableFlatMapCompletable<T> extends AbstractObservableWit
             CompletableSource cs;
 
             try {
-                cs = ObjectHelper.requireNonNull(mapper.apply(value), "The mapper returned a null CompletableSource");
+                cs = Objects.requireNonNull(mapper.apply(value), "The mapper returned a null CompletableSource");
             } catch (Throwable ex) {
                 Exceptions.throwIfFatal(ex);
                 upstream.dispose();
@@ -145,7 +145,7 @@ public final class ObservableFlatMapCompletable<T> extends AbstractObservableWit
 
         @Nullable
         @Override
-        public T poll() throws Exception {
+        public T poll() {
             return null; // always empty
         }
 

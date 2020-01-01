@@ -26,8 +26,8 @@ public class FutureDisposableTest extends RxJavaTest {
 
     @Test
     public void normal() {
-        FutureTask<Object> ft = new FutureTask<Object>(Functions.EMPTY_RUNNABLE, null);
-        Disposable d = Disposables.fromFuture(ft);
+        FutureTask<Object> ft = new FutureTask<>(Functions.EMPTY_RUNNABLE, null);
+        Disposable d = Disposable.fromFuture(ft);
         assertFalse(d.isDisposed());
 
         d.dispose();
@@ -43,8 +43,8 @@ public class FutureDisposableTest extends RxJavaTest {
 
     @Test
     public void interruptible() {
-        FutureTask<Object> ft = new FutureTask<Object>(Functions.EMPTY_RUNNABLE, null);
-        Disposable d = Disposables.fromFuture(ft, true);
+        FutureTask<Object> ft = new FutureTask<>(Functions.EMPTY_RUNNABLE, null);
+        Disposable d = Disposable.fromFuture(ft, true);
         assertFalse(d.isDisposed());
 
         d.dispose();
@@ -60,7 +60,7 @@ public class FutureDisposableTest extends RxJavaTest {
 
     @Test
     public void normalDone() {
-        FutureTask<Object> ft = new FutureTask<Object>(Functions.EMPTY_RUNNABLE, null);
+        FutureTask<Object> ft = new FutureTask<>(Functions.EMPTY_RUNNABLE, null);
         FutureDisposable d = new FutureDisposable(ft, false);
         assertFalse(d.isDisposed());
 

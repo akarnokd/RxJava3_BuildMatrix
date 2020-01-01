@@ -21,11 +21,12 @@ import io.reactivex.rxjava3.annotations.NonNull;
  *
  * @param <T> the value type pushed
  */
+@FunctionalInterface
 public interface MaybeOnSubscribe<T> {
 
     /**
-     * Called for each MaybeObserver that subscribes.
-     * @param emitter the safe emitter instance, never null
+     * Called for each {@link MaybeObserver} that subscribes.
+     * @param emitter the safe emitter instance, never {@code null}
      * @throws Throwable on error
      */
     void subscribe(@NonNull MaybeEmitter<T> emitter) throws Throwable;

@@ -155,7 +155,7 @@ public class FlowableMapTest extends RxJavaTest {
 
     @Test
     public void mapWithError() {
-        final List<Throwable> errors = new ArrayList<Throwable>();
+        final List<Throwable> errors = new ArrayList<>();
 
         Flowable<String> w = Flowable.just("one", "fail", "two", "three", "fail");
         Flowable<String> m = w.map(new Function<String, String>() {
@@ -261,7 +261,7 @@ public class FlowableMapTest extends RxJavaTest {
     }
 
     private static Map<String, String> getMap(String prefix) {
-        Map<String, String> m = new HashMap<String, String>();
+        Map<String, String> m = new HashMap<>();
         m.put("firstName", prefix + "First");
         m.put("lastName", prefix + "Last");
         return m;
@@ -272,7 +272,7 @@ public class FlowableMapTest extends RxJavaTest {
 
         PublishProcessor<Integer> pp = PublishProcessor.create();
 
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+        TestSubscriber<Integer> ts = new TestSubscriber<>();
 
         pp.map(new Function<Integer, Integer>() {
             @Override
@@ -583,13 +583,13 @@ public class FlowableMapTest extends RxJavaTest {
     public void fusedAsync() {
         TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>().setInitialFusionMode(QueueFuseable.ANY);
 
-        UnicastProcessor<Integer> us = UnicastProcessor.create();
+        UnicastProcessor<Integer> up = UnicastProcessor.create();
 
-        us
+        up
         .map(Functions.<Integer>identity())
         .subscribe(ts);
 
-        TestHelper.emit(us, 1, 2, 3, 4, 5);
+        TestHelper.emit(up, 1, 2, 3, 4, 5);
 
         ts.assertFusionMode(QueueFuseable.ASYNC)
         .assertResult(1, 2, 3, 4, 5);

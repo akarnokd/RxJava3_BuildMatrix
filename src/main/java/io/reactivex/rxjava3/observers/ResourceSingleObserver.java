@@ -13,13 +13,13 @@
 
 package io.reactivex.rxjava3.observers;
 
+import java.util.Objects;
 import java.util.concurrent.atomic.AtomicReference;
 
 import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.core.SingleObserver;
 import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.internal.disposables.*;
-import io.reactivex.rxjava3.internal.functions.ObjectHelper;
 import io.reactivex.rxjava3.internal.util.EndConsumerHelper;
 
 /**
@@ -77,20 +77,20 @@ import io.reactivex.rxjava3.internal.util.EndConsumerHelper;
  */
 public abstract class ResourceSingleObserver<T> implements SingleObserver<T>, Disposable {
     /** The active subscription. */
-    private final AtomicReference<Disposable> upstream = new AtomicReference<Disposable>();
+    private final AtomicReference<Disposable> upstream = new AtomicReference<>();
 
     /** The resource composite, can never be null. */
     private final ListCompositeDisposable resources = new ListCompositeDisposable();
 
     /**
-     * Adds a resource to this ResourceObserver.
+     * Adds a resource to this {@code ResourceSingleObserver}.
      *
      * @param resource the resource to add
      *
-     * @throws NullPointerException if resource is null
+     * @throws NullPointerException if resource is {@code null}
      */
     public final void add(@NonNull Disposable resource) {
-        ObjectHelper.requireNonNull(resource, "resource is null");
+        Objects.requireNonNull(resource, "resource is null");
         resources.add(resource);
     }
 
@@ -102,7 +102,7 @@ public abstract class ResourceSingleObserver<T> implements SingleObserver<T>, Di
     }
 
     /**
-     * Called once the upstream sets a Subscription on this ResourceObserver.
+     * Called once the upstream sets a {@link Disposable} on this {@code ResourceSingleObserver}.
      *
      * <p>You can perform initialization at this moment. The default
      * implementation does nothing.
@@ -112,10 +112,10 @@ public abstract class ResourceSingleObserver<T> implements SingleObserver<T>, Di
 
     /**
      * Cancels the main disposable (if any) and disposes the resources associated with
-     * this ResourceObserver (if any).
+     * this {@code ResourceSingleObserver} (if any).
      *
-     * <p>This method can be called before the upstream calls onSubscribe at which
-     * case the main Disposable will be immediately disposed.
+     * <p>This method can be called before the upstream calls {@link #onSubscribe(Disposable)} at which
+     * case the main {@link Disposable} will be immediately disposed.
      */
     @Override
     public final void dispose() {
@@ -125,8 +125,8 @@ public abstract class ResourceSingleObserver<T> implements SingleObserver<T>, Di
     }
 
     /**
-     * Returns true if this ResourceObserver has been disposed/cancelled.
-     * @return true if this ResourceObserver has been disposed/cancelled
+     * Returns true if this {@code ResourceSingleObserver} has been disposed/cancelled.
+     * @return true if this {@code ResourceSingleObserver} has been disposed/cancelled
      */
     @Override
     public final boolean isDisposed() {

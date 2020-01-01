@@ -18,9 +18,10 @@ import org.reactivestreams.*;
 import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.exceptions.Exceptions;
 import io.reactivex.rxjava3.functions.BiFunction;
-import io.reactivex.rxjava3.internal.functions.ObjectHelper;
 import io.reactivex.rxjava3.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.rxjava3.plugins.RxJavaPlugins;
+
+import java.util.Objects;
 
 public final class FlowableScan<T> extends AbstractFlowableWithUpstream<T, T> {
     final BiFunction<T, T, T> accumulator;
@@ -31,7 +32,7 @@ public final class FlowableScan<T> extends AbstractFlowableWithUpstream<T, T> {
 
     @Override
     protected void subscribeActual(Subscriber<? super T> s) {
-        source.subscribe(new ScanSubscriber<T>(s, accumulator));
+        source.subscribe(new ScanSubscriber<>(s, accumulator));
     }
 
     static final class ScanSubscriber<T> implements FlowableSubscriber<T>, Subscription {
@@ -71,7 +72,7 @@ public final class FlowableScan<T> extends AbstractFlowableWithUpstream<T, T> {
                 T u;
 
                 try {
-                    u = ObjectHelper.requireNonNull(accumulator.apply(v, t), "The value returned by the accumulator is null");
+                    u = Objects.requireNonNull(accumulator.apply(v, t), "The value returned by the accumulator is null");
                 } catch (Throwable e) {
                     Exceptions.throwIfFatal(e);
                     upstream.cancel();

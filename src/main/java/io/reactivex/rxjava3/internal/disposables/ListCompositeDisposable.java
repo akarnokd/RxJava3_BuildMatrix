@@ -16,7 +16,6 @@ import java.util.*;
 
 import io.reactivex.rxjava3.disposables.*;
 import io.reactivex.rxjava3.exceptions.*;
-import io.reactivex.rxjava3.internal.functions.ObjectHelper;
 import io.reactivex.rxjava3.internal.util.ExceptionHelper;
 
 /**
@@ -32,19 +31,19 @@ public final class ListCompositeDisposable implements Disposable, DisposableCont
     }
 
     public ListCompositeDisposable(Disposable... resources) {
-        ObjectHelper.requireNonNull(resources, "resources is null");
-        this.resources = new LinkedList<Disposable>();
+        Objects.requireNonNull(resources, "resources is null");
+        this.resources = new LinkedList<>();
         for (Disposable d : resources) {
-            ObjectHelper.requireNonNull(d, "Disposable item is null");
+            Objects.requireNonNull(d, "Disposable item is null");
             this.resources.add(d);
         }
     }
 
     public ListCompositeDisposable(Iterable<? extends Disposable> resources) {
-        ObjectHelper.requireNonNull(resources, "resources is null");
-        this.resources = new LinkedList<Disposable>();
+        Objects.requireNonNull(resources, "resources is null");
+        this.resources = new LinkedList<>();
         for (Disposable d : resources) {
-            ObjectHelper.requireNonNull(d, "Disposable item is null");
+            Objects.requireNonNull(d, "Disposable item is null");
             this.resources.add(d);
         }
     }
@@ -74,13 +73,13 @@ public final class ListCompositeDisposable implements Disposable, DisposableCont
 
     @Override
     public boolean add(Disposable d) {
-        ObjectHelper.requireNonNull(d, "d is null");
+        Objects.requireNonNull(d, "d is null");
         if (!disposed) {
             synchronized (this) {
                 if (!disposed) {
                     List<Disposable> set = resources;
                     if (set == null) {
-                        set = new LinkedList<Disposable>();
+                        set = new LinkedList<>();
                         resources = set;
                     }
                     set.add(d);
@@ -93,17 +92,17 @@ public final class ListCompositeDisposable implements Disposable, DisposableCont
     }
 
     public boolean addAll(Disposable... ds) {
-        ObjectHelper.requireNonNull(ds, "ds is null");
+        Objects.requireNonNull(ds, "ds is null");
         if (!disposed) {
             synchronized (this) {
                 if (!disposed) {
                     List<Disposable> set = resources;
                     if (set == null) {
-                        set = new LinkedList<Disposable>();
+                        set = new LinkedList<>();
                         resources = set;
                     }
                     for (Disposable d : ds) {
-                        ObjectHelper.requireNonNull(d, "d is null");
+                        Objects.requireNonNull(d, "d is null");
                         set.add(d);
                     }
                     return true;
@@ -127,7 +126,7 @@ public final class ListCompositeDisposable implements Disposable, DisposableCont
 
     @Override
     public boolean delete(Disposable d) {
-        ObjectHelper.requireNonNull(d, "Disposable item is null");
+        Objects.requireNonNull(d, "Disposable item is null");
         if (disposed) {
             return false;
         }
@@ -172,7 +171,7 @@ public final class ListCompositeDisposable implements Disposable, DisposableCont
             } catch (Throwable ex) {
                 Exceptions.throwIfFatal(ex);
                 if (errors == null) {
-                    errors = new ArrayList<Throwable>();
+                    errors = new ArrayList<>();
                 }
                 errors.add(ex);
             }

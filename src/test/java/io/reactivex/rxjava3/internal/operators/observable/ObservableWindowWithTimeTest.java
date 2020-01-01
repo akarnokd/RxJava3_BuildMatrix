@@ -19,12 +19,12 @@ import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.*;
 
+import io.reactivex.rxjava3.disposables.Disposable;
 import org.junit.*;
 
 import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.core.Observer;
-import io.reactivex.rxjava3.disposables.Disposables;
 import io.reactivex.rxjava3.exceptions.TestException;
 import io.reactivex.rxjava3.functions.*;
 import io.reactivex.rxjava3.internal.functions.Functions;
@@ -46,13 +46,13 @@ public class ObservableWindowWithTimeTest extends RxJavaTest {
 
     @Test
     public void timedAndCount() {
-        final List<String> list = new ArrayList<String>();
-        final List<List<String>> lists = new ArrayList<List<String>>();
+        final List<String> list = new ArrayList<>();
+        final List<List<String>> lists = new ArrayList<>();
 
         Observable<String> source = Observable.unsafeCreate(new ObservableSource<String>() {
             @Override
             public void subscribe(Observer<? super String> observer) {
-                observer.onSubscribe(Disposables.empty());
+                observer.onSubscribe(Disposable.empty());
                 push(observer, "one", 10);
                 push(observer, "two", 90);
                 push(observer, "three", 110);
@@ -82,13 +82,13 @@ public class ObservableWindowWithTimeTest extends RxJavaTest {
 
     @Test
     public void timed() {
-        final List<String> list = new ArrayList<String>();
-        final List<List<String>> lists = new ArrayList<List<String>>();
+        final List<String> list = new ArrayList<>();
+        final List<List<String>> lists = new ArrayList<>();
 
         Observable<String> source = Observable.unsafeCreate(new ObservableSource<String>() {
             @Override
             public void subscribe(Observer<? super String> observer) {
-                observer.onSubscribe(Disposables.empty());
+                observer.onSubscribe(Disposable.empty());
                 push(observer, "one", 98);
                 push(observer, "two", 99);
                 push(observer, "three", 99); // FIXME happens after the window is open
@@ -111,7 +111,7 @@ public class ObservableWindowWithTimeTest extends RxJavaTest {
     }
 
     private List<String> list(String... args) {
-        List<String> list = new ArrayList<String>();
+        List<String> list = new ArrayList<>();
         for (String arg : args) {
             list.add(arg);
         }
@@ -143,7 +143,7 @@ public class ObservableWindowWithTimeTest extends RxJavaTest {
                 stringObservable.subscribe(new DefaultObserver<T>() {
                     @Override
                     public void onComplete() {
-                        lists.add(new ArrayList<T>(list));
+                        lists.add(new ArrayList<>(list));
                         list.clear();
                     }
 
@@ -166,8 +166,8 @@ public class ObservableWindowWithTimeTest extends RxJavaTest {
         Observable<Observable<Integer>> source = Observable.range(1, 10)
                 .window(1, TimeUnit.MINUTES, scheduler, 3);
 
-        final List<Integer> list = new ArrayList<Integer>();
-        final List<List<Integer>> lists = new ArrayList<List<Integer>>();
+        final List<Integer> list = new ArrayList<>();
+        final List<List<Integer>> lists = new ArrayList<>();
 
         source.subscribe(observeWindow(list, lists));
 
@@ -184,7 +184,7 @@ public class ObservableWindowWithTimeTest extends RxJavaTest {
 
     @Test
     public void takeFlatMapCompletes() {
-        TestObserver<Integer> to = new TestObserver<Integer>();
+        TestObserver<Integer> to = new TestObserver<>();
 
         final AtomicInteger wip = new AtomicInteger();
 
@@ -971,14 +971,14 @@ public class ObservableWindowWithTimeTest extends RxJavaTest {
         to
         .assertResult(1);
 
-        assertFalse("Subject still has subscribers!", ps.hasObservers());
+        assertFalse("Subject still has observers!", ps.hasObservers());
     }
 
     @Test
     public void windowAbandonmentCancelsUpstreamExactTime() {
         PublishSubject<Integer> ps = PublishSubject.create();
 
-        final AtomicReference<Observable<Integer>> inner = new AtomicReference<Observable<Integer>>();
+        final AtomicReference<Observable<Integer>> inner = new AtomicReference<>();
 
         TestObserver<Observable<Integer>> to = ps.window(10, TimeUnit.MINUTES)
         .take(1)
@@ -990,7 +990,7 @@ public class ObservableWindowWithTimeTest extends RxJavaTest {
         })
         .test();
 
-        assertFalse("Subject still has subscribers!", ps.hasObservers());
+        assertFalse("Subject still has observers!", ps.hasObservers());
 
         to
         .assertValueCount(1)
@@ -1021,14 +1021,14 @@ public class ObservableWindowWithTimeTest extends RxJavaTest {
         to
         .assertResult(1);
 
-        assertFalse("Subject still has subscribers!", ps.hasObservers());
+        assertFalse("Subject still has observers!", ps.hasObservers());
     }
 
     @Test
     public void windowAbandonmentCancelsUpstreamExactTimeAndSize() {
         PublishSubject<Integer> ps = PublishSubject.create();
 
-        final AtomicReference<Observable<Integer>> inner = new AtomicReference<Observable<Integer>>();
+        final AtomicReference<Observable<Integer>> inner = new AtomicReference<>();
 
         TestObserver<Observable<Integer>> to = ps.window(10, TimeUnit.MINUTES, 100)
         .take(1)
@@ -1040,7 +1040,7 @@ public class ObservableWindowWithTimeTest extends RxJavaTest {
         })
         .test();
 
-        assertFalse("Subject still has subscribers!", ps.hasObservers());
+        assertFalse("Subject still has observers!", ps.hasObservers());
 
         to
         .assertValueCount(1)
@@ -1071,14 +1071,14 @@ public class ObservableWindowWithTimeTest extends RxJavaTest {
         to
         .assertResult(1);
 
-        assertFalse("Subject still has subscribers!", ps.hasObservers());
+        assertFalse("Subject still has observers!", ps.hasObservers());
     }
 
     @Test
     public void windowAbandonmentCancelsUpstreamExactTimeSkip() {
         PublishSubject<Integer> ps = PublishSubject.create();
 
-        final AtomicReference<Observable<Integer>> inner = new AtomicReference<Observable<Integer>>();
+        final AtomicReference<Observable<Integer>> inner = new AtomicReference<>();
 
         TestObserver<Observable<Integer>> to = ps.window(10, 15, TimeUnit.MINUTES)
         .take(1)
@@ -1090,7 +1090,7 @@ public class ObservableWindowWithTimeTest extends RxJavaTest {
         })
         .test();
 
-        assertFalse("Subject still has subscribers!", ps.hasObservers());
+        assertFalse("Subject still has observers!", ps.hasObservers());
 
         to
         .assertValueCount(1)

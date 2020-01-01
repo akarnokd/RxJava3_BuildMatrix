@@ -50,13 +50,13 @@ public class DeferredScalarObserverTest extends RxJavaTest {
     public void normal() {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
-            TestObserver<Integer> to = new TestObserver<Integer>();
+            TestObserver<Integer> to = new TestObserver<>();
 
             TakeFirst source = new TakeFirst(to);
 
-            source.onSubscribe(Disposables.empty());
+            source.onSubscribe(Disposable.empty());
 
-            Disposable d = Disposables.empty();
+            Disposable d = Disposable.empty();
             source.onSubscribe(d);
 
             assertTrue(d.isDisposed());
@@ -73,11 +73,11 @@ public class DeferredScalarObserverTest extends RxJavaTest {
 
     @Test
     public void error() {
-        TestObserver<Integer> to = new TestObserver<Integer>();
+        TestObserver<Integer> to = new TestObserver<>();
 
         TakeFirst source = new TakeFirst(to);
 
-        source.onSubscribe(Disposables.empty());
+        source.onSubscribe(Disposable.empty());
         source.onError(new TestException());
 
         to.assertFailure(TestException.class);
@@ -85,11 +85,11 @@ public class DeferredScalarObserverTest extends RxJavaTest {
 
     @Test
     public void complete() {
-        TestObserver<Integer> to = new TestObserver<Integer>();
+        TestObserver<Integer> to = new TestObserver<>();
 
         TakeFirst source = new TakeFirst(to);
 
-        source.onSubscribe(Disposables.empty());
+        source.onSubscribe(Disposable.empty());
         source.onComplete();
 
         to.assertResult();
@@ -97,11 +97,11 @@ public class DeferredScalarObserverTest extends RxJavaTest {
 
     @Test
     public void dispose() {
-        TestObserver<Integer> to = new TestObserver<Integer>();
+        TestObserver<Integer> to = new TestObserver<>();
 
         TakeFirst source = new TakeFirst(to);
 
-        Disposable d = Disposables.empty();
+        Disposable d = Disposable.empty();
 
         source.onSubscribe(d);
 
@@ -118,11 +118,11 @@ public class DeferredScalarObserverTest extends RxJavaTest {
     public void fused() {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
-            TestObserverEx<Integer> to = new TestObserverEx<Integer>(QueueFuseable.ANY);
+            TestObserverEx<Integer> to = new TestObserverEx<>(QueueFuseable.ANY);
 
             TakeFirst source = new TakeFirst(to);
 
-            Disposable d = Disposables.empty();
+            Disposable d = Disposable.empty();
 
             source.onSubscribe(d);
 
@@ -148,11 +148,11 @@ public class DeferredScalarObserverTest extends RxJavaTest {
     public void fusedReject() {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
-            TestObserverEx<Integer> to = new TestObserverEx<Integer>(QueueFuseable.SYNC);
+            TestObserverEx<Integer> to = new TestObserverEx<>(QueueFuseable.SYNC);
 
             TakeFirst source = new TakeFirst(to);
 
-            Disposable d = Disposables.empty();
+            Disposable d = Disposable.empty();
 
             source.onSubscribe(d);
 
@@ -193,11 +193,11 @@ public class DeferredScalarObserverTest extends RxJavaTest {
     public void nonfusedTerminateMore() {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
-            TestObserverEx<Integer> to = new TestObserverEx<Integer>(QueueFuseable.NONE);
+            TestObserverEx<Integer> to = new TestObserverEx<>(QueueFuseable.NONE);
 
             TakeLast source = new TakeLast(to);
 
-            Disposable d = Disposables.empty();
+            Disposable d = Disposable.empty();
 
             source.onSubscribe(d);
 
@@ -218,11 +218,11 @@ public class DeferredScalarObserverTest extends RxJavaTest {
     public void nonfusedError() {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
-            TestObserverEx<Integer> to = new TestObserverEx<Integer>(QueueFuseable.NONE);
+            TestObserverEx<Integer> to = new TestObserverEx<>(QueueFuseable.NONE);
 
             TakeLast source = new TakeLast(to);
 
-            Disposable d = Disposables.empty();
+            Disposable d = Disposable.empty();
 
             source.onSubscribe(d);
 
@@ -243,11 +243,11 @@ public class DeferredScalarObserverTest extends RxJavaTest {
     public void fusedTerminateMore() {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
-            TestObserverEx<Integer> to = new TestObserverEx<Integer>(QueueFuseable.ANY);
+            TestObserverEx<Integer> to = new TestObserverEx<>(QueueFuseable.ANY);
 
             TakeLast source = new TakeLast(to);
 
-            Disposable d = Disposables.empty();
+            Disposable d = Disposable.empty();
 
             source.onSubscribe(d);
 
@@ -268,11 +268,11 @@ public class DeferredScalarObserverTest extends RxJavaTest {
     public void fusedError() {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
-            TestObserverEx<Integer> to = new TestObserverEx<Integer>(QueueFuseable.ANY);
+            TestObserverEx<Integer> to = new TestObserverEx<>(QueueFuseable.ANY);
 
             TakeLast source = new TakeLast(to);
 
-            Disposable d = Disposables.empty();
+            Disposable d = Disposable.empty();
 
             source.onSubscribe(d);
 
@@ -291,11 +291,11 @@ public class DeferredScalarObserverTest extends RxJavaTest {
 
     @Test
     public void disposed() {
-        TestObserverEx<Integer> to = new TestObserverEx<Integer>(QueueFuseable.NONE);
+        TestObserverEx<Integer> to = new TestObserverEx<>(QueueFuseable.NONE);
 
         TakeLast source = new TakeLast(to);
 
-        Disposable d = Disposables.empty();
+        Disposable d = Disposable.empty();
 
         source.onSubscribe(d);
 
@@ -309,7 +309,7 @@ public class DeferredScalarObserverTest extends RxJavaTest {
 
     @Test
     public void disposedAfterOnNext() {
-        final TestObserver<Integer> to = new TestObserver<Integer>();
+        final TestObserver<Integer> to = new TestObserver<>();
 
         TakeLast source = new TakeLast(new Observer<Integer>() {
             Disposable upstream;
@@ -337,7 +337,7 @@ public class DeferredScalarObserverTest extends RxJavaTest {
             }
         });
 
-        source.onSubscribe(Disposables.empty());
+        source.onSubscribe(Disposable.empty());
         source.onNext(1);
         source.onComplete();
 
@@ -346,11 +346,11 @@ public class DeferredScalarObserverTest extends RxJavaTest {
 
     @Test
     public void fusedEmpty() {
-        TestObserverEx<Integer> to = new TestObserverEx<Integer>(QueueFuseable.ANY);
+        TestObserverEx<Integer> to = new TestObserverEx<>(QueueFuseable.ANY);
 
         TakeLast source = new TakeLast(to);
 
-        Disposable d = Disposables.empty();
+        Disposable d = Disposable.empty();
 
         source.onSubscribe(d);
 
@@ -361,11 +361,11 @@ public class DeferredScalarObserverTest extends RxJavaTest {
 
     @Test
     public void nonfusedEmpty() {
-        TestObserverEx<Integer> to = new TestObserverEx<Integer>(QueueFuseable.NONE);
+        TestObserverEx<Integer> to = new TestObserverEx<>(QueueFuseable.NONE);
 
         TakeLast source = new TakeLast(to);
 
-        Disposable d = Disposables.empty();
+        Disposable d = Disposable.empty();
 
         source.onSubscribe(d);
 
@@ -376,7 +376,7 @@ public class DeferredScalarObserverTest extends RxJavaTest {
 
     @Test
     public void customFusion() {
-        final TestObserver<Integer> to = new TestObserver<Integer>();
+        final TestObserver<Integer> to = new TestObserver<>();
 
         TakeLast source = new TakeLast(new Observer<Integer>() {
             QueueDisposable<Integer> d;
@@ -417,7 +417,7 @@ public class DeferredScalarObserverTest extends RxJavaTest {
             }
         });
 
-        source.onSubscribe(Disposables.empty());
+        source.onSubscribe(Disposable.empty());
         source.onNext(1);
         source.onComplete();
 
@@ -426,7 +426,7 @@ public class DeferredScalarObserverTest extends RxJavaTest {
 
     @Test
     public void customFusionClear() {
-        final TestObserver<Integer> to = new TestObserver<Integer>();
+        final TestObserver<Integer> to = new TestObserver<>();
 
         TakeLast source = new TakeLast(new Observer<Integer>() {
             QueueDisposable<Integer> d;
@@ -456,7 +456,7 @@ public class DeferredScalarObserverTest extends RxJavaTest {
             }
         });
 
-        source.onSubscribe(Disposables.empty());
+        source.onSubscribe(Disposable.empty());
         source.onNext(1);
         source.onComplete();
 
@@ -465,7 +465,7 @@ public class DeferredScalarObserverTest extends RxJavaTest {
 
     @Test
     public void offerThrow() {
-        TestObserverEx<Integer> to = new TestObserverEx<Integer>(QueueFuseable.NONE);
+        TestObserverEx<Integer> to = new TestObserverEx<>(QueueFuseable.NONE);
 
         TakeLast source = new TakeLast(to);
 
@@ -474,7 +474,7 @@ public class DeferredScalarObserverTest extends RxJavaTest {
 
     @Test
     public void customFusionDontConsume() {
-        final TestObserver<Integer> to = new TestObserver<Integer>();
+        final TestObserver<Integer> to = new TestObserver<>();
 
         TakeFirst source = new TakeFirst(new Observer<Integer>() {
             QueueDisposable<Integer> d;
@@ -503,7 +503,7 @@ public class DeferredScalarObserverTest extends RxJavaTest {
             }
         });
 
-        source.onSubscribe(Disposables.empty());
+        source.onSubscribe(Disposable.empty());
         source.onNext(1);
 
         to.assertNoValues().assertNoErrors().assertComplete();

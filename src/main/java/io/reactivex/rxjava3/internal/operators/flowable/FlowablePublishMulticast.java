@@ -16,6 +16,7 @@
 
 package io.reactivex.rxjava3.internal.operators.flowable;
 
+import java.util.Objects;
 import java.util.concurrent.atomic.*;
 
 import org.reactivestreams.*;
@@ -24,7 +25,6 @@ import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.exceptions.*;
 import io.reactivex.rxjava3.functions.Function;
-import io.reactivex.rxjava3.internal.functions.ObjectHelper;
 import io.reactivex.rxjava3.internal.fuseable.*;
 import io.reactivex.rxjava3.internal.subscriptions.*;
 import io.reactivex.rxjava3.internal.util.*;
@@ -55,19 +55,19 @@ public final class FlowablePublishMulticast<T, R> extends AbstractFlowableWithUp
 
     @Override
     protected void subscribeActual(Subscriber<? super R> s) {
-        MulticastProcessor<T> mp = new MulticastProcessor<T>(prefetch, delayError);
+        MulticastProcessor<T> mp = new MulticastProcessor<>(prefetch, delayError);
 
         Publisher<? extends R> other;
 
         try {
-            other = ObjectHelper.requireNonNull(selector.apply(mp), "selector returned a null Publisher");
+            other = Objects.requireNonNull(selector.apply(mp), "selector returned a null Publisher");
         } catch (Throwable ex) {
             Exceptions.throwIfFatal(ex);
             EmptySubscription.error(ex, s);
             return;
         }
 
-        OutputCanceller<R> out = new OutputCanceller<R>(s, mp);
+        OutputCanceller<R> out = new OutputCanceller<>(s, mp);
 
         other.subscribe(out);
 
@@ -159,8 +159,8 @@ public final class FlowablePublishMulticast<T, R> extends AbstractFlowableWithUp
             this.limit = prefetch - (prefetch >> 2); // request after 75% consumption
             this.delayError = delayError;
             this.wip = new AtomicInteger();
-            this.upstream = new AtomicReference<Subscription>();
-            this.subscribers = new AtomicReference<MulticastSubscription<T>[]>(EMPTY);
+            this.upstream = new AtomicReference<>();
+            this.subscribers = new AtomicReference<>(EMPTY);
         }
 
         @Override
@@ -293,7 +293,7 @@ public final class FlowablePublishMulticast<T, R> extends AbstractFlowableWithUp
 
         @Override
         protected void subscribeActual(Subscriber<? super T> s) {
-            MulticastSubscription<T> ms = new MulticastSubscription<T>(s, this);
+            MulticastSubscription<T> ms = new MulticastSubscription<>(s, this);
             s.onSubscribe(ms);
             if (add(ms)) {
                 if (ms.isCancelled()) {

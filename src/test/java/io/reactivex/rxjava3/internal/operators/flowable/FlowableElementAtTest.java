@@ -17,13 +17,13 @@ import static org.junit.Assert.*;
 
 import java.util.*;
 
+import io.reactivex.rxjava3.disposables.Disposable;
 import org.junit.Test;
 import org.reactivestreams.*;
 
 import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.core.Observer;
-import io.reactivex.rxjava3.disposables.Disposables;
 import io.reactivex.rxjava3.exceptions.TestException;
 import io.reactivex.rxjava3.functions.*;
 import io.reactivex.rxjava3.internal.subscriptions.BooleanSubscription;
@@ -72,7 +72,7 @@ public class FlowableElementAtTest extends RxJavaTest {
 
     @Test
     public void elementAtConstrainsUpstreamRequests() {
-        final List<Long> requests = new ArrayList<Long>();
+        final List<Long> requests = new ArrayList<>();
         Flowable.fromArray(1, 2, 3, 4)
             .doOnRequest(new LongConsumer() {
                 @Override
@@ -88,7 +88,7 @@ public class FlowableElementAtTest extends RxJavaTest {
 
     @Test
     public void elementAtWithDefaultConstrainsUpstreamRequests() {
-        final List<Long> requests = new ArrayList<Long>();
+        final List<Long> requests = new ArrayList<>();
         Flowable.fromArray(1, 2, 3, 4)
             .doOnRequest(new LongConsumer() {
                 @Override
@@ -344,7 +344,7 @@ public class FlowableElementAtTest extends RxJavaTest {
             new Observable<Integer>() {
                 @Override
                 protected void subscribeActual(Observer<? super Integer> observer) {
-                    observer.onSubscribe(Disposables.empty());
+                    observer.onSubscribe(Disposable.empty());
 
                     observer.onNext(1);
                     observer.onNext(2);

@@ -25,7 +25,6 @@ import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.disposables.*;
 import io.reactivex.rxjava3.exceptions.*;
 import io.reactivex.rxjava3.functions.*;
-import io.reactivex.rxjava3.internal.functions.ObjectHelper;
 import io.reactivex.rxjava3.internal.fuseable.SimpleQueue;
 import io.reactivex.rxjava3.internal.queue.SpscLinkedArrayQueue;
 import io.reactivex.rxjava3.internal.subscriptions.SubscriptionHelper;
@@ -60,7 +59,7 @@ public final class FlowableGroupJoin<TLeft, TRight, TLeftEnd, TRightEnd, R> exte
     protected void subscribeActual(Subscriber<? super R> s) {
 
         GroupJoinSubscription<TLeft, TRight, TLeftEnd, TRightEnd, R> parent =
-                new GroupJoinSubscription<TLeft, TRight, TLeftEnd, TRightEnd, R>(s, leftEnd, rightEnd, resultSelector);
+                new GroupJoinSubscription<>(s, leftEnd, rightEnd, resultSelector);
 
         s.onSubscribe(parent);
 
@@ -133,10 +132,10 @@ public final class FlowableGroupJoin<TLeft, TRight, TLeftEnd, TRightEnd, R> exte
             this.downstream = actual;
             this.requested = new AtomicLong();
             this.disposables = new CompositeDisposable();
-            this.queue = new SpscLinkedArrayQueue<Object>(bufferSize());
-            this.lefts = new LinkedHashMap<Integer, UnicastProcessor<TRight>>();
-            this.rights = new LinkedHashMap<Integer, TRight>();
-            this.error = new AtomicReference<Throwable>();
+            this.queue = new SpscLinkedArrayQueue<>(bufferSize());
+            this.lefts = new LinkedHashMap<>();
+            this.rights = new LinkedHashMap<>();
+            this.error = new AtomicReference<>();
             this.leftEnd = leftEnd;
             this.rightEnd = rightEnd;
             this.resultSelector = resultSelector;
@@ -240,14 +239,14 @@ public final class FlowableGroupJoin<TLeft, TRight, TLeftEnd, TRightEnd, R> exte
                         @SuppressWarnings("unchecked")
                         TLeft left = (TLeft)val;
 
-                        UnicastProcessor<TRight> up = UnicastProcessor.<TRight>create();
+                        UnicastProcessor<TRight> up = UnicastProcessor.create();
                         int idx = leftIndex++;
                         lefts.put(idx, up);
 
                         Publisher<TLeftEnd> p;
 
                         try {
-                            p = ObjectHelper.requireNonNull(leftEnd.apply(left), "The leftEnd returned a null Publisher");
+                            p = Objects.requireNonNull(leftEnd.apply(left), "The leftEnd returned a null Publisher");
                         } catch (Throwable exc) {
                             fail(exc, a, q);
                             return;
@@ -269,7 +268,7 @@ public final class FlowableGroupJoin<TLeft, TRight, TLeftEnd, TRightEnd, R> exte
                         R w;
 
                         try {
-                            w = ObjectHelper.requireNonNull(resultSelector.apply(left, up), "The resultSelector returned a null value");
+                            w = Objects.requireNonNull(resultSelector.apply(left, up), "The resultSelector returned a null value");
                         } catch (Throwable exc) {
                             fail(exc, a, q);
                             return;
@@ -299,7 +298,7 @@ public final class FlowableGroupJoin<TLeft, TRight, TLeftEnd, TRightEnd, R> exte
                         Publisher<TRightEnd> p;
 
                         try {
-                            p = ObjectHelper.requireNonNull(rightEnd.apply(right), "The rightEnd returned a null Publisher");
+                            p = Objects.requireNonNull(rightEnd.apply(right), "The rightEnd returned a null Publisher");
                         } catch (Throwable exc) {
                             fail(exc, a, q);
                             return;

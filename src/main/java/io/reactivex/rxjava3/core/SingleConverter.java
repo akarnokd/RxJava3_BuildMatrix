@@ -16,18 +16,19 @@ package io.reactivex.rxjava3.core;
 import io.reactivex.rxjava3.annotations.NonNull;
 
 /**
- * Convenience interface and callback used by the {@link Single#to} operator to turn a Single into another
+ * Convenience interface and callback used by the {@link Single#to} operator to turn a {@link Single} into another
  * value fluently.
  * <p>History: 2.1.7 - experimental
  * @param <T> the upstream type
  * @param <R> the output type
  * @since 2.2
  */
+@FunctionalInterface
 public interface SingleConverter<T, R> {
     /**
-     * Applies a function to the upstream Single and returns a converted value of type {@code R}.
+     * Applies a function to the upstream {@link Single} and returns a converted value of type {@code R}.
      *
-     * @param upstream the upstream Single instance
+     * @param upstream the upstream {@code Single} instance
      * @return the converted value
      */
     @NonNull

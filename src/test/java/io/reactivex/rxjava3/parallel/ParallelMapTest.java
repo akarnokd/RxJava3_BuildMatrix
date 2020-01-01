@@ -15,7 +15,7 @@ package io.reactivex.rxjava3.parallel;
 
 import static org.junit.Assert.*;
 
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 import org.junit.Test;
@@ -178,5 +178,25 @@ public class ParallelMapTest extends RxJavaTest {
         .test()
         .awaitDone(5, TimeUnit.SECONDS)
         .assertFailure(TestException.class);
+    }
+
+    @Test
+    public void invalidSubscriberCount() {
+        TestHelper.checkInvalidParallelSubscribers(
+                Flowable.range(1, 10).parallel()
+                .map(v -> v)
+            );
+    }
+
+    @Test
+    public void doubleOnSubscribe() {
+        TestHelper.checkDoubleOnSubscribeParallel(
+                p -> p.map(v -> v)
+            );
+
+        TestHelper.checkDoubleOnSubscribeParallel(
+                p -> p.map(v -> v)
+                .filter(v -> true)
+            );
     }
 }

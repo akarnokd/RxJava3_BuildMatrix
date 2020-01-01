@@ -22,7 +22,6 @@ import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.exceptions.Exceptions;
 import io.reactivex.rxjava3.functions.Supplier;
 import io.reactivex.rxjava3.internal.disposables.*;
-import io.reactivex.rxjava3.internal.functions.ObjectHelper;
 import io.reactivex.rxjava3.internal.util.ExceptionHelper;
 
 public final class ObservableBuffer<T, U extends Collection<? super T>> extends AbstractObservableWithUpstream<T, U> {
@@ -40,12 +39,12 @@ public final class ObservableBuffer<T, U extends Collection<? super T>> extends 
     @Override
     protected void subscribeActual(Observer<? super U> t) {
         if (skip == count) {
-            BufferExactObserver<T, U> bes = new BufferExactObserver<T, U>(t, count, bufferSupplier);
+            BufferExactObserver<T, U> bes = new BufferExactObserver<>(t, count, bufferSupplier);
             if (bes.createBuffer()) {
                 source.subscribe(bes);
             }
         } else {
-            source.subscribe(new BufferSkipObserver<T, U>(t, count, skip, bufferSupplier));
+            source.subscribe(new BufferSkipObserver<>(t, count, skip, bufferSupplier));
         }
     }
 
@@ -68,7 +67,7 @@ public final class ObservableBuffer<T, U extends Collection<? super T>> extends 
         boolean createBuffer() {
             U b;
             try {
-                b = ObjectHelper.requireNonNull(bufferSupplier.get(), "Empty buffer supplied");
+                b = Objects.requireNonNull(bufferSupplier.get(), "Empty buffer supplied");
             } catch (Throwable t) {
                 Exceptions.throwIfFatal(t);
                 buffer = null;
@@ -158,7 +157,7 @@ public final class ObservableBuffer<T, U extends Collection<? super T>> extends 
             this.count = count;
             this.skip = skip;
             this.bufferSupplier = bufferSupplier;
-            this.buffers = new ArrayDeque<U>();
+            this.buffers = new ArrayDeque<>();
         }
 
         @Override
@@ -187,6 +186,7 @@ public final class ObservableBuffer<T, U extends Collection<? super T>> extends 
                 try {
                     b = ExceptionHelper.nullCheck(bufferSupplier.get(), "The bufferSupplier returned a null Collection.");
                 } catch (Throwable e) {
+                    Exceptions.throwIfFatal(e);
                     buffers.clear();
                     upstream.dispose();
                     downstream.onError(e);

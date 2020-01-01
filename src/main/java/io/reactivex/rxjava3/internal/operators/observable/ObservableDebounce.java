@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava3.internal.operators.observable;
 
+import java.util.Objects;
 import java.util.concurrent.atomic.*;
 
 import io.reactivex.rxjava3.core.*;
@@ -20,7 +21,6 @@ import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.exceptions.Exceptions;
 import io.reactivex.rxjava3.functions.Function;
 import io.reactivex.rxjava3.internal.disposables.DisposableHelper;
-import io.reactivex.rxjava3.internal.functions.ObjectHelper;
 import io.reactivex.rxjava3.observers.*;
 import io.reactivex.rxjava3.plugins.RxJavaPlugins;
 
@@ -34,7 +34,7 @@ public final class ObservableDebounce<T, U> extends AbstractObservableWithUpstre
 
     @Override
     public void subscribeActual(Observer<? super T> t) {
-        source.subscribe(new DebounceObserver<T, U>(new SerializedObserver<T>(t), debounceSelector));
+        source.subscribe(new DebounceObserver<>(new SerializedObserver<>(t), debounceSelector));
     }
 
     static final class DebounceObserver<T, U>
@@ -44,7 +44,7 @@ public final class ObservableDebounce<T, U> extends AbstractObservableWithUpstre
 
         Disposable upstream;
 
-        final AtomicReference<Disposable> debouncer = new AtomicReference<Disposable>();
+        final AtomicReference<Disposable> debouncer = new AtomicReference<>();
 
         volatile long index;
 
@@ -81,7 +81,7 @@ public final class ObservableDebounce<T, U> extends AbstractObservableWithUpstre
             ObservableSource<U> p;
 
             try {
-                p = ObjectHelper.requireNonNull(debounceSelector.apply(t), "The ObservableSource supplied is null");
+                p = Objects.requireNonNull(debounceSelector.apply(t), "The ObservableSource supplied is null");
             } catch (Throwable e) {
                 Exceptions.throwIfFatal(e);
                 dispose();
@@ -89,7 +89,7 @@ public final class ObservableDebounce<T, U> extends AbstractObservableWithUpstre
                 return;
             }
 
-            DebounceInnerObserver<T, U> dis = new DebounceInnerObserver<T, U>(this, idx, t);
+            DebounceInnerObserver<T, U> dis = new DebounceInnerObserver<>(this, idx, t);
 
             if (debouncer.compareAndSet(d, dis)) {
                 p.subscribe(dis);

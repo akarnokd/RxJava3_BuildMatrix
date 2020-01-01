@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava3.internal.operators.flowable;
 
+import java.util.Objects;
 import java.util.concurrent.atomic.*;
 
 import org.reactivestreams.*;
@@ -20,7 +21,6 @@ import org.reactivestreams.*;
 import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.exceptions.*;
 import io.reactivex.rxjava3.functions.Function;
-import io.reactivex.rxjava3.internal.functions.ObjectHelper;
 import io.reactivex.rxjava3.internal.fuseable.SimpleQueue;
 import io.reactivex.rxjava3.internal.queue.SpscLinkedArrayQueue;
 import io.reactivex.rxjava3.internal.subscribers.*;
@@ -51,7 +51,7 @@ public final class FlowableConcatMapEager<T, R> extends AbstractFlowableWithUpst
 
     @Override
     protected void subscribeActual(Subscriber<? super R> s) {
-        source.subscribe(new ConcatMapEagerDelayErrorSubscriber<T, R>(
+        source.subscribe(new ConcatMapEagerDelayErrorSubscriber<>(
                 s, mapper, maxConcurrency, prefetch, errorMode));
     }
 
@@ -93,7 +93,7 @@ public final class FlowableConcatMapEager<T, R> extends AbstractFlowableWithUpst
             this.maxConcurrency = maxConcurrency;
             this.prefetch = prefetch;
             this.errorMode = errorMode;
-            this.subscribers = new SpscLinkedArrayQueue<InnerQueuedSubscriber<R>>(Math.min(prefetch, maxConcurrency));
+            this.subscribers = new SpscLinkedArrayQueue<>(Math.min(prefetch, maxConcurrency));
             this.errors = new AtomicThrowable();
             this.requested = new AtomicLong();
         }
@@ -115,7 +115,7 @@ public final class FlowableConcatMapEager<T, R> extends AbstractFlowableWithUpst
             Publisher<? extends R> p;
 
             try {
-                p = ObjectHelper.requireNonNull(mapper.apply(t), "The mapper returned a null Publisher");
+                p = Objects.requireNonNull(mapper.apply(t), "The mapper returned a null Publisher");
             } catch (Throwable ex) {
                 Exceptions.throwIfFatal(ex);
                 upstream.cancel();
@@ -123,7 +123,7 @@ public final class FlowableConcatMapEager<T, R> extends AbstractFlowableWithUpst
                 return;
             }
 
-            InnerQueuedSubscriber<R> inner = new InnerQueuedSubscriber<R>(this, prefetch);
+            InnerQueuedSubscriber<R> inner = new InnerQueuedSubscriber<>(this, prefetch);
 
             if (cancelled) {
                 return;

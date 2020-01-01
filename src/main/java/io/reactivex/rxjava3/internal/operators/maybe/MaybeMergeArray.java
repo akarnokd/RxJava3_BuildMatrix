@@ -13,6 +13,7 @@
 
 package io.reactivex.rxjava3.internal.operators.maybe;
 
+import java.util.Objects;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.*;
 
@@ -21,7 +22,6 @@ import org.reactivestreams.Subscriber;
 import io.reactivex.rxjava3.annotations.Nullable;
 import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.disposables.*;
-import io.reactivex.rxjava3.internal.functions.ObjectHelper;
 import io.reactivex.rxjava3.internal.fuseable.SimpleQueue;
 import io.reactivex.rxjava3.internal.subscriptions.*;
 import io.reactivex.rxjava3.internal.util.*;
@@ -47,11 +47,11 @@ public final class MaybeMergeArray<T> extends Flowable<T> {
         SimpleQueueWithConsumerIndex<Object> queue;
 
         if (n <= bufferSize()) {
-            queue = new MpscFillOnceSimpleQueue<Object>(n);
+            queue = new MpscFillOnceSimpleQueue<>(n);
         } else {
-            queue = new ClqSimpleQueue<Object>();
+            queue = new ClqSimpleQueue<>();
         }
-        MergeMaybeObserver<T> parent = new MergeMaybeObserver<T>(s, n, queue);
+        MergeMaybeObserver<T> parent = new MergeMaybeObserver<>(s, n, queue);
 
         s.onSubscribe(parent);
 
@@ -110,7 +110,7 @@ public final class MaybeMergeArray<T> extends Flowable<T> {
         @Nullable
         @SuppressWarnings("unchecked")
         @Override
-        public T poll() throws Exception {
+        public T poll() {
             for (;;) {
                 Object o = queue.poll();
                 if (o != NotificationLite.COMPLETE) {
@@ -327,7 +327,7 @@ public final class MaybeMergeArray<T> extends Flowable<T> {
 
         @Override
         public boolean offer(T value) {
-            ObjectHelper.requireNonNull(value, "value is null");
+            Objects.requireNonNull(value, "value is null");
             int idx = producerIndex.getAndIncrement();
             if (idx < length()) {
                 lazySet(idx, value);

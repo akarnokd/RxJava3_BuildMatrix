@@ -14,6 +14,7 @@
 package io.reactivex.rxjava3.internal.operators.single;
 
 import java.util.Iterator;
+import java.util.Objects;
 
 import io.reactivex.rxjava3.annotations.Nullable;
 import io.reactivex.rxjava3.core.*;
@@ -21,7 +22,6 @@ import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.exceptions.Exceptions;
 import io.reactivex.rxjava3.functions.Function;
 import io.reactivex.rxjava3.internal.disposables.DisposableHelper;
-import io.reactivex.rxjava3.internal.functions.ObjectHelper;
 import io.reactivex.rxjava3.internal.observers.BasicIntQueueDisposable;
 
 /**
@@ -44,7 +44,7 @@ public final class SingleFlatMapIterableObservable<T, R> extends Observable<R> {
 
     @Override
     protected void subscribeActual(Observer<? super R> observer) {
-        source.subscribe(new FlatMapIterableObserver<T, R>(observer, mapper));
+        source.subscribe(new FlatMapIterableObserver<>(observer, mapper));
     }
 
     static final class FlatMapIterableObserver<T, R>
@@ -183,11 +183,11 @@ public final class SingleFlatMapIterableObservable<T, R> extends Observable<R> {
 
         @Nullable
         @Override
-        public R poll() throws Exception {
+        public R poll() {
             Iterator<? extends R> iterator = it;
 
             if (iterator != null) {
-                R v = ObjectHelper.requireNonNull(iterator.next(), "The iterator returned a null value");
+                R v = Objects.requireNonNull(iterator.next(), "The iterator returned a null value");
                 if (!iterator.hasNext()) {
                     it = null;
                 }

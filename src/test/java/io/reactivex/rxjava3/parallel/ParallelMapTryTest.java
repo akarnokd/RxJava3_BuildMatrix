@@ -13,7 +13,7 @@
 
 package io.reactivex.rxjava3.parallel;
 
-import java.util.List;
+import java.util.*;
 
 import org.junit.Test;
 
@@ -167,7 +167,6 @@ public class ParallelMapTryTest extends RxJavaTest implements Consumer<Object> {
         .assertResult(1);
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void mapFailHandlerThrows() {
         TestSubscriberEx<Integer> ts = Flowable.range(0, 2)
@@ -302,7 +301,6 @@ public class ParallelMapTryTest extends RxJavaTest implements Consumer<Object> {
         .assertResult(1);
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void mapFailHandlerThrowsConditional() {
         TestSubscriberEx<Integer> ts = Flowable.range(0, 2)
@@ -354,5 +352,25 @@ public class ParallelMapTryTest extends RxJavaTest implements Consumer<Object> {
     @Test
     public void failureHandlingEnum() {
         TestHelper.checkEnum(ParallelFailureHandling.class);
+    }
+
+    @Test
+    public void invalidSubscriberCount() {
+        TestHelper.checkInvalidParallelSubscribers(
+                Flowable.range(1, 10).parallel()
+                .map(v -> v, ParallelFailureHandling.SKIP)
+            );
+    }
+
+    @Test
+    public void doubleOnSubscribe() {
+        TestHelper.checkDoubleOnSubscribeParallel(
+                p -> p.map(v -> v, ParallelFailureHandling.ERROR)
+            );
+
+        TestHelper.checkDoubleOnSubscribeParallel(
+                p -> p.map(v -> v, ParallelFailureHandling.ERROR)
+                .filter(v -> true)
+            );
     }
 }

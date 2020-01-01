@@ -16,10 +16,10 @@ package io.reactivex.rxjava3.testsupport;
 import java.util.List;
 
 import io.reactivex.rxjava3.functions.Predicate;
-import io.reactivex.rxjava3.internal.functions.ObjectHelper;
 import io.reactivex.rxjava3.internal.fuseable.QueueFuseable;
 import io.reactivex.rxjava3.internal.util.ExceptionHelper;
 import io.reactivex.rxjava3.observers.BaseTestConsumer;
+import java.util.Objects;
 
 /**
  * Base class with shared infrastructure to support TestSubscriber and TestObserver.
@@ -74,7 +74,7 @@ extends BaseTestConsumer<T, U> {
 
         for (int i = 0; i < s; i++) {
             T v = this.values.get(i);
-            if (ObjectHelper.equals(v, value)) {
+            if (Objects.equals(v, value)) {
                 throw fail("Value at position " + i + " is equal to " + valueAndClass(value) + "; Expected them to be different");
             }
         }
@@ -158,7 +158,7 @@ extends BaseTestConsumer<T, U> {
         if (s == 1) {
             Throwable e = errors.get(0);
             String errorMessage = e.getMessage();
-            if (!ObjectHelper.equals(message, errorMessage)) {
+            if (!Objects.equals(message, errorMessage)) {
                 throw fail("Error message differs; exptected: " + message + " but was: " + errorMessage);
             }
         } else {
@@ -176,6 +176,7 @@ extends BaseTestConsumer<T, U> {
      * @param values the expected values, asserted in order
      * @return this
      */
+    @SafeVarargs
     public final U assertFailure(Predicate<Throwable> errorPredicate, T... values) {
         return assertSubscribed()
                 .assertValues(values)
@@ -192,6 +193,7 @@ extends BaseTestConsumer<T, U> {
      * @param values the expected values, asserted in order
      * @return this
      */
+    @SafeVarargs
     public final U assertFailureAndMessage(Class<? extends Throwable> error,
             String message, T... values) {
         return assertSubscribed()

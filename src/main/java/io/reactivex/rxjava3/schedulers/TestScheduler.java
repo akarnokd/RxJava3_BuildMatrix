@@ -20,7 +20,6 @@ import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.core.Scheduler;
 import io.reactivex.rxjava3.disposables.*;
 import io.reactivex.rxjava3.internal.disposables.EmptyDisposable;
-import io.reactivex.rxjava3.internal.functions.ObjectHelper;
 
 /**
  * A special, non thread-safe scheduler for testing operators that require
@@ -29,7 +28,7 @@ import io.reactivex.rxjava3.internal.functions.ObjectHelper;
  */
 public final class TestScheduler extends Scheduler {
     /** The ordered queue for the runnable tasks. */
-    final Queue<TimedRunnable> queue = new PriorityBlockingQueue<TimedRunnable>(11);
+    final Queue<TimedRunnable> queue = new PriorityBlockingQueue<>(11);
     /** The per-scheduler global order counter. */
     long counter;
     // Storing time in nanoseconds internally.
@@ -76,9 +75,9 @@ public final class TestScheduler extends Scheduler {
         @Override
         public int compareTo(TimedRunnable o) {
             if (time == o.time) {
-                return ObjectHelper.compare(count, o.count);
+                return Long.compare(count, o.count);
             }
-            return ObjectHelper.compare(time, o.time);
+            return Long.compare(time, o.time);
         }
     }
 
@@ -167,7 +166,7 @@ public final class TestScheduler extends Scheduler {
             final TimedRunnable timedAction = new TimedRunnable(this, time + unit.toNanos(delayTime), run, counter++);
             queue.add(timedAction);
 
-            return Disposables.fromRunnable(new QueueRemove(timedAction));
+            return Disposable.fromRunnable(new QueueRemove(timedAction));
         }
 
         @NonNull
@@ -178,7 +177,7 @@ public final class TestScheduler extends Scheduler {
             }
             final TimedRunnable timedAction = new TimedRunnable(this, 0, run, counter++);
             queue.add(timedAction);
-            return Disposables.fromRunnable(new QueueRemove(timedAction));
+            return Disposable.fromRunnable(new QueueRemove(timedAction));
         }
 
         @Override

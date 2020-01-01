@@ -158,7 +158,7 @@ public class FlowableFilterTest extends RxJavaTest {
 
         PublishProcessor<Integer> pp = PublishProcessor.create();
 
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+        TestSubscriber<Integer> ts = new TestSubscriber<>();
 
         pp.filter(new Predicate<Integer>() {
             @Override
@@ -557,9 +557,9 @@ public class FlowableFilterTest extends RxJavaTest {
     public void fusedAsync() {
         TestSubscriberEx<Integer> ts = new TestSubscriberEx<Integer>().setInitialFusionMode(QueueFuseable.ANY);
 
-        UnicastProcessor<Integer> us = UnicastProcessor.create();
+        UnicastProcessor<Integer> up = UnicastProcessor.create();
 
-        us
+        up
         .filter(new Predicate<Integer>() {
             @Override
             public boolean test(Integer v) throws Exception {
@@ -568,7 +568,7 @@ public class FlowableFilterTest extends RxJavaTest {
         })
         .subscribe(ts);
 
-        TestHelper.emit(us, 1, 2, 3, 4, 5);
+        TestHelper.emit(up, 1, 2, 3, 4, 5);
 
         ts.assertFusionMode(QueueFuseable.ASYNC)
         .assertResult(2, 4);

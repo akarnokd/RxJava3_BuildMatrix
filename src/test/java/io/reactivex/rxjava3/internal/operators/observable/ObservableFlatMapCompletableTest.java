@@ -169,7 +169,7 @@ public class ObservableFlatMapCompletableTest extends RxJavaTest {
 
     @Test
     public void fusedObservable() {
-        TestObserverEx<Integer> to = new TestObserverEx<Integer>(QueueFuseable.ANY);
+        TestObserverEx<Integer> to = new TestObserverEx<>(QueueFuseable.ANY);
 
         Observable.range(1, 10)
         .flatMapCompletable(new Function<Integer, CompletableSource>() {
@@ -334,7 +334,7 @@ public class ObservableFlatMapCompletableTest extends RxJavaTest {
 
     @Test
     public void fused() {
-        TestObserverEx<Integer> to = new TestObserverEx<Integer>(QueueFuseable.ANY);
+        TestObserverEx<Integer> to = new TestObserverEx<>(QueueFuseable.ANY);
 
         Observable.range(1, 10)
         .flatMapCompletable(new Function<Integer, CompletableSource>() {
@@ -372,7 +372,7 @@ public class ObservableFlatMapCompletableTest extends RxJavaTest {
                 return new Completable() {
                     @Override
                     protected void subscribeActual(CompletableObserver observer) {
-                        observer.onSubscribe(Disposables.empty());
+                        observer.onSubscribe(Disposable.empty());
 
                         assertFalse(((Disposable)observer).isDisposed());
 
@@ -447,7 +447,7 @@ public class ObservableFlatMapCompletableTest extends RxJavaTest {
                 return new Completable() {
                     @Override
                     protected void subscribeActual(CompletableObserver observer) {
-                        observer.onSubscribe(Disposables.empty());
+                        observer.onSubscribe(Disposable.empty());
 
                         assertFalse(((Disposable)observer).isDisposed());
 

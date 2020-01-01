@@ -14,6 +14,7 @@
 package io.reactivex.rxjava3.internal.operators.flowable;
 
 import java.util.Iterator;
+import java.util.Objects;
 import java.util.concurrent.atomic.*;
 
 import org.reactivestreams.*;
@@ -22,7 +23,6 @@ import io.reactivex.rxjava3.annotations.*;
 import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.exceptions.Exceptions;
 import io.reactivex.rxjava3.functions.Function;
-import io.reactivex.rxjava3.internal.functions.ObjectHelper;
 import io.reactivex.rxjava3.internal.operators.flowable.FlowableMap.MapSubscriber;
 import io.reactivex.rxjava3.internal.queue.SpscLinkedArrayQueue;
 import io.reactivex.rxjava3.internal.subscriptions.*;
@@ -82,7 +82,7 @@ extends Flowable<R> {
             Iterator<? extends Publisher<? extends T>> it;
 
             try {
-                it = ObjectHelper.requireNonNull(iterable.iterator(), "The iterator returned is null");
+                it = Objects.requireNonNull(iterable.iterator(), "The iterator returned is null");
             } catch (Throwable e) {
                 Exceptions.throwIfFatal(e);
                 EmptySubscription.error(e, s);
@@ -108,7 +108,7 @@ extends Flowable<R> {
                 Publisher<? extends T> p;
 
                 try {
-                    p = ObjectHelper.requireNonNull(it.next(), "The publisher returned by the iterator is null");
+                    p = Objects.requireNonNull(it.next(), "The publisher returned by the iterator is null");
                 } catch (Throwable e) {
                     Exceptions.throwIfFatal(e);
                     EmptySubscription.error(e, s);
@@ -132,12 +132,12 @@ extends Flowable<R> {
             return;
         }
         if (n == 1) {
-            ((Publisher<T>)a[0]).subscribe(new MapSubscriber<T, R>(s, new SingletonArrayFunc()));
+            a[0].subscribe(new MapSubscriber<>(s, new SingletonArrayFunc()));
             return;
         }
 
         CombineLatestCoordinator<T, R> coordinator =
-                new CombineLatestCoordinator<T, R>(s, combiner, n, bufferSize, delayErrors);
+                new CombineLatestCoordinator<>(s, combiner, n, bufferSize, delayErrors);
 
         s.onSubscribe(coordinator);
 
@@ -183,13 +183,13 @@ extends Flowable<R> {
             @SuppressWarnings("unchecked")
             CombineLatestInnerSubscriber<T>[] a = new CombineLatestInnerSubscriber[n];
             for (int i = 0; i < n; i++) {
-                a[i] = new CombineLatestInnerSubscriber<T>(this, i, bufferSize);
+                a[i] = new CombineLatestInnerSubscriber<>(this, i, bufferSize);
             }
             this.subscribers = a;
             this.latest = new Object[n];
-            this.queue = new SpscLinkedArrayQueue<Object>(bufferSize);
+            this.queue = new SpscLinkedArrayQueue<>(bufferSize);
             this.requested = new AtomicLong();
-            this.error = new  AtomicReference<Throwable>();
+            this.error = new  AtomicReference<>();
             this.delayErrors = delayErrors;
         }
 
@@ -359,7 +359,7 @@ extends Flowable<R> {
                     R w;
 
                     try {
-                        w = ObjectHelper.requireNonNull(combiner.apply(va), "The combiner returned a null value");
+                        w = Objects.requireNonNull(combiner.apply(va), "The combiner returned a null value");
                     } catch (Throwable ex) {
                         Exceptions.throwIfFatal(ex);
 
@@ -472,7 +472,7 @@ extends Flowable<R> {
                 return null;
             }
             T[] a = (T[])queue.poll();
-            R r = ObjectHelper.requireNonNull(combiner.apply(a), "The combiner returned a null value");
+            R r = Objects.requireNonNull(combiner.apply(a), "The combiner returned a null value");
             ((CombineLatestInnerSubscriber<T>)e).requestOne();
             return r;
         }

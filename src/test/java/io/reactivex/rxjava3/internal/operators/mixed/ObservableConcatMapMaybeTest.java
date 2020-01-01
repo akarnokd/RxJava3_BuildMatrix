@@ -19,10 +19,10 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
+import io.reactivex.rxjava3.disposables.Disposable;
 import org.junit.Test;
 
 import io.reactivex.rxjava3.core.*;
-import io.reactivex.rxjava3.disposables.Disposables;
 import io.reactivex.rxjava3.exceptions.*;
 import io.reactivex.rxjava3.functions.Function;
 import io.reactivex.rxjava3.internal.functions.Functions;
@@ -239,7 +239,7 @@ public class ObservableConcatMapMaybeTest extends RxJavaTest {
             new Observable<Integer>() {
                 @Override
                 protected void subscribeActual(Observer<? super Integer> observer) {
-                    observer.onSubscribe(Disposables.empty());
+                    observer.onSubscribe(Disposable.empty());
                     observer.onNext(1);
                     observer.onError(new TestException("outer"));
                 }
@@ -262,7 +262,7 @@ public class ObservableConcatMapMaybeTest extends RxJavaTest {
         try {
             final PublishSubject<Integer> ps = PublishSubject.create();
 
-            final AtomicReference<MaybeObserver<? super Integer>> obs = new AtomicReference<MaybeObserver<? super Integer>>();
+            final AtomicReference<MaybeObserver<? super Integer>> obs = new AtomicReference<>();
 
             TestObserverEx<Integer> to = ps.concatMapMaybe(
                     new Function<Integer, MaybeSource<Integer>>() {
@@ -273,7 +273,7 @@ public class ObservableConcatMapMaybeTest extends RxJavaTest {
                                     @Override
                                     protected void subscribeActual(
                                             MaybeObserver<? super Integer> observer) {
-                                        observer.onSubscribe(Disposables.empty());
+                                        observer.onSubscribe(Disposable.empty());
                                         obs.set(observer);
                                     }
                             };
@@ -373,12 +373,12 @@ public class ObservableConcatMapMaybeTest extends RxJavaTest {
 
     @Test
     public void cancelNoConcurrentClean() {
-        TestObserver<Integer> to = new TestObserver<Integer>();
+        TestObserver<Integer> to = new TestObserver<>();
         ConcatMapMaybeMainObserver<Integer, Integer> operator =
-                new ConcatMapMaybeMainObserver<Integer, Integer>(
+                new ConcatMapMaybeMainObserver<>(
                         to, Functions.justFunction(Maybe.<Integer>never()), 16, ErrorMode.IMMEDIATE);
 
-        operator.onSubscribe(Disposables.empty());
+        operator.onSubscribe(Disposable.empty());
 
         operator.queue.offer(1);
 
@@ -399,7 +399,6 @@ public class ObservableConcatMapMaybeTest extends RxJavaTest {
     public void checkUnboundedInnerQueue() {
         MaybeSubject<Integer> ms = MaybeSubject.create();
 
-        @SuppressWarnings("unchecked")
         TestObserver<Integer> to = Observable
                 .fromArray(ms, Maybe.just(2), Maybe.just(3), Maybe.just(4))
                 .concatMapMaybe(Functions.<Maybe<Integer>>identity(), 2)

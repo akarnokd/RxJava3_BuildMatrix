@@ -17,8 +17,9 @@ import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.exceptions.Exceptions;
 import io.reactivex.rxjava3.functions.*;
 import io.reactivex.rxjava3.internal.disposables.EmptyDisposable;
-import io.reactivex.rxjava3.internal.functions.ObjectHelper;
 import io.reactivex.rxjava3.internal.operators.observable.ObservableReduceSeedSingle.ReduceSeedObserver;
+
+import java.util.Objects;
 
 /**
  * Reduce a sequence of values, starting from a generated seed value and by using
@@ -46,12 +47,12 @@ public final class ObservableReduceWithSingle<T, R> extends Single<R> {
         R seed;
 
         try {
-            seed = ObjectHelper.requireNonNull(seedSupplier.get(), "The seedSupplier returned a null value");
+            seed = Objects.requireNonNull(seedSupplier.get(), "The seedSupplier returned a null value");
         } catch (Throwable ex) {
             Exceptions.throwIfFatal(ex);
             EmptyDisposable.error(ex, observer);
             return;
         }
-        source.subscribe(new ReduceSeedObserver<T, R>(observer, reducer, seed));
+        source.subscribe(new ReduceSeedObserver<>(observer, reducer, seed));
     }
 }

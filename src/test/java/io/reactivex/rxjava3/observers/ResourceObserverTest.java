@@ -30,9 +30,9 @@ import io.reactivex.rxjava3.testsupport.TestHelper;
 public class ResourceObserverTest extends RxJavaTest {
 
     static final class TestResourceObserver<T> extends ResourceObserver<T> {
-        final List<T> values = new ArrayList<T>();
+        final List<T> values = new ArrayList<>();
 
-        final List<Throwable> errors = new ArrayList<Throwable>();
+        final List<Throwable> errors = new ArrayList<>();
 
         int complete;
 
@@ -67,17 +67,17 @@ public class ResourceObserverTest extends RxJavaTest {
 
     @Test(expected = NullPointerException.class)
     public void nullResource() {
-        TestResourceObserver<Integer> ro = new TestResourceObserver<Integer>();
+        TestResourceObserver<Integer> ro = new TestResourceObserver<>();
         ro.add(null);
     }
 
     @Test
     public void addResources() {
-        TestResourceObserver<Integer> ro = new TestResourceObserver<Integer>();
+        TestResourceObserver<Integer> ro = new TestResourceObserver<>();
 
         assertFalse(ro.isDisposed());
 
-        Disposable d = Disposables.empty();
+        Disposable d = Disposable.empty();
 
         ro.add(d);
 
@@ -98,11 +98,11 @@ public class ResourceObserverTest extends RxJavaTest {
 
     @Test
     public void onCompleteCleansUp() {
-        TestResourceObserver<Integer> ro = new TestResourceObserver<Integer>();
+        TestResourceObserver<Integer> ro = new TestResourceObserver<>();
 
         assertFalse(ro.isDisposed());
 
-        Disposable d = Disposables.empty();
+        Disposable d = Disposable.empty();
 
         ro.add(d);
 
@@ -117,11 +117,11 @@ public class ResourceObserverTest extends RxJavaTest {
 
     @Test
     public void onErrorCleansUp() {
-        TestResourceObserver<Integer> ro = new TestResourceObserver<Integer>();
+        TestResourceObserver<Integer> ro = new TestResourceObserver<>();
 
         assertFalse(ro.isDisposed());
 
-        Disposable d = Disposables.empty();
+        Disposable d = Disposable.empty();
 
         ro.add(d);
 
@@ -136,7 +136,7 @@ public class ResourceObserverTest extends RxJavaTest {
 
     @Test
     public void normal() {
-        TestResourceObserver<Integer> tc = new TestResourceObserver<Integer>();
+        TestResourceObserver<Integer> tc = new TestResourceObserver<>();
 
         assertFalse(tc.isDisposed());
         assertEquals(0, tc.start);
@@ -153,7 +153,7 @@ public class ResourceObserverTest extends RxJavaTest {
 
     @Test
     public void error() {
-        TestResourceObserver<Integer> tc = new TestResourceObserver<Integer>();
+        TestResourceObserver<Integer> tc = new TestResourceObserver<>();
 
         assertFalse(tc.isDisposed());
         assertEquals(0, tc.start);
@@ -176,11 +176,11 @@ public class ResourceObserverTest extends RxJavaTest {
         List<Throwable> error = TestHelper.trackPluginErrors();
 
         try {
-            TestResourceObserver<Integer> tc = new TestResourceObserver<Integer>();
+            TestResourceObserver<Integer> tc = new TestResourceObserver<>();
 
-            tc.onSubscribe(Disposables.empty());
+            tc.onSubscribe(Disposable.empty());
 
-            Disposable d = Disposables.empty();
+            Disposable d = Disposable.empty();
 
             tc.onSubscribe(d);
 
@@ -196,10 +196,10 @@ public class ResourceObserverTest extends RxJavaTest {
 
     @Test
     public void dispose() {
-        TestResourceObserver<Integer> tc = new TestResourceObserver<Integer>();
+        TestResourceObserver<Integer> tc = new TestResourceObserver<>();
         tc.dispose();
 
-        Disposable d = Disposables.empty();
+        Disposable d = Disposable.empty();
 
         tc.onSubscribe(d);
 

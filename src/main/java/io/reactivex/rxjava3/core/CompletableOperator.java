@@ -18,13 +18,14 @@ import io.reactivex.rxjava3.annotations.NonNull;
 /**
  * Interface to map/wrap a downstream observer to an upstream observer.
  */
+@FunctionalInterface
 public interface CompletableOperator {
     /**
-     * Applies a function to the child CompletableObserver and returns a new parent CompletableObserver.
-     * @param observer the child CompletableObservable instance
-     * @return the parent CompletableObserver instance
-     * @throws Exception on failure
+     * Applies a function to the child {@link CompletableObserver} and returns a new parent {@code CompletableObserver}.
+     * @param observer the child {@code CompletableObserver} instance
+     * @return the parent {@code CompletableObserver} instance
+     * @throws Throwable on failure
      */
     @NonNull
-    CompletableObserver apply(@NonNull CompletableObserver observer) throws Exception;
+    CompletableObserver apply(@NonNull CompletableObserver observer) throws Throwable;
 }

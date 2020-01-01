@@ -14,6 +14,7 @@
 package io.reactivex.rxjava3.internal.operators.observable;
 
 import java.util.ArrayDeque;
+import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import io.reactivex.rxjava3.core.*;
@@ -21,7 +22,6 @@ import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.exceptions.Exceptions;
 import io.reactivex.rxjava3.functions.Function;
 import io.reactivex.rxjava3.internal.disposables.DisposableHelper;
-import io.reactivex.rxjava3.internal.functions.ObjectHelper;
 import io.reactivex.rxjava3.internal.fuseable.*;
 import io.reactivex.rxjava3.internal.observers.*;
 import io.reactivex.rxjava3.internal.queue.SpscLinkedArrayQueue;
@@ -50,7 +50,7 @@ public final class ObservableConcatMapEager<T, R> extends AbstractObservableWith
 
     @Override
     protected void subscribeActual(Observer<? super R> observer) {
-        source.subscribe(new ConcatMapEagerMainObserver<T, R>(observer, mapper, maxConcurrency, prefetch, errorMode));
+        source.subscribe(new ConcatMapEagerMainObserver<>(observer, mapper, maxConcurrency, prefetch, errorMode));
     }
 
     static final class ConcatMapEagerMainObserver<T, R>
@@ -96,7 +96,7 @@ public final class ObservableConcatMapEager<T, R> extends AbstractObservableWith
             this.prefetch = prefetch;
             this.errorMode = errorMode;
             this.errors = new AtomicThrowable();
-            this.observers = new ArrayDeque<InnerQueuedObserver<R>>();
+            this.observers = new ArrayDeque<>();
         }
 
         @SuppressWarnings("unchecked")
@@ -129,7 +129,7 @@ public final class ObservableConcatMapEager<T, R> extends AbstractObservableWith
                     }
                 }
 
-                queue = new SpscLinkedArrayQueue<T>(prefetch);
+                queue = new SpscLinkedArrayQueue<>(prefetch);
 
                 downstream.onSubscribe(this);
             }
@@ -271,7 +271,7 @@ public final class ObservableConcatMapEager<T, R> extends AbstractObservableWith
                             break;
                         }
 
-                        source = ObjectHelper.requireNonNull(mapper.apply(v), "The mapper returned a null ObservableSource");
+                        source = Objects.requireNonNull(mapper.apply(v), "The mapper returned a null ObservableSource");
                     } catch (Throwable ex) {
                         Exceptions.throwIfFatal(ex);
                         upstream.dispose();
@@ -282,7 +282,7 @@ public final class ObservableConcatMapEager<T, R> extends AbstractObservableWith
                         return;
                     }
 
-                    InnerQueuedObserver<R> inner = new InnerQueuedObserver<R>(this, prefetch);
+                    InnerQueuedObserver<R> inner = new InnerQueuedObserver<>(this, prefetch);
 
                     observers.offer(inner);
 

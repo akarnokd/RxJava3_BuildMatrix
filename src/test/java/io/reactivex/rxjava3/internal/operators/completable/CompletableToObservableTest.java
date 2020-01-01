@@ -39,11 +39,11 @@ public class CompletableToObservableTest extends RxJavaTest {
 
     @Test
     public void fusion() throws Exception {
-        TestObserver<Void> to = new TestObserver<Void>();
+        TestObserver<Void> to = new TestObserver<>();
 
         ObserverCompletableObserver co = new ObserverCompletableObserver(to);
 
-        Disposable d = Disposables.empty();
+        Disposable d = Disposable.empty();
 
         co.onSubscribe(d);
 

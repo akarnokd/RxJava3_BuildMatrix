@@ -24,7 +24,6 @@ import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.exceptions.Exceptions;
 import io.reactivex.rxjava3.functions.Supplier;
 import io.reactivex.rxjava3.internal.disposables.*;
-import io.reactivex.rxjava3.internal.functions.ObjectHelper;
 import io.reactivex.rxjava3.internal.observers.QueueDrainObserver;
 import io.reactivex.rxjava3.internal.queue.MpscLinkedQueue;
 import io.reactivex.rxjava3.internal.util.QueueDrainHelper;
@@ -56,16 +55,16 @@ extends AbstractObservableWithUpstream<T, U> {
     @Override
     protected void subscribeActual(Observer<? super U> t) {
         if (timespan == timeskip && maxSize == Integer.MAX_VALUE) {
-            source.subscribe(new BufferExactUnboundedObserver<T, U>(
-                    new SerializedObserver<U>(t),
+            source.subscribe(new BufferExactUnboundedObserver<>(
+                    new SerializedObserver<>(t),
                     bufferSupplier, timespan, unit, scheduler));
             return;
         }
         Scheduler.Worker w = scheduler.createWorker();
 
         if (timespan == timeskip) {
-            source.subscribe(new BufferExactBoundedObserver<T, U>(
-                    new SerializedObserver<U>(t),
+            source.subscribe(new BufferExactBoundedObserver<>(
+                    new SerializedObserver<>(t),
                     bufferSupplier,
                     timespan, unit, maxSize, restartTimerOnMaxSize, w
             ));
@@ -73,8 +72,8 @@ extends AbstractObservableWithUpstream<T, U> {
         }
         // Can't use maxSize because what to do if a buffer is full but its
         // timespan hasn't been elapsed?
-        source.subscribe(new BufferSkipBoundedObserver<T, U>(
-                new SerializedObserver<U>(t),
+        source.subscribe(new BufferSkipBoundedObserver<>(
+                new SerializedObserver<>(t),
                 bufferSupplier, timespan, timeskip, unit, w));
 
     }
@@ -90,12 +89,12 @@ extends AbstractObservableWithUpstream<T, U> {
 
         U buffer;
 
-        final AtomicReference<Disposable> timer = new AtomicReference<Disposable>();
+        final AtomicReference<Disposable> timer = new AtomicReference<>();
 
         BufferExactUnboundedObserver(
                 Observer<? super U> actual, Supplier<U> bufferSupplier,
                 long timespan, TimeUnit unit, Scheduler scheduler) {
-            super(actual, new MpscLinkedQueue<U>());
+            super(actual, new MpscLinkedQueue<>());
             this.bufferSupplier = bufferSupplier;
             this.timespan = timespan;
             this.unit = unit;
@@ -110,7 +109,7 @@ extends AbstractObservableWithUpstream<T, U> {
                 U b;
 
                 try {
-                    b = ObjectHelper.requireNonNull(bufferSupplier.get(), "The buffer supplied is null");
+                    b = Objects.requireNonNull(bufferSupplier.get(), "The buffer supplied is null");
                 } catch (Throwable e) {
                     Exceptions.throwIfFatal(e);
                     dispose();
@@ -184,7 +183,7 @@ extends AbstractObservableWithUpstream<T, U> {
             U next;
 
             try {
-                next = ObjectHelper.requireNonNull(bufferSupplier.get(), "The bufferSupplier returned a null buffer");
+                next = Objects.requireNonNull(bufferSupplier.get(), "The bufferSupplier returned a null buffer");
             } catch (Throwable e) {
                 Exceptions.throwIfFatal(e);
                 downstream.onError(e);
@@ -229,13 +228,13 @@ extends AbstractObservableWithUpstream<T, U> {
         BufferSkipBoundedObserver(Observer<? super U> actual,
                 Supplier<U> bufferSupplier, long timespan,
                 long timeskip, TimeUnit unit, Worker w) {
-            super(actual, new MpscLinkedQueue<U>());
+            super(actual, new MpscLinkedQueue<>());
             this.bufferSupplier = bufferSupplier;
             this.timespan = timespan;
             this.timeskip = timeskip;
             this.unit = unit;
             this.w = w;
-            this.buffers = new LinkedList<U>();
+            this.buffers = new LinkedList<>();
         }
 
         @Override
@@ -246,7 +245,7 @@ extends AbstractObservableWithUpstream<T, U> {
                 final U b; // NOPMD
 
                 try {
-                    b = ObjectHelper.requireNonNull(bufferSupplier.get(), "The buffer supplied is null");
+                    b = Objects.requireNonNull(bufferSupplier.get(), "The buffer supplied is null");
                 } catch (Throwable e) {
                     Exceptions.throwIfFatal(e);
                     d.dispose();
@@ -286,7 +285,7 @@ extends AbstractObservableWithUpstream<T, U> {
         public void onComplete() {
             List<U> bs;
             synchronized (this) {
-                bs = new ArrayList<U>(buffers);
+                bs = new ArrayList<>(buffers);
                 buffers.clear();
             }
 
@@ -328,7 +327,7 @@ extends AbstractObservableWithUpstream<T, U> {
             final U b; // NOPMD
 
             try {
-                b = ObjectHelper.requireNonNull(bufferSupplier.get(), "The bufferSupplier returned a null buffer");
+                b = Objects.requireNonNull(bufferSupplier.get(), "The bufferSupplier returned a null buffer");
             } catch (Throwable e) {
                 Exceptions.throwIfFatal(e);
                 downstream.onError(e);
@@ -410,7 +409,7 @@ extends AbstractObservableWithUpstream<T, U> {
                 Supplier<U> bufferSupplier,
                 long timespan, TimeUnit unit, int maxSize,
                 boolean restartOnMaxSize, Worker w) {
-            super(actual, new MpscLinkedQueue<U>());
+            super(actual, new MpscLinkedQueue<>());
             this.bufferSupplier = bufferSupplier;
             this.timespan = timespan;
             this.unit = unit;
@@ -427,7 +426,7 @@ extends AbstractObservableWithUpstream<T, U> {
                 U b;
 
                 try {
-                    b = ObjectHelper.requireNonNull(bufferSupplier.get(), "The buffer supplied is null");
+                    b = Objects.requireNonNull(bufferSupplier.get(), "The buffer supplied is null");
                 } catch (Throwable e) {
                     Exceptions.throwIfFatal(e);
                     d.dispose();
@@ -469,7 +468,7 @@ extends AbstractObservableWithUpstream<T, U> {
             fastPathOrderedEmit(b, false, this);
 
             try {
-                b = ObjectHelper.requireNonNull(bufferSupplier.get(), "The buffer supplied is null");
+                b = Objects.requireNonNull(bufferSupplier.get(), "The buffer supplied is null");
             } catch (Throwable e) {
                 Exceptions.throwIfFatal(e);
                 downstream.onError(e);
@@ -541,7 +540,7 @@ extends AbstractObservableWithUpstream<T, U> {
             U next;
 
             try {
-                next = ObjectHelper.requireNonNull(bufferSupplier.get(), "The bufferSupplier returned a null buffer");
+                next = Objects.requireNonNull(bufferSupplier.get(), "The bufferSupplier returned a null buffer");
             } catch (Throwable e) {
                 Exceptions.throwIfFatal(e);
                 dispose();

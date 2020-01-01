@@ -44,10 +44,10 @@ public final class FlowableDoOnEach<T> extends AbstractFlowableWithUpstream<T, T
     @Override
     protected void subscribeActual(Subscriber<? super T> s) {
         if (s instanceof ConditionalSubscriber) {
-            source.subscribe(new DoOnEachConditionalSubscriber<T>(
-                    (ConditionalSubscriber<? super T>)s, onNext, onError, onComplete, onAfterTerminate));
+            source.subscribe(new DoOnEachConditionalSubscriber<>(
+                    (ConditionalSubscriber<? super T>) s, onNext, onError, onComplete, onAfterTerminate));
         } else {
-            source.subscribe(new DoOnEachSubscriber<T>(
+            source.subscribe(new DoOnEachSubscriber<>(
                     s, onNext, onError, onComplete, onAfterTerminate));
         }
     }
@@ -159,6 +159,7 @@ public final class FlowableDoOnEach<T> extends AbstractFlowableWithUpstream<T, T
                 try {
                     onError.accept(ex);
                 } catch (Throwable exc) {
+                    Exceptions.throwIfFatal(exc);
                     throw new CompositeException(ex, exc);
                 }
                 throw ExceptionHelper.<Exception>throwIfThrowable(ex);
@@ -173,6 +174,7 @@ public final class FlowableDoOnEach<T> extends AbstractFlowableWithUpstream<T, T
                         try {
                             onError.accept(ex);
                         } catch (Throwable exc) {
+                            Exceptions.throwIfFatal(exc);
                             throw new CompositeException(ex, exc);
                         }
                         throw ExceptionHelper.<Exception>throwIfThrowable(ex);
@@ -314,6 +316,7 @@ public final class FlowableDoOnEach<T> extends AbstractFlowableWithUpstream<T, T
                 try {
                     onError.accept(ex);
                 } catch (Throwable exc) {
+                    Exceptions.throwIfFatal(exc);
                     throw new CompositeException(ex, exc);
                 }
                 throw ExceptionHelper.<Exception>throwIfThrowable(ex);
@@ -328,6 +331,7 @@ public final class FlowableDoOnEach<T> extends AbstractFlowableWithUpstream<T, T
                         try {
                             onError.accept(ex);
                         } catch (Throwable exc) {
+                            Exceptions.throwIfFatal(exc);
                             throw new CompositeException(ex, exc);
                         }
                         throw ExceptionHelper.<Exception>throwIfThrowable(ex);

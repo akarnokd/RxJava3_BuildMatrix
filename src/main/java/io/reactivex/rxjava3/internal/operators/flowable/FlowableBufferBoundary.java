@@ -22,7 +22,6 @@ import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.disposables.*;
 import io.reactivex.rxjava3.exceptions.Exceptions;
 import io.reactivex.rxjava3.functions.*;
-import io.reactivex.rxjava3.internal.functions.ObjectHelper;
 import io.reactivex.rxjava3.internal.queue.SpscLinkedArrayQueue;
 import io.reactivex.rxjava3.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.rxjava3.internal.util.*;
@@ -45,7 +44,7 @@ extends AbstractFlowableWithUpstream<T, U> {
     @Override
     protected void subscribeActual(Subscriber<? super U> s) {
         BufferBoundarySubscriber<T, U, Open, Close> parent =
-            new BufferBoundarySubscriber<T, U, Open, Close>(
+            new BufferBoundarySubscriber<>(
                 s, bufferOpen, bufferClose, bufferSupplier
             );
         s.onSubscribe(parent);
@@ -94,11 +93,11 @@ extends AbstractFlowableWithUpstream<T, U> {
             this.bufferSupplier = bufferSupplier;
             this.bufferOpen = bufferOpen;
             this.bufferClose = bufferClose;
-            this.queue = new SpscLinkedArrayQueue<C>(bufferSize());
+            this.queue = new SpscLinkedArrayQueue<>(bufferSize());
             this.subscribers = new CompositeDisposable();
             this.requested = new AtomicLong();
-            this.upstream = new AtomicReference<Subscription>();
-            this.buffers = new LinkedHashMap<Long, C>();
+            this.upstream = new AtomicReference<>();
+            this.buffers = new LinkedHashMap<>();
             this.errors = new AtomicThrowable();
         }
 
@@ -106,7 +105,7 @@ extends AbstractFlowableWithUpstream<T, U> {
         public void onSubscribe(Subscription s) {
             if (SubscriptionHelper.setOnce(this.upstream, s)) {
 
-                BufferOpenSubscriber<Open> open = new BufferOpenSubscriber<Open>(this);
+                BufferOpenSubscriber<Open> open = new BufferOpenSubscriber<>(this);
                 subscribers.add(open);
 
                 bufferOpen.subscribe(open);
@@ -181,8 +180,8 @@ extends AbstractFlowableWithUpstream<T, U> {
             Publisher<? extends Close> p;
             C buf;
             try {
-                buf = ObjectHelper.requireNonNull(bufferSupplier.get(), "The bufferSupplier returned a null Collection");
-                p = ObjectHelper.requireNonNull(bufferClose.apply(token), "The bufferClose returned a null Publisher");
+                buf = Objects.requireNonNull(bufferSupplier.get(), "The bufferSupplier returned a null Collection");
+                p = Objects.requireNonNull(bufferClose.apply(token), "The bufferClose returned a null Publisher");
             } catch (Throwable ex) {
                 Exceptions.throwIfFatal(ex);
                 SubscriptionHelper.cancel(upstream);
@@ -200,7 +199,7 @@ extends AbstractFlowableWithUpstream<T, U> {
                 bufs.put(idx, buf);
             }
 
-            BufferCloseSubscriber<T, C> bc = new BufferCloseSubscriber<T, C>(this, idx);
+            BufferCloseSubscriber<T, C> bc = new BufferCloseSubscriber<>(this, idx);
             subscribers.add(bc);
             p.subscribe(bc);
         }

@@ -52,7 +52,7 @@ public class TooManyEmptyNewLines {
             return;
         }
 
-        Queue<File> dirs = new ArrayDeque<File>();
+        Queue<File> dirs = new ArrayDeque<>();
 
         StringBuilder fail = new StringBuilder();
         fail.append("The following code pattern was found: ");
@@ -82,7 +82,7 @@ public class TooManyEmptyNewLines {
                         String fname = u.getName();
                         if (fname.endsWith(".java")) {
 
-                            List<String> lines = new ArrayList<String>();
+                            List<String> lines = new ArrayList<>();
                             BufferedReader in = new BufferedReader(new FileReader(u));
                             try {
                                 for (;;) {
@@ -112,7 +112,14 @@ public class TooManyEmptyNewLines {
                                         fail
                                         .append(fname)
                                         .append("#L").append(i + 1)
-                                        .append("\n");
+                                        .append("\n")
+                                        .append(" at ")
+                                        .append(fname.replace(".java", ""))
+                                        .append(".method(")
+                                        .append(fname)
+                                        .append(":").append(i + 1)
+                                        .append(")\n")
+                                        ;
                                         total++;
                                         i += c;
                                     }
@@ -124,9 +131,7 @@ public class TooManyEmptyNewLines {
             }
         }
         if (total != 0) {
-            fail.append("Found ")
-            .append(total)
-            .append(" instances");
+            fail.insert(0, "Found " + total + " instances\n");
             System.out.println(fail);
             throw new AssertionError(fail.toString());
         }

@@ -30,7 +30,7 @@ public class ResourceMaybeObserverTest extends RxJavaTest {
     static final class TestResourceMaybeObserver<T> extends ResourceMaybeObserver<T> {
         T value;
 
-        final List<Throwable> errors = new ArrayList<Throwable>();
+        final List<Throwable> errors = new ArrayList<>();
 
         int complete;
 
@@ -67,17 +67,17 @@ public class ResourceMaybeObserverTest extends RxJavaTest {
 
     @Test(expected = NullPointerException.class)
     public void nullResource() {
-        TestResourceMaybeObserver<Integer> rmo = new TestResourceMaybeObserver<Integer>();
+        TestResourceMaybeObserver<Integer> rmo = new TestResourceMaybeObserver<>();
         rmo.add(null);
     }
 
     @Test
     public void addResources() {
-        TestResourceMaybeObserver<Integer> rmo = new TestResourceMaybeObserver<Integer>();
+        TestResourceMaybeObserver<Integer> rmo = new TestResourceMaybeObserver<>();
 
         assertFalse(rmo.isDisposed());
 
-        Disposable d = Disposables.empty();
+        Disposable d = Disposable.empty();
 
         rmo.add(d);
 
@@ -98,11 +98,11 @@ public class ResourceMaybeObserverTest extends RxJavaTest {
 
     @Test
     public void onCompleteCleansUp() {
-        TestResourceMaybeObserver<Integer> rmo = new TestResourceMaybeObserver<Integer>();
+        TestResourceMaybeObserver<Integer> rmo = new TestResourceMaybeObserver<>();
 
         assertFalse(rmo.isDisposed());
 
-        Disposable d = Disposables.empty();
+        Disposable d = Disposable.empty();
 
         rmo.add(d);
 
@@ -117,11 +117,11 @@ public class ResourceMaybeObserverTest extends RxJavaTest {
 
     @Test
     public void onSuccessCleansUp() {
-        TestResourceMaybeObserver<Integer> rmo = new TestResourceMaybeObserver<Integer>();
+        TestResourceMaybeObserver<Integer> rmo = new TestResourceMaybeObserver<>();
 
         assertFalse(rmo.isDisposed());
 
-        Disposable d = Disposables.empty();
+        Disposable d = Disposable.empty();
 
         rmo.add(d);
 
@@ -136,11 +136,11 @@ public class ResourceMaybeObserverTest extends RxJavaTest {
 
     @Test
     public void onErrorCleansUp() {
-        TestResourceMaybeObserver<Integer> rmo = new TestResourceMaybeObserver<Integer>();
+        TestResourceMaybeObserver<Integer> rmo = new TestResourceMaybeObserver<>();
 
         assertFalse(rmo.isDisposed());
 
-        Disposable d = Disposables.empty();
+        Disposable d = Disposable.empty();
 
         rmo.add(d);
 
@@ -155,7 +155,7 @@ public class ResourceMaybeObserverTest extends RxJavaTest {
 
     @Test
     public void normal() {
-        TestResourceMaybeObserver<Integer> rmo = new TestResourceMaybeObserver<Integer>();
+        TestResourceMaybeObserver<Integer> rmo = new TestResourceMaybeObserver<>();
 
         assertFalse(rmo.isDisposed());
         assertEquals(0, rmo.start);
@@ -173,7 +173,7 @@ public class ResourceMaybeObserverTest extends RxJavaTest {
 
     @Test
     public void empty() {
-        TestResourceMaybeObserver<Integer> rmo = new TestResourceMaybeObserver<Integer>();
+        TestResourceMaybeObserver<Integer> rmo = new TestResourceMaybeObserver<>();
 
         assertFalse(rmo.isDisposed());
         assertEquals(0, rmo.start);
@@ -191,7 +191,7 @@ public class ResourceMaybeObserverTest extends RxJavaTest {
 
     @Test
     public void error() {
-        TestResourceMaybeObserver<Integer> rmo = new TestResourceMaybeObserver<Integer>();
+        TestResourceMaybeObserver<Integer> rmo = new TestResourceMaybeObserver<>();
 
         assertFalse(rmo.isDisposed());
         assertEquals(0, rmo.start);
@@ -215,11 +215,11 @@ public class ResourceMaybeObserverTest extends RxJavaTest {
         List<Throwable> error = TestHelper.trackPluginErrors();
 
         try {
-            TestResourceMaybeObserver<Integer> rmo = new TestResourceMaybeObserver<Integer>();
+            TestResourceMaybeObserver<Integer> rmo = new TestResourceMaybeObserver<>();
 
-            rmo.onSubscribe(Disposables.empty());
+            rmo.onSubscribe(Disposable.empty());
 
-            Disposable d = Disposables.empty();
+            Disposable d = Disposable.empty();
 
             rmo.onSubscribe(d);
 
@@ -235,10 +235,10 @@ public class ResourceMaybeObserverTest extends RxJavaTest {
 
     @Test
     public void dispose() {
-        TestResourceMaybeObserver<Integer> rmo = new TestResourceMaybeObserver<Integer>();
+        TestResourceMaybeObserver<Integer> rmo = new TestResourceMaybeObserver<>();
         rmo.dispose();
 
-        Disposable d = Disposables.empty();
+        Disposable d = Disposable.empty();
 
         rmo.onSubscribe(d);
 
