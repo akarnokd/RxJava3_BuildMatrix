@@ -68,14 +68,14 @@ sourceCompatibility = targetStr
 targetCompatibility = targetStr
 
 // workaround for JDK 14 as Gradle 6 so far doesn't work natively with it
-def jdk14dir = System.getenv("JDK14")
-if (jdk14dir != null) {
-    println("JDK 14 override: " + jdk14dir);
+def jdkNextdir = System.getenv("JDK_NEXT")
+if (jdkNextdir != null) {
+    println("JDK override: " + jdkNextdir);
     compileJava.options.fork = true
     compileTestJava.options.fork = true
-    compileJava.options.forkOptions.executable = jdk14dir + "/bin/javac"
-    javadoc.executable = jdk14dir + "/bin/javadoc"
-    test.executable = jdk14dir + "/bin/java"
+    compileJava.options.forkOptions.executable = jdkNextdir + "/bin/javac"
+    javadoc.executable = jdkNextdir + "/bin/javadoc"
+    test.executable = jdkNextdir + "/bin/java"
     compileTestJava.options.forkOptions.executable = compileJava.options.forkOptions.executable
 }
 
@@ -301,7 +301,7 @@ test {
 
 task testng(type: Test) { 
     useTestNG()
-    if (jdk14dir != null) {
+    if (jdkNextdir != null) {
         executable = test.executable
     }
     testLogging  {
