@@ -11,31 +11,22 @@
  * the License for the specific language governing permissions and limitations under the License.
  */
 
-package io.reactivex.rxjava3.internal.operators.completable;
+package io.reactivex.rxjava3.validators;
 
+import static org.junit.Assert.assertEquals;
 import org.junit.Test;
 
-import io.reactivex.rxjava3.core.*;
-
-public class CompletableFromMaybeTest extends RxJavaTest {
-    @Test
-    public void fromMaybe() {
-        Completable.fromMaybe(Maybe.just(1))
-            .test()
-            .assertResult();
+public class ParameterNamesInClassesTest {
+    void method(int paramName) {
+        // deliberately empty
     }
 
     @Test
-    public void fromMaybeEmpty() {
-        Completable.fromMaybe(Maybe.<Integer>empty())
-            .test()
-            .assertResult();
-    }
-
-    @Test
-    public void fromMaybeError() {
-        Completable.fromMaybe(Maybe.error(new UnsupportedOperationException()))
-            .test()
-            .assertFailure(UnsupportedOperationException.class);
+    public void javacParametersEnabled() throws Exception {
+        assertEquals("Please enable saving parameter names via the -parameters javac argument",
+                "paramName",
+                getClass()
+                .getDeclaredMethod("method", Integer.TYPE)
+                .getParameters()[0].getName());
     }
 }

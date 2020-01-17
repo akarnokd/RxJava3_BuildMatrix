@@ -190,10 +190,12 @@ public final class ReplayProcessor<T> extends FlowableProcessor<T> {
      * @param capacityHint
      *          the initial buffer capacity
      * @return the created processor
+     * @throws IllegalArgumentException if {@code capacityHint} is non-positive
      */
     @CheckReturnValue
     @NonNull
     public static <T> ReplayProcessor<T> create(int capacityHint) {
+        ObjectHelper.verifyPositive(capacityHint, "capacityHint");
         return new ReplayProcessor<>(new UnboundedReplayBuffer<>(capacityHint));
     }
 
@@ -216,10 +218,12 @@ public final class ReplayProcessor<T> extends FlowableProcessor<T> {
      * @param maxSize
      *          the maximum number of buffered items
      * @return the created processor
+     * @throws IllegalArgumentException if {@code maxSize} is non-positive
      */
     @CheckReturnValue
     @NonNull
     public static <T> ReplayProcessor<T> createWithSize(int maxSize) {
+        ObjectHelper.verifyPositive(maxSize, "maxSize");
         return new ReplayProcessor<>(new SizeBoundReplayBuffer<>(maxSize));
     }
 
@@ -272,10 +276,15 @@ public final class ReplayProcessor<T> extends FlowableProcessor<T> {
      * @param scheduler
      *          the {@link Scheduler} that provides the current time
      * @return the created processor
+     * @throws NullPointerException if {@code unit} or {@code scheduler} is {@code null}
+     * @throws IllegalArgumentException if {@code maxAge} is non-positive
      */
     @CheckReturnValue
     @NonNull
     public static <T> ReplayProcessor<T> createWithTime(long maxAge, @NonNull TimeUnit unit, @NonNull Scheduler scheduler) {
+        ObjectHelper.verifyPositive(maxAge, "maxAge");
+        Objects.requireNonNull(unit, "unit is null");
+        Objects.requireNonNull(scheduler, "scheduler is null");
         return new ReplayProcessor<>(new SizeAndTimeBoundReplayBuffer<>(Integer.MAX_VALUE, maxAge, unit, scheduler));
     }
 
@@ -312,10 +321,16 @@ public final class ReplayProcessor<T> extends FlowableProcessor<T> {
      * @param scheduler
      *          the {@link Scheduler} that provides the current time
      * @return the created processor
+     * @throws NullPointerException if {@code unit} or {@code scheduler} is {@code null}
+     * @throws IllegalArgumentException if {@code maxAge} or {@code maxSize} is non-positive
      */
     @CheckReturnValue
     @NonNull
     public static <T> ReplayProcessor<T> createWithTimeAndSize(long maxAge, @NonNull TimeUnit unit, @NonNull Scheduler scheduler, int maxSize) {
+        ObjectHelper.verifyPositive(maxSize, "maxSize");
+        ObjectHelper.verifyPositive(maxAge, "maxAge");
+        Objects.requireNonNull(unit, "unit is null");
+        Objects.requireNonNull(scheduler, "scheduler is null");
         return new ReplayProcessor<>(new SizeAndTimeBoundReplayBuffer<>(maxSize, maxAge, unit, scheduler));
     }
 
@@ -330,7 +345,7 @@ public final class ReplayProcessor<T> extends FlowableProcessor<T> {
     }
 
     @Override
-    protected void subscribeActual(Subscriber<? super T> s) {
+    protected void subscribeActual(Subscriber<@NonNull ? super T> s) {
         ReplaySubscription<T> rs = new ReplaySubscription<>(s, this);
         s.onSubscribe(rs);
 
@@ -600,7 +615,7 @@ public final class ReplayProcessor<T> extends FlowableProcessor<T> {
     static final class ReplaySubscription<T> extends AtomicInteger implements Subscription {
 
         private static final long serialVersionUID = 466549804534799122L;
-        final Subscriber<? super T> downstream;
+        final Subscriber<@NonNull ? super T> downstream;
         final ReplayProcessor<T> state;
 
         Object index;
@@ -611,7 +626,7 @@ public final class ReplayProcessor<T> extends FlowableProcessor<T> {
 
         long emitted;
 
-        ReplaySubscription(Subscriber<? super T> actual, ReplayProcessor<T> state) {
+        ReplaySubscription(Subscriber<@NonNull ? super T> actual, ReplayProcessor<T> state) {
             this.downstream = actual;
             this.state = state;
             this.requested = new AtomicLong();
@@ -645,7 +660,7 @@ public final class ReplayProcessor<T> extends FlowableProcessor<T> {
         volatile int size;
 
         UnboundedReplayBuffer(int capacityHint) {
-            this.buffer = new ArrayList<>(ObjectHelper.verifyPositive(capacityHint, "capacityHint"));
+            this.buffer = new ArrayList<>(capacityHint);
         }
 
         @Override
@@ -713,7 +728,7 @@ public final class ReplayProcessor<T> extends FlowableProcessor<T> {
 
             int missed = 1;
             final List<T> b = buffer;
-            final Subscriber<? super T> a = rs.downstream;
+            final Subscriber<@NonNull ? super T> a = rs.downstream;
 
             Integer indexObject = (Integer)rs.index;
             int index;
@@ -845,7 +860,7 @@ public final class ReplayProcessor<T> extends FlowableProcessor<T> {
         volatile boolean done;
 
         SizeBoundReplayBuffer(int maxSize) {
-            this.maxSize = ObjectHelper.verifyPositive(maxSize, "maxSize");
+            this.maxSize = maxSize;
             Node<T> h = new Node<>(null);
             this.tail = h;
             this.head = h;
@@ -952,7 +967,7 @@ public final class ReplayProcessor<T> extends FlowableProcessor<T> {
             }
 
             int missed = 1;
-            final Subscriber<? super T> a = rs.downstream;
+            final Subscriber<@NonNull ? super T> a = rs.downstream;
 
             Node<T> index = (Node<T>)rs.index;
             if (index == null) {
@@ -1061,10 +1076,10 @@ public final class ReplayProcessor<T> extends FlowableProcessor<T> {
         volatile boolean done;
 
         SizeAndTimeBoundReplayBuffer(int maxSize, long maxAge, TimeUnit unit, Scheduler scheduler) {
-            this.maxSize = ObjectHelper.verifyPositive(maxSize, "maxSize");
-            this.maxAge = ObjectHelper.verifyPositive(maxAge, "maxAge");
-            this.unit = Objects.requireNonNull(unit, "unit is null");
-            this.scheduler = Objects.requireNonNull(scheduler, "scheduler is null");
+            this.maxSize = maxSize;
+            this.maxAge = maxAge;
+            this.unit = unit;
+            this.scheduler = scheduler;
             TimedNode<T> h = new TimedNode<>(null, 0L);
             this.tail = h;
             this.head = h;
@@ -1242,7 +1257,7 @@ public final class ReplayProcessor<T> extends FlowableProcessor<T> {
             }
 
             int missed = 1;
-            final Subscriber<? super T> a = rs.downstream;
+            final Subscriber<@NonNull ? super T> a = rs.downstream;
 
             TimedNode<T> index = (TimedNode<T>)rs.index;
             if (index == null) {

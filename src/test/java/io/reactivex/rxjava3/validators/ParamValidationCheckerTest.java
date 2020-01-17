@@ -93,7 +93,7 @@ public class ParamValidationCheckerTest {
         addOverride(new ParamOverride(Flowable.class, 0, ParamMode.NON_NEGATIVE, "elementAtOrError", Long.TYPE));
 
         // negative skip count is ignored
-        addOverride(new ParamOverride(Flowable.class, 0, ParamMode.ANY, "skip", Long.TYPE));
+        addOverride(new ParamOverride(Flowable.class, 0, ParamMode.NON_NEGATIVE, "skip", Long.TYPE));
         // negative skip time is considered as zero skip time
         addOverride(new ParamOverride(Flowable.class, 0, ParamMode.ANY, "skip", Long.TYPE, TimeUnit.class));
         addOverride(new ParamOverride(Flowable.class, 0, ParamMode.ANY, "skip", Long.TYPE, TimeUnit.class, Scheduler.class));
@@ -125,10 +125,6 @@ public class ParamValidationCheckerTest {
 
         // negative timeout is allowed
         addOverride(new ParamOverride(Flowable.class, 1, ParamMode.ANY, "fromFuture", Future.class, Long.TYPE, TimeUnit.class));
-        addOverride(new ParamOverride(Flowable.class, 1, ParamMode.ANY, "fromFuture", Future.class, Long.TYPE, TimeUnit.class, Scheduler.class));
-
-        // null default is allowed
-        addOverride(new ParamOverride(Flowable.class, 0, ParamMode.ANY, "blockingLast", Object.class));
 
         // negative time is considered as zero time
         addOverride(new ParamOverride(Flowable.class, 0, ParamMode.ANY, "timer", Long.TYPE, TimeUnit.class));
@@ -152,9 +148,6 @@ public class ParamValidationCheckerTest {
         // negative time is considered as zero time
         addOverride(new ParamOverride(Flowable.class, 0, ParamMode.ANY, "delaySubscription", Long.TYPE, TimeUnit.class));
         addOverride(new ParamOverride(Flowable.class, 0, ParamMode.ANY, "delaySubscription", Long.TYPE, TimeUnit.class, Scheduler.class));
-
-        // null default is allowed
-        addOverride(new ParamOverride(Flowable.class, 0, ParamMode.ANY, "blockingFirst", Object.class));
 
         // negative time is considered as zero time
         addOverride(new ParamOverride(Flowable.class, 0, ParamMode.ANY, "debounce", Long.TYPE, TimeUnit.class));
@@ -325,7 +318,6 @@ public class ParamValidationCheckerTest {
 
         // negative timeout is allowed
         addOverride(new ParamOverride(Single.class, 1, ParamMode.ANY, "fromFuture", Future.class, Long.TYPE, TimeUnit.class));
-        addOverride(new ParamOverride(Single.class, 1, ParamMode.ANY, "fromFuture", Future.class, Long.TYPE, TimeUnit.class, Scheduler.class));
 
         // negative time is considered as zero time
         addOverride(new ParamOverride(Single.class, 0, ParamMode.ANY, "delay", Long.TYPE, TimeUnit.class));
@@ -353,7 +345,7 @@ public class ParamValidationCheckerTest {
         addOverride(new ParamOverride(Observable.class, 0, ParamMode.NON_NEGATIVE, "elementAtOrError", Long.TYPE));
 
         // negative skip count is ignored
-        addOverride(new ParamOverride(Observable.class, 0, ParamMode.ANY, "skip", Long.TYPE));
+        addOverride(new ParamOverride(Observable.class, 0, ParamMode.NON_NEGATIVE, "skip", Long.TYPE));
         // negative skip time is considered as zero skip time
         addOverride(new ParamOverride(Observable.class, 0, ParamMode.ANY, "skip", Long.TYPE, TimeUnit.class));
         addOverride(new ParamOverride(Observable.class, 0, ParamMode.ANY, "skip", Long.TYPE, TimeUnit.class, Scheduler.class));
@@ -381,10 +373,6 @@ public class ParamValidationCheckerTest {
 
         // negative timeout is allowed
         addOverride(new ParamOverride(Observable.class, 1, ParamMode.ANY, "fromFuture", Future.class, Long.TYPE, TimeUnit.class));
-        addOverride(new ParamOverride(Observable.class, 1, ParamMode.ANY, "fromFuture", Future.class, Long.TYPE, TimeUnit.class, Scheduler.class));
-
-        // null default is allowed
-        addOverride(new ParamOverride(Observable.class, 0, ParamMode.ANY, "blockingLast", Object.class));
 
         // negative time is considered as zero time
         addOverride(new ParamOverride(Observable.class, 0, ParamMode.ANY, "timer", Long.TYPE, TimeUnit.class));
@@ -408,9 +396,6 @@ public class ParamValidationCheckerTest {
         // negative time is considered as zero time
         addOverride(new ParamOverride(Observable.class, 0, ParamMode.ANY, "delaySubscription", Long.TYPE, TimeUnit.class));
         addOverride(new ParamOverride(Observable.class, 0, ParamMode.ANY, "delaySubscription", Long.TYPE, TimeUnit.class, Scheduler.class));
-
-        // null default is allowed
-        addOverride(new ParamOverride(Observable.class, 0, ParamMode.ANY, "blockingFirst", Object.class));
 
         // negative time is considered as zero time
         addOverride(new ParamOverride(Observable.class, 0, ParamMode.ANY, "debounce", Long.TYPE, TimeUnit.class));
@@ -893,6 +878,12 @@ public class ParamValidationCheckerTest {
                                 error = ex;
                             }
 
+                            if (!success && error.getCause() instanceof NullPointerException) {
+                                if (!error.getCause().toString().contains("is null")) {
+                                    fail++;
+                                    b.append("\r\nNPEs should indicate which argument failed: " + m + " # " + i + " = " + p + ", tag = " + tag + ", params = " + Arrays.toString(callParams2));
+                                }
+                            }
                             if (success != shouldSucceed) {
                                 fail++;
                                 if (shouldSucceed) {

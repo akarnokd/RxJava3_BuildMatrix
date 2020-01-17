@@ -32,16 +32,41 @@ public class JavadocCodesAndLinks {
 
     @Test
     public void checkFlowable() throws Exception {
-        checkSource("Flowable");
+        checkSource("Flowable", "io.reactivex.rxjava3.core");
     }
 
     @Test
     public void checkCompletable() throws Exception {
-        checkSource("Completable");
+        checkSource("Completable", "io.reactivex.rxjava3.core");
     }
 
-    static void checkSource(String baseClassName) throws Exception {
-        File f = TestHelper.findSource(baseClassName);
+    @Test
+    public void checkSingle() throws Exception {
+        checkSource("Single", "io.reactivex.rxjava3.core");
+    }
+
+    @Test
+    public void checkMaybe() throws Exception {
+        checkSource("Maybe", "io.reactivex.rxjava3.core");
+    }
+
+    @Test
+    public void checkObservable() throws Exception {
+        checkSource("Observable", "io.reactivex.rxjava3.core");
+    }
+
+    @Test
+    public void checkParallelFlowable() throws Exception {
+        checkSource("ParallelFlowable", "io.reactivex.rxjava3.parallel");
+    }
+
+    @Test
+    public void checkCompositeDisposable() throws Exception {
+        checkSource("CompositeDisposable", "io.reactivex.rxjava3.disposables");
+    }
+
+    static void checkSource(String baseClassName, String packageName) throws Exception {
+        File f = TestHelper.findSource(baseClassName, packageName);
         if (f == null) {
             return;
         }
@@ -120,6 +145,8 @@ public class JavadocCodesAndLinks {
                                     errors.append("The subsequent mention should be code: ")
                                     .append("{@code ").append(name)
                                     .append("}\r\n at ")
+                                    .append(packageName)
+                                    .append(".")
                                     .append(baseClassName)
                                     .append(".method(")
                                     .append(baseClassName)
@@ -136,6 +163,8 @@ public class JavadocCodesAndLinks {
                                 errors.append("The subsequent mention should be code: ")
                                 .append("{@code ").append(name)
                                 .append("}\r\n at ")
+                                .append(packageName)
+                                .append(".")
                                 .append(baseClassName)
                                 .append(".method(")
                                 .append(baseClassName)
@@ -152,6 +181,8 @@ public class JavadocCodesAndLinks {
                                     errors.append("The host type mention should be code: ")
                                     .append("{@code ").append(name)
                                     .append("}\r\n at ")
+                                    .append(packageName)
+                                    .append(".")
                                     .append(baseClassName)
                                     .append(".method(")
                                     .append(baseClassName)
@@ -175,6 +206,8 @@ public class JavadocCodesAndLinks {
                                     errors
                                     .append(name)
                                     .append("}\r\n at ")
+                                    .append(packageName)
+                                    .append(".")
                                     .append(baseClassName)
                                     .append(".method(")
                                     .append(baseClassName)
@@ -204,6 +237,8 @@ public class JavadocCodesAndLinks {
                                 errors.append("The host type mention should be code: ")
                                 .append("{@code ").append(name)
                                 .append("}\r\n at ")
+                                .append(packageName)
+                                .append(".")
                                 .append(baseClassName)
                                 .append(".method(")
                                 .append(baseClassName)
@@ -223,6 +258,8 @@ public class JavadocCodesAndLinks {
                                 errors
                                 .append(name)
                                 .append("}\r\n at ")
+                                .append(packageName)
+                                .append(".")
                                 .append(baseClassName)
                                 .append(".method(")
                                 .append(baseClassName)
@@ -234,6 +271,8 @@ public class JavadocCodesAndLinks {
                                 errors.append("The subsequent mention should be code: ")
                                 .append("{@code ").append(name)
                                 .append("}\r\n at ")
+                                .append(packageName)
+                                .append(".")
                                 .append(baseClassName)
                                 .append(".method(")
                                 .append(baseClassName)
@@ -347,7 +386,7 @@ public class JavadocCodesAndLinks {
 
             "Supplier", "Callable", "TimeUnit",
 
-            "BackpressureOverflowStrategy",
+            "BackpressureOverflowStrategy", "ParallelFailureHandling",
 
             "Exception", "Throwable", "NullPointerException", "IllegalStateException", "IllegalArgumentException", "MissingBackpressureException", "UndeliverableException",
             "OutOfMemoryError", "StackOverflowError", "NoSuchElementException", "ClassCastException", "CompositeException",
@@ -369,7 +408,7 @@ public class JavadocCodesAndLinks {
 
             "List", "ArrayList", "HashMap", "HashSet", "CharSequence",
 
-            "TestSubscriber", "TestObserver"
+            "TestSubscriber", "TestObserver", "Class"
     );
 
     static final Set<String> ALWAYS_CODE = new HashSet<>(Arrays.asList(
