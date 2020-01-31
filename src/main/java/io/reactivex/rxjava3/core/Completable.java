@@ -18,6 +18,7 @@ import java.util.concurrent.*;
 import org.reactivestreams.*;
 
 import io.reactivex.rxjava3.annotations.*;
+import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.exceptions.*;
 import io.reactivex.rxjava3.functions.*;
@@ -28,7 +29,7 @@ import io.reactivex.rxjava3.internal.observers.*;
 import io.reactivex.rxjava3.internal.operators.completable.*;
 import io.reactivex.rxjava3.internal.operators.maybe.*;
 import io.reactivex.rxjava3.internal.operators.mixed.*;
-import io.reactivex.rxjava3.internal.operators.single.SingleDelayWithCompletable;
+import io.reactivex.rxjava3.internal.operators.single.*;
 import io.reactivex.rxjava3.observers.TestObserver;
 import io.reactivex.rxjava3.plugins.RxJavaPlugins;
 import io.reactivex.rxjava3.schedulers.Schedulers;
@@ -177,7 +178,7 @@ public abstract class Completable implements CompletableSource {
     /**
      * Returns a {@code Completable} which completes only when all sources complete, one after another.
      * <p>
-     * <img width="640" height="283" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Completable.concatArray.png" alt="">
+     * <img width="640" height="284" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Completable.concatArray.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code concatArray} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -204,6 +205,27 @@ public abstract class Completable implements CompletableSource {
     /**
      * Returns a {@code Completable} which completes only when all sources complete, one after another.
      * <p>
+     * <img width="640" height="324" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Completable.concatArrayDelayError.png" alt="">
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code concatArrayDelayError} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     * @param sources the sources to concatenate
+     * @return the new {@code Completable} instance
+     * @throws NullPointerException if {@code sources} is {@code null}
+     * @since 3.0.0
+     */
+    @CheckReturnValue
+    @NonNull
+    @SchedulerSupport(SchedulerSupport.NONE)
+    @SafeVarargs
+    public static Completable concatArrayDelayError(@NonNull CompletableSource... sources) {
+        return Flowable.fromArray(sources).concatMapCompletableDelayError(Functions.identity(), true, 2);
+    }
+
+    /**
+     * Returns a {@code Completable} which completes only when all sources complete, one after another.
+     * <p>
      * <img width="640" height="303" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Completable.concat.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
@@ -225,7 +247,7 @@ public abstract class Completable implements CompletableSource {
     /**
      * Returns a {@code Completable} which completes only when all sources complete, one after another.
      * <p>
-     * <img width="640" height="237" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Completable.concat.p.png" alt="">
+     * <img width="640" height="238" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Completable.concat.p.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The returned {@code Completable} honors the backpressure of the downstream consumer
@@ -248,7 +270,7 @@ public abstract class Completable implements CompletableSource {
     /**
      * Returns a {@code Completable} which completes only when all sources complete, one after another.
      * <p>
-     * <img width="640" height="237" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Completable.concat.pn.png" alt="">
+     * <img width="640" height="238" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Completable.concat.pn.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The returned {@code Completable} honors the backpressure of the downstream consumer
@@ -270,6 +292,76 @@ public abstract class Completable implements CompletableSource {
         Objects.requireNonNull(sources, "sources is null");
         ObjectHelper.verifyPositive(prefetch, "prefetch");
         return RxJavaPlugins.onAssembly(new CompletableConcat(sources, prefetch));
+    }
+
+    /**
+     * Returns a {@code Completable} which completes only when all sources complete, one after another.
+     * <p>
+     * <img width="640" height="361" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Completable.concatDelayError.i.png" alt="">
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code concatDelayError} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     * @param sources the sources to concatenate
+     * @return the new {@code Completable} instance
+     * @throws NullPointerException if {@code sources} is {@code null}
+     * @since 3.0.0
+     */
+    @CheckReturnValue
+    @NonNull
+    @SchedulerSupport(SchedulerSupport.NONE)
+    public static Completable concatDelayError(@NonNull Iterable<@NonNull ? extends CompletableSource> sources) {
+        return Flowable.fromIterable(sources).concatMapCompletableDelayError(Functions.identity());
+    }
+
+    /**
+     * Returns a {@code Completable} which completes only when all sources complete, one after another.
+     * <p>
+     * <img width="640" height="396" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Completable.concatDelayError.p.png" alt="">
+     * <dl>
+     *  <dt><b>Backpressure:</b></dt>
+     *  <dd>The returned {@code Completable} honors the backpressure of the downstream consumer
+     *  and expects the other {@link Publisher} to honor it as well.</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code concatDelayError} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     * @param sources the sources to concatenate
+     * @return the new {@code Completable} instance
+     * @throws NullPointerException if {@code sources} is {@code null}
+     * @since 3.0.0
+     */
+    @CheckReturnValue
+    @SchedulerSupport(SchedulerSupport.NONE)
+    @BackpressureSupport(BackpressureKind.FULL)
+    @NonNull
+    public static Completable concatDelayError(@NonNull Publisher<@NonNull ? extends CompletableSource> sources) {
+        return concatDelayError(sources, 2);
+    }
+
+    /**
+     * Returns a {@code Completable} which completes only when all sources complete, one after another.
+     * <p>
+     * <img width="640" height="359" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Completable.concatDelayError.pn.png" alt="">
+     * <dl>
+     *  <dt><b>Backpressure:</b></dt>
+     *  <dd>The returned {@code Completable} honors the backpressure of the downstream consumer
+     *  and expects the other {@link Publisher} to honor it as well.</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code concatDelayError} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     * @param sources the sources to concatenate
+     * @param prefetch the number of sources to prefetch from the sources
+     * @return the new {@code Completable} instance
+     * @throws NullPointerException if {@code sources} is {@code null}
+     * @throws IllegalArgumentException if {@code prefetch} is non-positive
+     * @since 3.0.0
+     */
+    @CheckReturnValue
+    @NonNull
+    @SchedulerSupport(SchedulerSupport.NONE)
+    @BackpressureSupport(BackpressureKind.FULL)
+    public static Completable concatDelayError(@NonNull Publisher<@NonNull ? extends CompletableSource> sources, int prefetch) {
+        return Flowable.fromPublisher(sources).concatMapCompletableDelayError(Functions.identity(), true, prefetch);
     }
 
     /**
@@ -323,6 +415,29 @@ public abstract class Completable implements CompletableSource {
     }
 
     /**
+     * Compares two {@link CompletableSource}s and emits {@code true} via a {@link Single} if both complete.
+     * <p>
+     * <img width="640" height="187" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Completable.sequenceEqual.png" alt="">
+     * <dl>
+     * <dt><b>Scheduler:</b></dt>
+     * <dd>{@code sequenceEqual} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     * @param source1 the first {@code CompletableSource} instance
+     * @param source2 the second {@code CompletableSource} instance
+     * @return the new {@code Single} instance
+     * @throws NullPointerException if {@code source1} or {@code source2} is {@code null}
+     * @since 3.0.0
+     */
+    @CheckReturnValue
+    @NonNull
+    @SchedulerSupport(SchedulerSupport.NONE)
+    public static Single<Boolean> sequenceEqual(@NonNull CompletableSource source1, @NonNull CompletableSource source2) { // NOPMD
+        Objects.requireNonNull(source1, "source1 is null");
+        Objects.requireNonNull(source2, "source2 is null");
+        return mergeArrayDelayError(source1, source2).andThen(Single.just(true));
+    }
+
+    /**
      * Constructs a {@code Completable} instance by wrapping the given source callback
      * <strong>without any safeguards; you should manage the lifecycle and response
      * to downstream disposal</strong>.
@@ -332,21 +447,21 @@ public abstract class Completable implements CompletableSource {
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code unsafeCreate} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
-     * @param source the callback which will receive the {@link CompletableObserver} instances
+     * @param onSubscribe the callback which will receive the {@link CompletableObserver} instances
      * when the {@code Completable} is subscribed to.
      * @return the new {@code Completable} instance
-     * @throws NullPointerException if {@code source} is {@code null}
+     * @throws NullPointerException if {@code onSubscribe} is {@code null}
      * @throws IllegalArgumentException if {@code source} is a {@code Completable}
      */
     @CheckReturnValue
     @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
-    public static Completable unsafeCreate(@NonNull CompletableSource source) {
-        Objects.requireNonNull(source, "source is null");
-        if (source instanceof Completable) {
+    public static Completable unsafeCreate(@NonNull CompletableSource onSubscribe) {
+        Objects.requireNonNull(onSubscribe, "onSubscribe is null");
+        if (onSubscribe instanceof Completable) {
             throw new IllegalArgumentException("Use of unsafeCreate(Completable)!");
         }
-        return RxJavaPlugins.onAssembly(new CompletableFromUnsafeSource(source));
+        return RxJavaPlugins.onAssembly(new CompletableFromUnsafeSource(onSubscribe));
     }
 
     /**
@@ -357,16 +472,16 @@ public abstract class Completable implements CompletableSource {
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code defer} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
-     * @param completableSupplier the supplier that returns the {@code Completable} that will be subscribed to.
+     * @param supplier the supplier that returns the {@code Completable} that will be subscribed to.
      * @return the new {@code Completable} instance
-     * @throws NullPointerException if {@code completableSupplier} is {@code null}
+     * @throws NullPointerException if {@code supplier} is {@code null}
      */
     @CheckReturnValue
     @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
-    public static Completable defer(@NonNull Supplier<? extends CompletableSource> completableSupplier) {
-        Objects.requireNonNull(completableSupplier, "completableSupplier is null");
-        return RxJavaPlugins.onAssembly(new CompletableDefer(completableSupplier));
+    public static Completable defer(@NonNull Supplier<? extends CompletableSource> supplier) {
+        Objects.requireNonNull(supplier, "supplier is null");
+        return RxJavaPlugins.onAssembly(new CompletableDefer(supplier));
     }
 
     /**
@@ -381,16 +496,16 @@ public abstract class Completable implements CompletableSource {
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code error} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
-     * @param errorSupplier the error supplier, not {@code null}
+     * @param supplier the error supplier, not {@code null}
      * @return the new {@code Completable} instance
-     * @throws NullPointerException if {@code errorSupplier} is {@code null}
+     * @throws NullPointerException if {@code supplier} is {@code null}
      */
     @CheckReturnValue
     @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
-    public static Completable error(@NonNull Supplier<? extends Throwable> errorSupplier) {
-        Objects.requireNonNull(errorSupplier, "errorSupplier is null");
-        return RxJavaPlugins.onAssembly(new CompletableErrorSupplier(errorSupplier));
+    public static Completable error(@NonNull Supplier<? extends Throwable> supplier) {
+        Objects.requireNonNull(supplier, "supplier is null");
+        return RxJavaPlugins.onAssembly(new CompletableErrorSupplier(supplier));
     }
 
     /**
@@ -401,16 +516,16 @@ public abstract class Completable implements CompletableSource {
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code error} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
-     * @param error the {@code Throwable} instance to emit, not {@code null}
+     * @param throwable the {@code Throwable} instance to emit, not {@code null}
      * @return the new {@code Completable} instance
-     * @throws NullPointerException if {@code error} is {@code null}
+     * @throws NullPointerException if {@code throwable} is {@code null}
      */
     @CheckReturnValue
     @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
-    public static Completable error(@NonNull Throwable error) {
-        Objects.requireNonNull(error, "error is null");
-        return RxJavaPlugins.onAssembly(new CompletableError(error));
+    public static Completable error(@NonNull Throwable throwable) {
+        Objects.requireNonNull(throwable, "throwable is null");
+        return RxJavaPlugins.onAssembly(new CompletableError(throwable));
     }
 
     /**
@@ -429,16 +544,16 @@ public abstract class Completable implements CompletableSource {
      *  {@link RxJavaPlugins#onError(Throwable)} as an {@link io.reactivex.rxjava3.exceptions.UndeliverableException UndeliverableException}.
      *  </dd>
      * </dl>
-     * @param run the {@code Action} to run for each subscribing {@link CompletableObserver}
+     * @param action the {@code Action} to run for each subscribing {@link CompletableObserver}
      * @return the new {@code Completable} instance
-     * @throws NullPointerException if {@code run} is {@code null}
+     * @throws NullPointerException if {@code action} is {@code null}
      */
     @CheckReturnValue
     @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
-    public static Completable fromAction(@NonNull Action run) {
-        Objects.requireNonNull(run, "run is null");
-        return RxJavaPlugins.onAssembly(new CompletableFromAction(run));
+    public static Completable fromAction(@NonNull Action action) {
+        Objects.requireNonNull(action, "action is null");
+        return RxJavaPlugins.onAssembly(new CompletableFromAction(action));
     }
 
     /**
@@ -496,7 +611,7 @@ public abstract class Completable implements CompletableSource {
     }
 
     /**
-     * Returns a {@code Completable} instance that when subscribed to, subscribes to the {@link Maybe} instance and
+     * Returns a {@code Completable} instance that when subscribed to, subscribes to the {@link MaybeSource} instance and
      * emits an {@code onComplete} event if the maybe emits {@code onSuccess}/{@code onComplete} or forwards any
      * {@code onError} events.
      * <p>
@@ -506,8 +621,8 @@ public abstract class Completable implements CompletableSource {
      *  <dd>{@code fromMaybe} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * <p>History: 2.1.17 - beta
-     * @param <T> the value type of the {@link MaybeSource} element
-     * @param maybe the {@code Maybe} instance to subscribe to, not {@code null}
+     * @param <T> the value type of the {@code MaybeSource} element
+     * @param maybe the {@code MaybeSource} instance to subscribe to, not {@code null}
      * @return the new {@code Completable} instance
      * @throws NullPointerException if {@code maybe} is {@code null}
      * @since 2.2
@@ -874,7 +989,7 @@ public abstract class Completable implements CompletableSource {
      * any error emitted by any of the inner {@code CompletableSource}s until all of
      * them terminate in a way or another.
      * <p>
-     * <img width="640" height="475" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Completable.mergeDelayError.png" alt="">
+     * <img width="640" height="476" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Completable.mergeDelayError.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code mergeDelayError} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -935,6 +1050,7 @@ public abstract class Completable implements CompletableSource {
      *                       at a time to the inner {@code CompletableSource}s
      * @return the new {@code Completable} instance
      * @throws NullPointerException if {@code sources} is {@code null}
+     * @throws IllegalArgumentException if {@code maxConcurrency} is non-positive
      */
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
@@ -1017,10 +1133,75 @@ public abstract class Completable implements CompletableSource {
     }
 
     /**
+     * Switches between {@link CompletableSource}s emitted by the source {@link Publisher} whenever
+     * a new {@code CompletableSource} is emitted, disposing the previously running {@code CompletableSource},
+     * exposing the setup as a {@code Completable} sequence.
+     * <p>
+     * <img width="640" height="518" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Completable.switchOnNext.png" alt="">
+     * <dl>
+     *  <dt><b>Backpressure:</b></dt>
+     *  <dd>The {@code sources} {@code Publisher} is consumed in an unbounded manner (requesting {@link Long#MAX_VALUE}).</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code switchOnNext} does not operate by default on a particular {@link Scheduler}.</dd>
+     *  <dt><b>Error handling:</b></dt>
+     *  <dd>The returned sequence fails with the first error signaled by the {@code sources} {@code Publisher}
+     *  or the currently running {@code CompletableSource}, disposing the rest. Late errors are
+     *  forwarded to the global error handler via {@link RxJavaPlugins#onError(Throwable)}.</dd>
+     * </dl>
+     * @param sources the {@code Publisher} sequence of inner {@code CompletableSource}s to switch between
+     * @return the new {@code Completable} instance
+     * @throws NullPointerException if {@code sources} is {@code null}
+     * @since 3.0.0
+     * @see #switchOnNextDelayError(Publisher)
+     * @see <a href="http://reactivex.io/documentation/operators/switch.html">ReactiveX operators documentation: Switch</a>
+     */
+    @CheckReturnValue
+    @NonNull
+    @SchedulerSupport(SchedulerSupport.NONE)
+    @BackpressureSupport(BackpressureKind.UNBOUNDED_IN)
+    public static Completable switchOnNext(@NonNull Publisher<@NonNull ? extends CompletableSource> sources) {
+        Objects.requireNonNull(sources, "sources is null");
+        return RxJavaPlugins.onAssembly(new FlowableSwitchMapCompletablePublisher<>(sources, Functions.identity(), false));
+    }
+
+    /**
+     * Switches between {@link CompletableSource}s emitted by the source {@link Publisher} whenever
+     * a new {@code CompletableSource} is emitted, disposing the previously running {@code CompletableSource},
+     * exposing the setup as a {@code Completable} sequence and delaying all errors from
+     * all of them until all terminate.
+     * <p>
+     * <img width="640" height="415" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Completable.switchOnNextDelayError.png" alt="">
+     * <dl>
+     *  <dt><b>Backpressure:</b></dt>
+     *  <dd>The {@code sources} {@code Publisher} is consumed in an unbounded manner (requesting {@link Long#MAX_VALUE}).</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code switchOnNextDelayError} does not operate by default on a particular {@link Scheduler}.</dd>
+     *  <dt><b>Error handling:</b></dt>
+     *  <dd>The returned {@code Completable} collects all errors emitted by either the {@code sources}
+     *  {@code Publisher} or any inner {@code CompletableSource} and emits them as a {@link CompositeException}
+     *  when all sources terminate. If only one source ever failed, its error is emitted as-is at the end.</dd>
+     * </dl>
+     * @param sources the {@code Publisher} sequence of inner {@code CompletableSource}s to switch between
+     * @return the new {@code Completable} instance
+     * @throws NullPointerException if {@code sources} is {@code null}
+     * @since 3.0.0
+     * @see #switchOnNext(Publisher)
+     * @see <a href="http://reactivex.io/documentation/operators/switch.html">ReactiveX operators documentation: Switch</a>
+     */
+    @CheckReturnValue
+    @NonNull
+    @SchedulerSupport(SchedulerSupport.NONE)
+    @BackpressureSupport(BackpressureKind.UNBOUNDED_IN)
+    public static Completable switchOnNextDelayError(@NonNull Publisher<@NonNull ? extends CompletableSource> sources) {
+        Objects.requireNonNull(sources, "sources is null");
+        return RxJavaPlugins.onAssembly(new FlowableSwitchMapCompletablePublisher<>(sources, Functions.identity(), true));
+    }
+
+    /**
      * Returns a {@code Completable} instance which manages a resource along
      * with a custom {@link CompletableSource} instance while the subscription is active.
      * <p>
-     * <img width="640" height="388" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Completable.using.png" alt="">
+     * <img width="640" height="389" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Completable.using.png" alt="">
      * <p>
      * This overload disposes eagerly before the terminal event is emitted.
      * <dl>
@@ -1029,19 +1210,19 @@ public abstract class Completable implements CompletableSource {
      * </dl>
      * @param <R> the resource type
      * @param resourceSupplier the {@link Supplier} that returns a resource to be managed.
-     * @param completableFunction the {@link Function} that given a resource returns a {@code CompletableSource} instance that will be subscribed to
-     * @param disposer the {@link Consumer} that disposes the resource created by the resource supplier
+     * @param sourceSupplier the {@link Function} that given a resource returns a {@code CompletableSource} instance that will be subscribed to
+     * @param resourceCleanup the {@link Consumer} that disposes the resource created by the resource supplier
      * @return the new {@code Completable} instance
-     * @throws NullPointerException if {@code resourceSupplier}, {@code completableFunction}
-     *                              or {@code disposer} is {@code null}
+     * @throws NullPointerException if {@code resourceSupplier}, {@code sourceSupplier}
+     *                              or {@code resourceCleanup} is {@code null}
      */
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     @NonNull
     public static <R> Completable using(@NonNull Supplier<R> resourceSupplier,
-            @NonNull Function<? super R, ? extends CompletableSource> completableFunction,
-            @NonNull Consumer<? super R> disposer) {
-        return using(resourceSupplier, completableFunction, disposer, true);
+            @NonNull Function<? super R, ? extends CompletableSource> sourceSupplier,
+            @NonNull Consumer<? super R> resourceCleanup) {
+        return using(resourceSupplier, sourceSupplier, resourceCleanup, true);
     }
 
     /**
@@ -1059,31 +1240,31 @@ public abstract class Completable implements CompletableSource {
      * </dl>
      * @param <R> the resource type
      * @param resourceSupplier the {@link Supplier} that returns a resource to be managed
-     * @param completableFunction the {@link Function} that given a resource returns a non-{@code null}
+     * @param sourceSupplier the {@link Function} that given a resource returns a non-{@code null}
      * {@code CompletableSource} instance that will be subscribed to
-     * @param disposer the {@link Consumer} that disposes the resource created by the resource supplier
+     * @param resourceCleanup the {@link Consumer} that disposes the resource created by the resource supplier
      * @param eager
      *            If {@code true} then resource disposal will happen either on a {@code dispose()} call before the upstream is disposed
      *            or just before the emission of a terminal event ({@code onComplete} or {@code onError}).
      *            If {@code false} the resource disposal will happen either on a {@code dispose()} call after the upstream is disposed
      *            or just after the emission of a terminal event ({@code onComplete} or {@code onError}).
      * @return the new {@code Completable} instance
-     * @throws NullPointerException if {@code resourceSupplier}, {@code completableFunction}
-     *                              or {@code disposer} is {@code null}
+     * @throws NullPointerException if {@code resourceSupplier}, {@code sourceSupplier}
+     *                              or {@code resourceCleanup} is {@code null}
      */
     @CheckReturnValue
     @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <R> Completable using(
             @NonNull Supplier<R> resourceSupplier,
-            @NonNull Function<? super R, ? extends CompletableSource> completableFunction,
-            @NonNull Consumer<? super R> disposer,
+            @NonNull Function<? super R, ? extends CompletableSource> sourceSupplier,
+            @NonNull Consumer<? super R> resourceCleanup,
             boolean eager) {
         Objects.requireNonNull(resourceSupplier, "resourceSupplier is null");
-        Objects.requireNonNull(completableFunction, "completableFunction is null");
-        Objects.requireNonNull(disposer, "disposer is null");
+        Objects.requireNonNull(sourceSupplier, "sourceSupplier is null");
+        Objects.requireNonNull(resourceCleanup, "resourceCleanup is null");
 
-        return RxJavaPlugins.onAssembly(new CompletableUsing<>(resourceSupplier, completableFunction, disposer, eager));
+        return RxJavaPlugins.onAssembly(new CompletableUsing<>(resourceSupplier, sourceSupplier, resourceCleanup, eager));
     }
 
     /**
@@ -1114,7 +1295,7 @@ public abstract class Completable implements CompletableSource {
      * Returns a {@code Completable} that emits the a terminated event of either this {@code Completable}
      * or the other {@link CompletableSource}, whichever fires first.
      * <p>
-     * <img width="640" height="484" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Completable.ambWith.png" alt="">
+     * <img width="640" height="485" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Completable.ambWith.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code ambWith} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -1215,7 +1396,7 @@ public abstract class Completable implements CompletableSource {
      * propagated to the downstream observer and will result in skipping the subscription to the next
      * {@code MaybeSource}.
      * <p>
-     * <img width="640" height="280" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Completable.andThen.m.png" alt="">
+     * <img width="640" height="281" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Completable.andThen.m.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code andThen} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -1263,7 +1444,7 @@ public abstract class Completable implements CompletableSource {
      * Subscribes to and awaits the termination of this {@code Completable} instance in a blocking manner and
      * rethrows any exception emitted.
      * <p>
-     * <img width="640" height="432" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Completable.blockingAwait.png" alt="">
+     * <img width="640" height="433" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Completable.blockingAwait.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code blockingAwait} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -1308,6 +1489,106 @@ public abstract class Completable implements CompletableSource {
         BlockingMultiObserver<Void> observer = new BlockingMultiObserver<>();
         subscribe(observer);
         return observer.blockingAwait(timeout, unit);
+    }
+
+    /**
+     * Subscribes to the current {@code Completable} and <em>blocks the current thread</em> until it terminates.
+     * <p>
+     * <img width="640" height="346" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Completable.blockingSubscribe.png" alt="">
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code blockingSubscribe} does not operate by default on a particular {@link Scheduler}.</dd>
+     *  <dt><b>Error handling:</b></dt>
+     *  <dd>If the current {@code Completable} signals an error,
+     *  the {@link Throwable} is routed to the global error handler via {@link RxJavaPlugins#onError(Throwable)}.
+     *  If the current thread is interrupted, an {@link InterruptedException} is routed to the same global error handler.
+     *  </dd>
+     * </dl>
+     * @since 3.0.0
+     * @see #blockingSubscribe(Action)
+     * @see #blockingSubscribe(Action, Consumer)
+     */
+    @SchedulerSupport(SchedulerSupport.NONE)
+    public final void blockingSubscribe() {
+        blockingSubscribe(Functions.EMPTY_ACTION, Functions.ERROR_CONSUMER);
+    }
+
+    /**
+     * Subscribes to the current {@code Completable} and calls given {@code onComplete} callback on the <em>current thread</em>
+     * when it completes normally.
+     * <p>
+     * <img width="640" height="351" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Completable.blockingSubscribe.a.png" alt="">
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code blockingSubscribe} does not operate by default on a particular {@link Scheduler}.</dd>
+     *  <dt><b>Error handling:</b></dt>
+     *  <dd>If either the current {@code Completable} signals an error or {@code onComplete} throws,
+     *  the respective {@link Throwable} is routed to the global error handler via {@link RxJavaPlugins#onError(Throwable)}.
+     *  If the current thread is interrupted, an {@link InterruptedException} is routed to the same global error handler.
+     *  </dd>
+     * </dl>
+     * @param onComplete the {@link Action} to call if the current {@code Completable} completes normally
+     * @throws NullPointerException if {@code onComplete} is {@code null}
+     * @since 3.0.0
+     * @see #blockingSubscribe(Action, Consumer)
+     */
+    @SchedulerSupport(SchedulerSupport.NONE)
+    public final void blockingSubscribe(@NonNull Action onComplete) {
+        blockingSubscribe(onComplete, Functions.ERROR_CONSUMER);
+    }
+
+    /**
+     * Subscribes to the current {@code Completable} and calls the appropriate callback on the <em>current thread</em>
+     * when it terminates.
+     * <p>
+     * <img width="640" height="352" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Completable.blockingSubscribe.ac.png" alt="">
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code blockingSubscribe} does not operate by default on a particular {@link Scheduler}.</dd>
+     *  <dt><b>Error handling:</b></dt>
+     *  <dd>If either {@code onComplete} or {@code onError} throw, the {@link Throwable} is routed to the
+     *  global error handler via {@link RxJavaPlugins#onError(Throwable)}.
+     *  If the current thread is interrupted, the {@code onError} consumer is called with an {@link InterruptedException}.
+     *  </dd>
+     * </dl>
+     * @param onComplete the {@link Action} to call if the current {@code Completable} completes normally
+     * @param onError the {@link Consumer} to call if the current {@code Completable} signals an error
+     * @throws NullPointerException if {@code onComplete} or {@code onError} is {@code null}
+     * @since 3.0.0
+     */
+    @SchedulerSupport(SchedulerSupport.NONE)
+    public final void blockingSubscribe(@NonNull Action onComplete, @NonNull Consumer<? super Throwable> onError) {
+        Objects.requireNonNull(onComplete, "onComplete is null");
+        Objects.requireNonNull(onError, "onError is null");
+        BlockingMultiObserver<Void> observer = new BlockingMultiObserver<>();
+        subscribe(observer);
+        observer.blockingConsume(Functions.emptyConsumer(), onError, onComplete);
+    }
+
+    /**
+     * Subscribes to the current {@code Completable} and calls the appropriate {@link CompletableObserver} method on the <em>current thread</em>.
+     * <p>
+     * <img width="640" height="468" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Completable.blockingSubscribe.o.png" alt="">
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code blockingSubscribe} does not operate by default on a particular {@link Scheduler}.</dd>
+     *  <dt><b>Error handling:</b></dt>
+     *  <dd>An {@code onError} signal is delivered to the {@link CompletableObserver#onError(Throwable)} method.
+     *  If any of the {@code CompletableObserver}'s methods throw, the {@link RuntimeException} is propagated to the caller of this method.
+     *  If the current thread is interrupted, an {@link InterruptedException} is delivered to {@code observer.onError}.
+     *  </dd>
+     * </dl>
+     * @param observer the {@code CompletableObserver} to call methods on the current thread
+     * @throws NullPointerException if {@code observer} is {@code null}
+     * @since 3.0.0
+     */
+    @SchedulerSupport(SchedulerSupport.NONE)
+    public final void blockingSubscribe(@NonNull CompletableObserver observer) {
+        Objects.requireNonNull(observer, "observer is null");
+        BlockingDisposableMultiObserver<Void> blockingObserver = new BlockingDisposableMultiObserver<>();
+        observer.onSubscribe(blockingObserver);
+        subscribe(blockingObserver);
+        blockingObserver.blockingConsume(observer);
     }
 
     /**
@@ -1385,12 +1666,12 @@ public abstract class Completable implements CompletableSource {
     /**
      * Returns a {@code Completable} which delays the emission of the completion event by the given time.
      * <p>
-     * <img width="640" height="343" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Completable.delay.png" alt="">
+     * <img width="640" height="344" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Completable.delay.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code delay} does operate by default on the {@code computation} {@link Scheduler}.</dd>
      * </dl>
-     * @param delay the delay time
+     * @param time the delay time
      * @param unit the delay unit
      * @return the new {@code Completable} instance
      * @throws NullPointerException if {@code unit} is {@code null}
@@ -1398,8 +1679,8 @@ public abstract class Completable implements CompletableSource {
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.COMPUTATION)
     @NonNull
-    public final Completable delay(long delay, @NonNull TimeUnit unit) {
-        return delay(delay, unit, Schedulers.computation(), false);
+    public final Completable delay(long time, @NonNull TimeUnit unit) {
+        return delay(time, unit, Schedulers.computation(), false);
     }
 
     /**
@@ -1411,7 +1692,7 @@ public abstract class Completable implements CompletableSource {
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code delay} operates on the {@code Scheduler} you specify.</dd>
      * </dl>
-     * @param delay the delay time
+     * @param time the delay time
      * @param unit the delay unit
      * @param scheduler the {@code Scheduler} to run the delayed completion on
      * @return the new {@code Completable} instance
@@ -1420,8 +1701,8 @@ public abstract class Completable implements CompletableSource {
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.CUSTOM)
     @NonNull
-    public final Completable delay(long delay, @NonNull TimeUnit unit, @NonNull Scheduler scheduler) {
-        return delay(delay, unit, scheduler, false);
+    public final Completable delay(long time, @NonNull TimeUnit unit, @NonNull Scheduler scheduler) {
+        return delay(time, unit, scheduler, false);
     }
 
     /**
@@ -1433,7 +1714,7 @@ public abstract class Completable implements CompletableSource {
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code delay} operates on the {@code Scheduler} you specify.</dd>
      * </dl>
-     * @param delay the delay time
+     * @param time the delay time
      * @param unit the delay unit
      * @param scheduler the {@code Scheduler} to run the delayed completion on
      * @param delayError delay the error emission as well?
@@ -1443,10 +1724,10 @@ public abstract class Completable implements CompletableSource {
     @CheckReturnValue
     @NonNull
     @SchedulerSupport(SchedulerSupport.CUSTOM)
-    public final Completable delay(long delay, @NonNull TimeUnit unit, @NonNull Scheduler scheduler, boolean delayError) {
+    public final Completable delay(long time, @NonNull TimeUnit unit, @NonNull Scheduler scheduler, boolean delayError) {
         Objects.requireNonNull(unit, "unit is null");
         Objects.requireNonNull(scheduler, "scheduler is null");
-        return RxJavaPlugins.onAssembly(new CompletableDelay(this, delay, unit, scheduler, delayError));
+        return RxJavaPlugins.onAssembly(new CompletableDelay(this, time, unit, scheduler, delayError));
     }
 
     /**
@@ -1459,7 +1740,7 @@ public abstract class Completable implements CompletableSource {
      * </dl>
      * <p>History: 2.2.3 - experimental
      *
-     * @param delay the time to delay the subscription
+     * @param time the time to delay the subscription
      * @param unit  the time unit of {@code delay}
      * @return the new {@code Completable} instance
      * @throws NullPointerException if {@code unit} is {@code null}
@@ -1469,8 +1750,8 @@ public abstract class Completable implements CompletableSource {
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.COMPUTATION)
     @NonNull
-    public final Completable delaySubscription(long delay, @NonNull TimeUnit unit) {
-        return delaySubscription(delay, unit, Schedulers.computation());
+    public final Completable delaySubscription(long time, @NonNull TimeUnit unit) {
+        return delaySubscription(time, unit, Schedulers.computation());
     }
 
     /**
@@ -1483,7 +1764,7 @@ public abstract class Completable implements CompletableSource {
      *  <dd>You specify which {@code Scheduler} this operator will use.</dd>
      * </dl>
      * <p>History: 2.2.3 - experimental
-     * @param delay     the time to delay the subscription
+     * @param time     the time to delay the subscription
      * @param unit      the time unit of {@code delay}
      * @param scheduler the {@code Scheduler} on which the waiting and subscription will happen
      * @return the new {@code Completable} instance
@@ -1494,8 +1775,8 @@ public abstract class Completable implements CompletableSource {
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.CUSTOM)
     @NonNull
-    public final Completable delaySubscription(long delay, @NonNull TimeUnit unit, @NonNull Scheduler scheduler) {
-        return Completable.timer(delay, unit, scheduler).andThen(this);
+    public final Completable delaySubscription(long time, @NonNull TimeUnit unit, @NonNull Scheduler scheduler) {
+        return Completable.timer(time, unit, scheduler).andThen(this);
     }
 
     /**
@@ -1587,6 +1868,34 @@ public abstract class Completable implements CompletableSource {
     }
 
     /**
+     * Calls the appropriate {@code onXXX} method (shared between all {@link CompletableObserver}s) for the lifecycle events of
+     * the sequence (subscription, disposal).
+     * <p>
+     * <img width="640" height="257" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Completable.doOnLifecycle.png" alt="">
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code doOnLifecycle} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     *
+     * @param onSubscribe
+     *              a {@link Consumer} called with the {@link Disposable} sent via {@link CompletableObserver#onSubscribe(Disposable)}
+     * @param onDispose
+     *              called when the downstream disposes the {@code Disposable} via {@code dispose()}
+     * @return the new {@code Completable} instance
+     * @throws NullPointerException if {@code onSubscribe} or {@code onDispose} is {@code null}
+     * @see <a href="http://reactivex.io/documentation/operators/do.html">ReactiveX operators documentation: Do</a>
+     * @since 3.0.0
+     */
+    @CheckReturnValue
+    @SchedulerSupport(SchedulerSupport.NONE)
+    @NonNull
+    public final Completable doOnLifecycle(@NonNull Consumer<? super Disposable> onSubscribe, @NonNull Action onDispose) {
+        return doOnLifecycle(onSubscribe, Functions.emptyConsumer(),
+                Functions.EMPTY_ACTION, Functions.EMPTY_ACTION,
+                Functions.EMPTY_ACTION, onDispose);
+    }
+
+    /**
      * Returns a {@code Completable} instance that calls the various callbacks upon the specific
      * lifecycle events.
      * <dl>
@@ -1647,7 +1956,7 @@ public abstract class Completable implements CompletableSource {
      * Returns a {@code Completable} instance that calls the given {@code onTerminate} {@link Action} just before this {@code Completable}
      * completes normally or with an exception.
      * <p>
-     * <img width="640" height="304" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Completable.doOnTerminate.png" alt="">
+     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Completable.doOnTerminate.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code doOnTerminate} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -1670,7 +1979,7 @@ public abstract class Completable implements CompletableSource {
      * Returns a {@code Completable} instance that calls the given {@code onAfterTerminate}  {@link Action} after this {@code Completable}
      * completes normally or with an exception.
      * <p>
-     * <img width="640" height="304" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Completable.doAfterTerminate.png" alt="">
+     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Completable.doAfterTerminate.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code doAfterTerminate} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -1974,17 +2283,103 @@ public abstract class Completable implements CompletableSource {
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code onErrorResumeNext} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
-     * @param errorMapper the {@code mapper} {@code Function} that takes the error and should return a {@code CompletableSource} as
+     * @param fallbackSupplier the {@code mapper} {@code Function} that takes the error and should return a {@code CompletableSource} as
      * continuation.
      * @return the new {@code Completable} instance
-     * @throws NullPointerException if {@code errorMapper} is {@code null}
+     * @throws NullPointerException if {@code fallbackSupplier} is {@code null}
      */
     @CheckReturnValue
     @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final Completable onErrorResumeNext(@NonNull Function<? super Throwable, ? extends CompletableSource> errorMapper) {
-        Objects.requireNonNull(errorMapper, "errorMapper is null");
-        return RxJavaPlugins.onAssembly(new CompletableResumeNext(this, errorMapper));
+    public final Completable onErrorResumeNext(@NonNull Function<? super Throwable, ? extends CompletableSource> fallbackSupplier) {
+        Objects.requireNonNull(fallbackSupplier, "fallbackSupplier is null");
+        return RxJavaPlugins.onAssembly(new CompletableResumeNext(this, fallbackSupplier));
+    }
+    /**
+     * Resumes the flow with the given {@link CompletableSource} when the current {@code Completable} fails instead of
+     * signaling the error via {@code onError}.
+     * <p>
+     * <img width="640" height="409" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Completable.onErrorResumeWith.png" alt="">
+     * <p>
+     * You can use this to prevent errors from propagating or to supply fallback data should errors be
+     * encountered.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code onErrorResumeWith} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     *
+     * @param fallback
+     *            the next {@code CompletableSource} that will take over if the current {@code Completable} encounters
+     *            an error
+     * @return the new {@code Completable} instance
+     * @throws NullPointerException if {@code fallback} is {@code null}
+     * @see <a href="http://reactivex.io/documentation/operators/catch.html">ReactiveX operators documentation: Catch</a>
+     * @since 3.0.0
+     */
+    @CheckReturnValue
+    @NonNull
+    @SchedulerSupport(SchedulerSupport.NONE)
+    public final Completable onErrorResumeWith(@NonNull CompletableSource fallback) {
+        Objects.requireNonNull(fallback, "fallback is null");
+        return onErrorResumeNext(Functions.justFunction(fallback));
+    }
+
+    /**
+     * Ends the flow with a success item returned by a function for the {@link Throwable} error signaled by the current
+     * {@code Completable} instead of signaling the error via {@code onError}.
+     * <p>
+     * <img width="640" height="567" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Completable.onErrorReturn.png" alt="">
+     * <p>
+     * You can use this to prevent errors from propagating or to supply fallback data should errors be
+     * encountered.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code onErrorReturn} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     *
+     * @param <T> the item type to return on error
+     * @param itemSupplier
+     *            a function that returns a single value that will be emitted as success value
+     *            the current {@code Completable} signals an {@code onError} event
+     * @return the new {@link Maybe} instance
+     * @throws NullPointerException if {@code itemSupplier} is {@code null}
+     * @see <a href="http://reactivex.io/documentation/operators/catch.html">ReactiveX operators documentation: Catch</a>
+     * @since 3.0.0
+     */
+    @CheckReturnValue
+    @NonNull
+    @SchedulerSupport(SchedulerSupport.NONE)
+    public final <T> Maybe<T> onErrorReturn(@NonNull Function<? super Throwable, ? extends T> itemSupplier) {
+        Objects.requireNonNull(itemSupplier, "itemSupplier is null");
+        return RxJavaPlugins.onAssembly(new CompletableOnErrorReturn<>(this, itemSupplier));
+    }
+
+    /**
+     * Ends the flow with the given success item when the current {@code Completable}
+     * fails instead of signaling the error via {@code onError}.
+     * <p>
+     * <img width="640" height="567" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Completable.onErrorReturnItem.png" alt="">
+     * <p>
+     * You can use this to prevent errors from propagating or to supply fallback data should errors be
+     * encountered.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code onErrorReturnItem} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     *
+     * @param <T> the item type to return on error
+     * @param item
+     *            the value that is emitted as {@code onSuccess} in case the current {@code Completable} signals an {@code onError}
+     * @return the new {@link Maybe} instance
+     * @throws NullPointerException if {@code item} is {@code null}
+     * @see <a href="http://reactivex.io/documentation/operators/catch.html">ReactiveX operators documentation: Catch</a>
+     */
+    @CheckReturnValue
+    @NonNull
+    @SchedulerSupport(SchedulerSupport.NONE)
+    public final <T> Maybe<T> onErrorReturnItem(@NonNull T item) {
+        Objects.requireNonNull(item, "item is null");
+        return onErrorReturn(Functions.justFunction(item));
     }
 
     /**
@@ -2190,6 +2585,27 @@ public abstract class Completable implements CompletableSource {
     }
 
     /**
+     * Retries until the given stop function returns {@code true}.
+     * <p>
+     * <img width="640" height="354" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Completable.retryUntil.png" alt="">
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code retryUntil} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     * @param stop the function that should return {@code true} to stop retrying
+     * @return the new {@code Completable} instance
+     * @throws NullPointerException if {@code stop} is {@code null}
+     * @since 3.0.0
+     */
+    @CheckReturnValue
+    @NonNull
+    @SchedulerSupport(SchedulerSupport.NONE)
+    public final Completable retryUntil(@NonNull BooleanSupplier stop) {
+        Objects.requireNonNull(stop, "stop is null");
+        return retry(Long.MAX_VALUE, Functions.predicateReverseFor(stop));
+    }
+
+    /**
      * Returns a {@code Completable} which given a {@link Publisher} and when this {@code Completable} emits an error, delivers
      * that error through a {@link Flowable} and the {@code Publisher} should signal a value indicating a retry in response
      * or a terminal event indicating a termination.
@@ -2237,8 +2653,33 @@ public abstract class Completable implements CompletableSource {
     }
 
     /**
+     * Wraps the given {@link CompletableObserver}, catches any {@link RuntimeException}s thrown by its
+     * {@link CompletableObserver#onSubscribe(Disposable)}, {@link CompletableObserver#onError(Throwable)}
+     * or {@link CompletableObserver#onComplete()} methods and routes those to the global
+     * error handler via {@link RxJavaPlugins#onError(Throwable)}.
+     * <p>
+     * By default, the {@code Completable} protocol forbids the {@code onXXX} methods to throw, but some
+     * {@code CompletableObserver} implementation may do it anyway, causing undefined behavior in the
+     * upstream. This method and the underlying safe wrapper ensures such misbehaving consumers don't
+     * disrupt the protocol.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code safeSubscribe} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     * @param observer the potentially misbehaving {@code CompletableObserver}
+     * @throws NullPointerException if {@code observer} is {@code null}
+     * @see #subscribe(Action, Consumer)
+     * @since 3.0.0
+     */
+    @SchedulerSupport(SchedulerSupport.NONE)
+    public final void safeSubscribe(@NonNull CompletableObserver observer) {
+        Objects.requireNonNull(observer, "observer is null");
+        subscribe(new SafeCompletableObserver(observer));
+    }
+
+    /**
      * Returns a {@code Completable} which first runs the other {@link CompletableSource}
-     * then this {@code Completable} if the other completed normally.
+     * then the current {@code Completable} if the other completed normally.
      * <p>
      * <img width="640" height="437" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Completable.startWith.c.png" alt="">
      * <dl>
@@ -2258,8 +2699,60 @@ public abstract class Completable implements CompletableSource {
     }
 
     /**
+     * Returns a {@link Flowable} which first runs the other {@link SingleSource}
+     * then the current {@code Completable} if the other succeeded normally.
+     * <p>
+     * <img width="640" height="388" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Completable.startWith.s.png" alt="">
+     * <dl>
+     *  <dt><b>Backpressure:</b></dt>
+     *  <dd>The returned {@code Flowable} honors the backpressure of the downstream consumer.</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code startWith} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     * @param <T> the element type of the {@code other} {@code SingleSource}.
+     * @param other the other {@code SingleSource} to run first
+     * @return the new {@code Flowable} instance
+     * @throws NullPointerException if {@code other} is {@code null}
+     * @since 3.0.0
+     */
+    @CheckReturnValue
+    @NonNull
+    @SchedulerSupport(SchedulerSupport.NONE)
+    @BackpressureSupport(BackpressureKind.FULL)
+    public final <T> Flowable<T> startWith(@NonNull SingleSource<T> other) {
+        Objects.requireNonNull(other, "other is null");
+        return Flowable.concat(Single.wrap(other).toFlowable(), toFlowable());
+    }
+
+    /**
+     * Returns a {@link Flowable} which first runs the other {@link MaybeSource}
+     * then the current {@code Completable} if the other succeeded or completed normally.
+     * <p>
+     * <img width="640" height="266" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Completable.startWith.m.png" alt="">
+     * <dl>
+     *  <dt><b>Backpressure:</b></dt>
+     *  <dd>The returned {@code Flowable} honors the backpressure of the downstream consumer.</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code startWith} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     * @param <T> the element type of the {@code other} {@code MaybeSource}.
+     * @param other the other {@code MaybeSource} to run first
+     * @return the new {@code Flowable} instance
+     * @throws NullPointerException if {@code other} is {@code null}
+     * @since 3.0.0
+     */
+    @CheckReturnValue
+    @NonNull
+    @SchedulerSupport(SchedulerSupport.NONE)
+    @BackpressureSupport(BackpressureKind.FULL)
+    public final <T> Flowable<T> startWith(@NonNull MaybeSource<T> other) {
+        Objects.requireNonNull(other, "other is null");
+        return Flowable.concat(Maybe.wrap(other).toFlowable(), toFlowable());
+    }
+
+    /**
      * Returns an {@link Observable} which first delivers the events
-     * of the other {@link ObservableSource} then runs this {@code Completable}.
+     * of the other {@link ObservableSource} then runs the current {@code Completable}.
      * <p>
      * <img width="640" height="289" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Completable.startWith.o.png" alt="">
      * <dl>
@@ -2278,9 +2771,10 @@ public abstract class Completable implements CompletableSource {
         Objects.requireNonNull(other, "other is null");
         return Observable.wrap(other).concatWith(this.toObservable());
     }
+
     /**
      * Returns a {@link Flowable} which first delivers the events
-     * of the other {@link Publisher} then runs this {@code Completable}.
+     * of the other {@link Publisher} then runs the current {@code Completable}.
      * <p>
      * <img width="640" height="250" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Completable.startWith.p.png" alt="">
      * <dl>
@@ -2544,16 +3038,16 @@ public abstract class Completable implements CompletableSource {
      * </dl>
      * @param timeout the timeout value
      * @param unit the unit of {@code timeout}
-     * @param other the other {@code CompletableSource} instance to switch to in case of a timeout
+     * @param fallback the other {@code CompletableSource} instance to switch to in case of a timeout
      * @return the new {@code Completable} instance
-     * @throws NullPointerException if {@code unit} or {@code other} is {@code null}
+     * @throws NullPointerException if {@code unit} or {@code fallback} is {@code null}
      */
     @CheckReturnValue
     @NonNull
     @SchedulerSupport(SchedulerSupport.COMPUTATION)
-    public final Completable timeout(long timeout, @NonNull TimeUnit unit, @NonNull CompletableSource other) {
-        Objects.requireNonNull(other, "other is null");
-        return timeout0(timeout, unit, Schedulers.computation(), other);
+    public final Completable timeout(long timeout, @NonNull TimeUnit unit, @NonNull CompletableSource fallback) {
+        Objects.requireNonNull(fallback, "fallback is null");
+        return timeout0(timeout, unit, Schedulers.computation(), fallback);
     }
 
     /**
@@ -2593,16 +3087,16 @@ public abstract class Completable implements CompletableSource {
      * @param timeout the timeout value
      * @param unit the unit of {@code timeout}
      * @param scheduler the {@code Scheduler} to use to wait for completion
-     * @param other the other {@code Completable} instance to switch to in case of a timeout
+     * @param fallback the other {@code Completable} instance to switch to in case of a timeout
      * @return the new {@code Completable} instance
-     * @throws NullPointerException if {@code unit}, {@code scheduler} or {@code other} is {@code null}
+     * @throws NullPointerException if {@code unit}, {@code scheduler} or {@code fallback} is {@code null}
      */
     @CheckReturnValue
     @NonNull
     @SchedulerSupport(SchedulerSupport.CUSTOM)
-    public final Completable timeout(long timeout, @NonNull TimeUnit unit, @NonNull Scheduler scheduler, @NonNull CompletableSource other) {
-        Objects.requireNonNull(other, "other is null");
-        return timeout0(timeout, unit, scheduler, other);
+    public final Completable timeout(long timeout, @NonNull TimeUnit unit, @NonNull Scheduler scheduler, @NonNull CompletableSource fallback) {
+        Objects.requireNonNull(fallback, "fallback is null");
+        return timeout0(timeout, unit, scheduler, fallback);
     }
 
     /**
@@ -2616,18 +3110,18 @@ public abstract class Completable implements CompletableSource {
      * @param timeout the timeout value
      * @param unit the unit of {@code timeout}
      * @param scheduler the {@code Scheduler} to use to wait for completion
-     * @param other the other {@code Completable} instance to switch to in case of a timeout,
+     * @param fallback the other {@code Completable} instance to switch to in case of a timeout,
      * if {@code null} a {@link TimeoutException} is emitted instead
      * @return the new {@code Completable} instance
-     * @throws NullPointerException if {@code unit}, {@code scheduler} or {@code other} is {@code null}
+     * @throws NullPointerException if {@code unit}, {@code scheduler} or {@code fallback} is {@code null}
      */
     @CheckReturnValue
     @NonNull
     @SchedulerSupport(SchedulerSupport.CUSTOM)
-    private Completable timeout0(long timeout, TimeUnit unit, Scheduler scheduler, CompletableSource other) {
+    private Completable timeout0(long timeout, TimeUnit unit, Scheduler scheduler, CompletableSource fallback) {
         Objects.requireNonNull(unit, "unit is null");
         Objects.requireNonNull(scheduler, "scheduler is null");
-        return RxJavaPlugins.onAssembly(new CompletableTimeout(this, timeout, unit, scheduler, other));
+        return RxJavaPlugins.onAssembly(new CompletableTimeout(this, timeout, unit, scheduler, fallback));
     }
 
     /**
@@ -2677,6 +3171,28 @@ public abstract class Completable implements CompletableSource {
             return ((FuseToFlowable<T>)this).fuseToFlowable();
         }
         return RxJavaPlugins.onAssembly(new CompletableToFlowable<>(this));
+    }
+    /**
+     * Returns a {@link Future} representing the termination of the current {@code Completable}
+     * via a {@code null} value.
+     * <p>
+     * <img width="640" height="433" src="https://github.com/ReactiveX/RxJava/wiki/images/rx-operators/Completable.toFuture.png" alt="">
+     * <p>
+     * Cancelling the {@code Future} will cancel the subscription to the current {@code Completable}.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code toFuture} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     *
+     * @return the new {@code Future} instance
+     * @see <a href="http://reactivex.io/documentation/operators/to.html">ReactiveX documentation: To</a>
+     * @since 3.0.0
+     */
+    @CheckReturnValue
+    @SchedulerSupport(SchedulerSupport.NONE)
+    @NonNull
+    public final Future<Void> toFuture() {
+        return subscribeWith(new FutureMultiObserver<>());
     }
 
     /**

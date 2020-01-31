@@ -37,10 +37,11 @@ public final class MaybeOnErrorComplete<T> extends AbstractMaybeWithUpstream<T, 
 
     @Override
     protected void subscribeActual(MaybeObserver<? super T> observer) {
-        source.subscribe(new OnErrorCompleteMaybeObserver<>(observer, predicate));
+        source.subscribe(new OnErrorCompleteMultiObserver<>(observer, predicate));
     }
 
-    static final class OnErrorCompleteMaybeObserver<T> implements MaybeObserver<T>, Disposable {
+    public static final class OnErrorCompleteMultiObserver<T>
+    implements MaybeObserver<T>, SingleObserver<T>, Disposable {
 
         final MaybeObserver<? super T> downstream;
 
@@ -48,7 +49,7 @@ public final class MaybeOnErrorComplete<T> extends AbstractMaybeWithUpstream<T, 
 
         Disposable upstream;
 
-        OnErrorCompleteMaybeObserver(MaybeObserver<? super T> actual, Predicate<? super Throwable> predicate) {
+        public OnErrorCompleteMultiObserver(MaybeObserver<? super T> actual, Predicate<? super Throwable> predicate) {
             this.downstream = actual;
             this.predicate = predicate;
         }

@@ -32,4 +32,14 @@ public class FlowableFromObservableTest extends RxJavaTest {
         .test()
         .assertFailure(TestException.class);
     }
+
+    @Test
+    public void all() {
+        for (BackpressureStrategy mode : BackpressureStrategy.values()) {
+            Flowable.fromObservable(Observable.range(1, 5), mode)
+            .test()
+            .withTag("mode: " + mode)
+            .assertResult(1, 2, 3, 4, 5);
+        }
+    }
 }

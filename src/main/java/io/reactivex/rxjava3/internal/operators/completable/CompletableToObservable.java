@@ -14,9 +14,7 @@
 package io.reactivex.rxjava3.internal.operators.completable;
 
 import io.reactivex.rxjava3.core.*;
-import io.reactivex.rxjava3.disposables.Disposable;
-import io.reactivex.rxjava3.internal.disposables.DisposableHelper;
-import io.reactivex.rxjava3.internal.observers.BasicQueueDisposable;
+import io.reactivex.rxjava3.internal.operators.observable.ObservableFromCompletable;
 
 /**
  * Wraps a Completable and exposes it as an Observable.
@@ -33,66 +31,6 @@ public final class CompletableToObservable<T> extends Observable<T> {
 
     @Override
     protected void subscribeActual(Observer<? super T> observer) {
-        source.subscribe(new ObserverCompletableObserver(observer));
-    }
-
-    static final class ObserverCompletableObserver extends BasicQueueDisposable<Void>
-    implements CompletableObserver {
-
-        final Observer<?> observer;
-
-        Disposable upstream;
-
-        ObserverCompletableObserver(Observer<?> observer) {
-            this.observer = observer;
-        }
-
-        @Override
-        public void onComplete() {
-            observer.onComplete();
-        }
-
-        @Override
-        public void onError(Throwable e) {
-            observer.onError(e);
-        }
-
-        @Override
-        public void onSubscribe(Disposable d) {
-            if (DisposableHelper.validate(upstream, d)) {
-                this.upstream = d;
-                observer.onSubscribe(this);
-            }
-        }
-
-        @Override
-        public int requestFusion(int mode) {
-            return mode & ASYNC;
-        }
-
-        @Override
-        public Void poll() {
-            return null; // always empty
-        }
-
-        @Override
-        public boolean isEmpty() {
-            return true;
-        }
-
-        @Override
-        public void clear() {
-            // always empty
-        }
-
-        @Override
-        public void dispose() {
-            upstream.dispose();
-        }
-
-        @Override
-        public boolean isDisposed() {
-            return upstream.isDisposed();
-        }
+        source.subscribe(new ObservableFromCompletable.FromCompletableObserver<>(observer));
     }
 }

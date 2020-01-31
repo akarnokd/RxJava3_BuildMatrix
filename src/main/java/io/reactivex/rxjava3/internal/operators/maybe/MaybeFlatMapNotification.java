@@ -109,7 +109,9 @@ public final class MaybeFlatMapNotification<T, R> extends AbstractMaybeWithUpstr
                 return;
             }
 
-            source.subscribe(new InnerObserver());
+            if (!isDisposed()) {
+                source.subscribe(new InnerObserver());
+            }
         }
 
         @Override
@@ -124,7 +126,9 @@ public final class MaybeFlatMapNotification<T, R> extends AbstractMaybeWithUpstr
                 return;
             }
 
-            source.subscribe(new InnerObserver());
+            if (!isDisposed()) {
+                source.subscribe(new InnerObserver());
+            }
         }
 
         @Override
@@ -139,7 +143,9 @@ public final class MaybeFlatMapNotification<T, R> extends AbstractMaybeWithUpstr
                 return;
             }
 
-            source.subscribe(new InnerObserver());
+            if (!isDisposed()) {
+                source.subscribe(new InnerObserver());
+            }
         }
 
         final class InnerObserver implements MaybeObserver<R> {

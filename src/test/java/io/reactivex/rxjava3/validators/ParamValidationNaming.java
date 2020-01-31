@@ -203,7 +203,7 @@ public class ParamValidationNaming {
 
                     int quote = line.indexOf('"', comma);
 
-                    String message = line.substring(quote + 1, quote + 2 + paramName.length());
+                    String message = line.substring(quote + 1, Math.min(line.length(), quote + 2 + paramName.length()));
 
                     if (line.contains("\"A Disposable")) {
                         continue;
@@ -523,7 +523,11 @@ public class ParamValidationNaming {
             new ValidatorStrings("stage", "* @throws NullPointerException"),
             new ValidatorStrings("stream", "* @throws NullPointerException"),
             new ValidatorStrings("collector", "* @throws NullPointerException"),
+            new ValidatorStrings("subscriptionIndicator", "* @throws NullPointerException"),
+            new ValidatorStrings("itemDelayIndicator", "* @throws NullPointerException"),
+            new ValidatorStrings("future", "* @throws NullPointerException"),
 
+            new ValidatorStrings("maxConcurrency", "* @throws IllegalArgumentException"),
             new ValidatorStrings("parallelism", "* @throws IllegalArgumentException"),
             new ValidatorStrings("prefetch", "* @throws IllegalArgumentException"),
             new ValidatorStrings("bufferSize", "* @throws IllegalArgumentException"),

@@ -19,7 +19,7 @@ import io.reactivex.rxjava3.internal.disposables.DisposableHelper;
 import io.reactivex.rxjava3.internal.fuseable.HasUpstreamCompletableSource;
 
 /**
- * Wrap a Single into a Maybe.
+ * Wrap a Completable into a Maybe.
  *
  * @param <T> the value type
  */

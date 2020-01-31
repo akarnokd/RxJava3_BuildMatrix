@@ -11,35 +11,38 @@
  * the License for the specific language governing permissions and limitations under the License.
  */
 
-package io.reactivex.rxjava3.internal.operators.flowable;
+package io.reactivex.rxjava3.internal.operators.mixed;
 
 import org.reactivestreams.*;
 
-import io.reactivex.rxjava3.core.Flowable;
+import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.functions.Function;
 
-public final class FlowableFlatMapPublisher<T, U> extends Flowable<U> {
-    final Publisher<T> source;
-    final Function<? super T, ? extends Publisher<? extends U>> mapper;
-    final boolean delayErrors;
-    final int maxConcurrency;
-    final int bufferSize;
+/**
+ * Switch between subsequent {@link MaybeSource}s emitted by a {@link Publisher}.
+ * Reuses {@link FlowableSwitchMapMaybe} internals.
+ * @param <T> the upstream value type
+ * @param <R> the downstream value type
+ * @since 3.0.0
+ */
+public final class FlowableSwitchMapMaybePublisher<T, R> extends Flowable<R> {
 
-    public FlowableFlatMapPublisher(Publisher<T> source,
-            Function<? super T, ? extends Publisher<? extends U>> mapper,
-            boolean delayErrors, int maxConcurrency, int bufferSize) {
+    final Publisher<T> source;
+
+    final Function<? super T, ? extends MaybeSource<? extends R>> mapper;
+
+    final boolean delayErrors;
+
+    public FlowableSwitchMapMaybePublisher(Publisher<T> source,
+            Function<? super T, ? extends MaybeSource<? extends R>> mapper,
+            boolean delayErrors) {
         this.source = source;
         this.mapper = mapper;
         this.delayErrors = delayErrors;
-        this.maxConcurrency = maxConcurrency;
-        this.bufferSize = bufferSize;
     }
 
     @Override
-    protected void subscribeActual(Subscriber<? super U> s) {
-        if (FlowableScalarXMap.tryScalarXMapSubscribe(source, s, mapper)) {
-            return;
-        }
-        source.subscribe(FlowableFlatMap.subscribe(s, mapper, delayErrors, maxConcurrency, bufferSize));
+    protected void subscribeActual(Subscriber<? super R> s) {
+        source.subscribe(new FlowableSwitchMapMaybe.SwitchMapMaybeSubscriber<>(s, mapper, delayErrors));
     }
 }

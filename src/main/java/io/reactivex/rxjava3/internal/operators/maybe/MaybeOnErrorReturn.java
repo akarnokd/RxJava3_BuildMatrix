@@ -27,31 +27,31 @@ import java.util.Objects;
  */
 public final class MaybeOnErrorReturn<T> extends AbstractMaybeWithUpstream<T, T> {
 
-    final Function<? super Throwable, ? extends T> valueSupplier;
+    final Function<? super Throwable, ? extends T> itemSupplier;
 
     public MaybeOnErrorReturn(MaybeSource<T> source,
-            Function<? super Throwable, ? extends T> valueSupplier) {
+            Function<? super Throwable, ? extends T> itemSupplier) {
         super(source);
-        this.valueSupplier = valueSupplier;
+        this.itemSupplier = itemSupplier;
     }
 
     @Override
     protected void subscribeActual(MaybeObserver<? super T> observer) {
-        source.subscribe(new OnErrorReturnMaybeObserver<>(observer, valueSupplier));
+        source.subscribe(new OnErrorReturnMaybeObserver<>(observer, itemSupplier));
     }
 
     static final class OnErrorReturnMaybeObserver<T> implements MaybeObserver<T>, Disposable {
 
         final MaybeObserver<? super T> downstream;
 
-        final Function<? super Throwable, ? extends T> valueSupplier;
+        final Function<? super Throwable, ? extends T> itemSupplier;
 
         Disposable upstream;
 
         OnErrorReturnMaybeObserver(MaybeObserver<? super T> actual,
                 Function<? super Throwable, ? extends T> valueSupplier) {
             this.downstream = actual;
-            this.valueSupplier = valueSupplier;
+            this.itemSupplier = valueSupplier;
         }
 
         @Override
@@ -83,7 +83,7 @@ public final class MaybeOnErrorReturn<T> extends AbstractMaybeWithUpstream<T, T>
             T v;
 
             try {
-                v = Objects.requireNonNull(valueSupplier.apply(e), "The valueSupplier returned a null value");
+                v = Objects.requireNonNull(itemSupplier.apply(e), "The itemSupplier returned a null value");
             } catch (Throwable ex) {
                 Exceptions.throwIfFatal(ex);
                 downstream.onError(new CompositeException(e, ex));
