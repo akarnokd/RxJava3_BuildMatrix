@@ -27,6 +27,6 @@ With the newest JDKs, certain older compile targets are no longer supported:
 - JDK 12 dropped target 6 support
 - JDK 13 dropped target 7 support
 - JDK 14 dropped target 8 support
-- JDK 14 dropped target 9 support
+- JDK 15 dropped target 9 support
 
 Note also that RxJava 3 is now a Java 8 library and thus the Java 6 build targets have been removed.
