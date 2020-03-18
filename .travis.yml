@@ -10,50 +10,49 @@ before_install:
   - export GRADLE_OPTS=-Xmx1024m
   - wget https://github.com/sormuras/bach/raw/master/install-jdk.sh
   - chmod +x usejdk14.sh
+  - chmod +x usejdk15.sh
   - chmod +x install-jdk.sh
 
 matrix:
   include:
     - env: JDK='Oracle JDK 15 target 10' RXJAVA_TARGET=10
-      jdk: openjdk13
-      install: . ./usejdk15.sh
+      install:
+        - . ./install-jdk.sh -F 14 -L GPL
+        - . ./usejdk15.sh
     - env: JDK='Oracle JDK 15 target 11' RXJAVA_TARGET=11
-      jdk: openjdk13
-      install: . ./usejdk15.sh
+      install:
+        - . ./install-jdk.sh -F 14 -L GPL
+        - . ./usejdk15.sh
     - env: JDK='Oracle JDK 15 target 12' RXJAVA_TARGET=12
-      jdk: openjdk13
-      install: . ./usejdk15.sh
+      install:
+        - . ./install-jdk.sh -F 14 -L GPL
+        - . ./usejdk15.sh
     - env: JDK='Oracle JDK 15 target 13' RXJAVA_TARGET=13
-      jdk: openjdk13
-      install: . ./usejdk15.sh
-    # target 14 doesn't work yet
-    - env: JDK='Oracle JDK 15 target 14' RXJAVA_TARGET=13
-      jdk: openjdk13
-      install: . ./usejdk15.sh
+      install:
+        - . ./install-jdk.sh -F 14 -L GPL
+        - . ./usejdk15.sh
+    - env: JDK='Oracle JDK 15 target 14' RXJAVA_TARGET=14
+      install:
+        - . ./install-jdk.sh -F 14 -L GPL
+        - . ./usejdk15.sh
     # target 15 doesn't work yet
-    - env: JDK='Oracle JDK 15 target 15' RXJAVA_TARGET=13
-      jdk: openjdk13
-      install: . ./usejdk15.sh
+    - env: JDK='Oracle JDK 15 target 15' RXJAVA_TARGET=14
+      install:
+        - . ./install-jdk.sh -F 14 -L GPL
+        - . ./usejdk15.sh
     # ------------------------------------------------------------
     - env: JDK='Oracle JDK 14 target 9' RXJAVA_TARGET=1.9
-      jdk: openjdk13
-      install: . ./usejdk14.sh
+      install: . ./install-jdk.sh -F 14 -L GPL
     - env: JDK='Oracle JDK 14 target 10' RXJAVA_TARGET=10
-      jdk: openjdk13
-      install: . ./usejdk14.sh
+      install: . ./install-jdk.sh -F 14 -L GPL
     - env: JDK='Oracle JDK 14 target 11' RXJAVA_TARGET=11
-      jdk: openjdk13
-      install: . ./usejdk14.sh
+      install: . ./install-jdk.sh -F 14 -L GPL
     - env: JDK='Oracle JDK 14 target 12' RXJAVA_TARGET=12
-      jdk: openjdk13
-      install: . ./usejdk14.sh
+      install: . ./install-jdk.sh -F 14 -L GPL
     - env: JDK='Oracle JDK 14 target 13' RXJAVA_TARGET=13
-      jdk: openjdk13
-      install: . ./usejdk14.sh
-    # target 14 doesn't work yet
-    - env: JDK='Oracle JDK 14 target 14' RXJAVA_TARGET=13
-      jdk: openjdk13
-      install: . ./usejdk14.sh
+      install: . ./install-jdk.sh -F 14 -L GPL
+    - env: JDK='Oracle JDK 14 target 14' RXJAVA_TARGET=14
+      install: . ./install-jdk.sh -F 14 -L GPL
     # ------------------------------------------------------------
     - env: JDK='Oracle JDK 13 target 8' RXJAVA_TARGET=1.8
       install: . ./install-jdk.sh -F 13 -L GPL
