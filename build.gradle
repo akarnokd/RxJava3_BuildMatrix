@@ -88,21 +88,15 @@ if (!sniff) {
 
 def runJacoco = true
 
-/*
-// Jacoco doesn't support Java 11+ and prevents testing
+
+// Jacoco doesn't support Java 15+ and prevents testing
 def jvmVer = System.getProperty("java.version");
-if (!jvmVer.startsWith("11")
-        && !jvmVer.startsWith("12")
-        && !jvmVer.startsWith("13")
-        && !jvmVer.startsWith("14")
-        && !jvmVer.startsWith("15")) {
+if (!jvmVer.startsWith("15")) {
     runJacoco = true;
     println("Jacoco enabled for runtime version " + jvmVer)
 } else {
     println("Jacoco disabled for runtime version " + jvmVer)
 }
-runJacoco = false // Gradle 6.0 issues
- */
 
 apply plugin: "checkstyle"
 if (runJacoco) {
