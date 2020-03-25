@@ -86,7 +86,7 @@ if (!sniff) {
     println("AnimalSniffer can't be used due to target version " + targetStr)
 }
 
-def runJacoco = true
+def runJacoco = false
 
 
 // Jacoco doesn't support Java 15+ and prevents testing
