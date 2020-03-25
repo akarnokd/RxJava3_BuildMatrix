@@ -9,7 +9,7 @@ buildscript {
   ext.jmhLibVersion = "1.21"
   ext.jmhGradleVersion = "0.5.0"
   ext.guavaVersion = "28.2-jre"
-  ext.jacocoVersion = "0.8.4"
+  ext.jacocoVersion = "0.8.5"
   ext.animalSnifferVersion = "1.5.0"
   ext.licenseVersion = "0.15.0"
   ext.bintrayVersion = "1.8.4"
@@ -86,17 +86,23 @@ if (!sniff) {
     println("AnimalSniffer can't be used due to target version " + targetStr)
 }
 
-def runJacoco = false
+def runJacoco = true
 
+/*
 // Jacoco doesn't support Java 11+ and prevents testing
 def jvmVer = System.getProperty("java.version");
-if (!jvmVer.startsWith("11") && !jvmVer.startsWith("12") && !jvmVer.startsWith("13") && !jvmVer.startsWith("14")) {
+if (!jvmVer.startsWith("11")
+        && !jvmVer.startsWith("12")
+        && !jvmVer.startsWith("13")
+        && !jvmVer.startsWith("14")
+        && !jvmVer.startsWith("15")) {
     runJacoco = true;
     println("Jacoco enabled for runtime version " + jvmVer)
 } else {
     println("Jacoco disabled for runtime version " + jvmVer)
 }
 runJacoco = false // Gradle 6.0 issues
+ */
 
 apply plugin: "checkstyle"
 if (runJacoco) {
