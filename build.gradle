@@ -186,7 +186,12 @@ artifacts {
 
 apply plugin: 'maven'
 
-apply plugin: 'biz.aQute.bnd.builder'
+if (!jvmVer.startsWith("15")) {
+    println("BND enabled")
+    apply plugin: 'biz.aQute.bnd.builder'
+} else {
+    println("BND disabled")
+}
 
 jar {
     bnd ('Bundle-Name': 'rxjava',
