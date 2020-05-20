@@ -214,9 +214,7 @@ public final class FlowableGroupBy<T, K, V> extends AbstractFlowableWithUpstream
                 g.onError(t);
             }
             groups.clear();
-            if (evictedGroups != null) {
-                evictedGroups.clear();
-            }
+            completeEvictions();
             downstream.onError(t);
         }
 
@@ -226,10 +224,10 @@ public final class FlowableGroupBy<T, K, V> extends AbstractFlowableWithUpstream
                 for (GroupedUnicast<K, V> g : groups.values()) {
                     g.onComplete();
                 }
+
                 groups.clear();
-                if (evictedGroups != null) {
-                    evictedGroups.clear();
-                }
+                completeEvictions();
+
                 done = true;
                 downstream.onComplete();
             }
@@ -259,8 +257,9 @@ public final class FlowableGroupBy<T, K, V> extends AbstractFlowableWithUpstream
                 int count = 0;
                 GroupedUnicast<K, V> evictedGroup;
                 while ((evictedGroup = evictedGroups.poll()) != null) {
-                    evictedGroup.onComplete();
-                    count++;
+                    if (evictedGroup.state.tryComplete()) {
+                        count++;
+                    }
                 }
                 if (count != 0) {
                     groupCount.addAndGet(-count);
@@ -270,9 +269,10 @@ public final class FlowableGroupBy<T, K, V> extends AbstractFlowableWithUpstream
 
         public void cancel(K key) {
             Object mapKey = key != null ? key : NULL_KEY;
-            groups.remove(mapKey);
-            if (groupCount.decrementAndGet() == 0) {
-                upstream.cancel();
+            if (groups.remove(mapKey) != null) {
+                if (groupCount.decrementAndGet() == 0) {
+                    upstream.cancel();
+                }
             }
         }
 
@@ -382,6 +382,8 @@ public final class FlowableGroupBy<T, K, V> extends AbstractFlowableWithUpstream
         static final int ABANDONED = 2;
         static final int ABANDONED_HAS_SUBSCRIBER = ABANDONED | HAS_SUBSCRIBER;
 
+        final AtomicBoolean evictOnce = new AtomicBoolean();
+
         State(int bufferSize, GroupBySubscriber<?, K, T> parent, K key, boolean delayError) {
             this.queue = new SpscLinkedArrayQueue<>(bufferSize);
             this.parent = parent;
@@ -443,9 +445,18 @@ public final class FlowableGroupBy<T, K, V> extends AbstractFlowableWithUpstream
             drain();
         }
 
+        boolean tryComplete() {
+            boolean canEvict = evictOnce.compareAndSet(false, true);
+            done = true;
+            drain();
+            return canEvict;
+        }
+
         void cancelParent() {
             if ((once.get() & ABANDONED) == 0) {
-                parent.cancel(key);
+                if (evictOnce.compareAndSet(false, true)) {
+                    parent.cancel(key);
+                }
             }
         }
 
@@ -517,37 +528,44 @@ public final class FlowableGroupBy<T, K, V> extends AbstractFlowableWithUpstream
             final SpscLinkedArrayQueue<T> q = queue;
             final boolean delayError = this.delayError;
             Subscriber<? super T> a = actual.get();
+            final AtomicBoolean cancelled = this.cancelled;
+
+            outer:
             for (;;) {
-                if (a != null) {
-                    long r = requested.get();
-                    long e = 0;
+                if (cancelled.get()) {
+                    cleanupQueue(0, false);
+                } else {
+                    if (a != null) {
+                        long r = requested.get();
+                        long e = 0;
 
-                    while (e != r) {
-                        boolean d = done;
-                        T v = q.poll();
-                        boolean empty = v == null;
+                        while (e != r) {
+                            boolean d = done;
+                            T v = q.poll();
+                            boolean empty = v == null;
 
-                        if (checkTerminated(d, empty, a, delayError, e)) {
-                            return;
+                            if (checkTerminated(d, empty, a, delayError, e, !empty)) {
+                                continue outer;
+                            }
+
+                            if (empty) {
+                                break;
+                            }
+
+                            a.onNext(v);
+
+                            e++;
                         }
 
-                        if (empty) {
-                            break;
+                        if (e == r && checkTerminated(done, q.isEmpty(), a, delayError, e, false)) {
+                            continue outer;
                         }
 
-                        a.onNext(v);
-
-                        e++;
-                    }
-
-                    if (e == r && checkTerminated(done, q.isEmpty(), a, delayError, e)) {
-                        return;
-                    }
-
-                    if (e != 0L) {
-                        BackpressureHelper.produced(requested, e);
-                        // replenish based on this batch run
-                        requestParent(e);
+                        if (e != 0L) {
+                            BackpressureHelper.produced(requested, e);
+                            // replenish based on this batch run
+                            requestParent(e);
+                        }
                     }
                 }
 
@@ -567,28 +585,45 @@ public final class FlowableGroupBy<T, K, V> extends AbstractFlowableWithUpstream
             }
         }
 
-        boolean checkTerminated(boolean d, boolean empty, Subscriber<? super T> a, boolean delayError, long emitted) {
+        void cleanupQueue(long emitted, boolean polled) {
+            // if this group is canceled, all accumulated emissions and
+            // remaining items in the queue should be requested
+            // so that other groups can proceed
+            while (queue.poll() != null) {
+                emitted++;
+            }
+
+            replenishParent(emitted, polled);
+        }
+
+        void replenishParent(long emitted, boolean polled) {
+            if (polled) {
+                emitted++;
+            }
+            if (emitted != 0L) {
+                requestParent(emitted);
+            }
+        }
+
+        boolean checkTerminated(boolean d, boolean empty, Subscriber<? super T> a,
+                boolean delayError, long emitted, boolean polled) {
             if (cancelled.get()) {
-                // if this group is canceled, all accumulated emissions and
-                // remaining items in the queue should be requested
-                // so that other groups can proceed
-                while (queue.poll() != null) {
-                    emitted++;
-                }
-                if (emitted != 0L) {
-                    requestParent(emitted);
-                }
+                cleanupQueue(emitted, polled);
                 return true;
             }
 
             if (d) {
                 if (delayError) {
                     if (empty) {
+                        cancelled.lazySet(true);
                         Throwable e = error;
                         if (e != null) {
                             a.onError(e);
                         } else {
                             a.onComplete();
+                            // completion doesn't mean the parent has completed
+                            // because of evicted groups
+                            replenishParent(emitted, polled);
                         }
                         return true;
                     }
@@ -596,11 +631,17 @@ public final class FlowableGroupBy<T, K, V> extends AbstractFlowableWithUpstream
                     Throwable e = error;
                     if (e != null) {
                         queue.clear();
+                        cancelled.lazySet(true);
                         a.onError(e);
                         return true;
                     } else
                     if (empty) {
+                        cancelled.lazySet(true);
                         a.onComplete();
+
+                        // completion doesn't mean the parent has completed
+                        // because of evicted groups
+                        replenishParent(emitted, polled);
                         return true;
                     }
                 }
@@ -611,10 +652,13 @@ public final class FlowableGroupBy<T, K, V> extends AbstractFlowableWithUpstream
 
         @Override
         public int requestFusion(int mode) {
+            // FIXME fusion mode causes hangs
+            /*
             if ((mode & ASYNC) != 0) {
                 outputFused = true;
                 return ASYNC;
             }
+            */
             return NONE;
         }
 
