@@ -200,6 +200,7 @@ jar {
             'Automatic-Module-Name': 'io.reactivex.rxjava3'
     )
 }
+
 */
 
 license {
