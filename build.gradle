@@ -187,7 +187,6 @@ artifacts {
 apply plugin: 'maven'
 
 // currently bugged plugin
-/*
 apply plugin: 'biz.aQute.bnd.builder'
 
 jar {
@@ -200,8 +199,6 @@ jar {
             'Automatic-Module-Name': 'io.reactivex.rxjava3'
     )
 }
-
-*/
 
 license {
     header rootProject.file("HEADER")
