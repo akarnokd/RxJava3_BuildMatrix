@@ -1,0 +1,31 @@
+<html>
+<head>
+    <title>Generate the version matrix badges</title>
+</head>
+<body>
+<textarea cols="120" rows="10" id="txt"></textarea>
+<script>
+    var txt = document.getElementById("txt");
+
+    var str = "";
+    var idx = 1;
+    for (var version = 16; version >= 8; version--) {
+
+        str += version + " | ";
+        for (var jdk = 8; jdk <= 16; jdk++) {
+            if (jdk + 5 < version) {
+                str += " N/A | ";
+            } else
+            if (jdk <= version) {
+                str += "[![image](https://travis-matrix-badges.herokuapp.com/repos/akarnokd/RxJava3_BuildMatrix/branches/master/" + idx + ")](https://travis-ci.org/akarnokd/RxJava3_BuildMatrix.svg?branch=master) | ";
+                idx++;
+            } else {
+                str += " | ";
+            }
+        }
+        str += "\r\n";
+    }
+    txt.value = str;
+</script>
+</body>
+</html>
