@@ -11,7 +11,7 @@ This repository doesn't produce maven artifacts of the builds as the only purpos
 
 ### Build matrix
 
-JDK runtime | Target 8 | Target 9 | Target 10 | Target 11 | Target 12 | Target 13 | Target 14 | Target 15 |
+JDK runtime | Target 8 | Target 9 | Target 10 | Target 11 | Target 12 | Target 13 | Target 14 | Target 15 | Target 16 |
 -|----|---|------|------|------|----------|----------|---|
 16 |  N/A |  N/A |  N/A | [![image](https://travis-matrix-badges.herokuapp.com/repos/akarnokd/RxJava3_BuildMatrix/branches/master/1)](https://travis-ci.org/akarnokd/RxJava3_BuildMatrix.svg?branch=master) | [![image](https://travis-matrix-badges.herokuapp.com/repos/akarnokd/RxJava3_BuildMatrix/branches/master/2)](https://travis-ci.org/akarnokd/RxJava3_BuildMatrix.svg?branch=master) | [![image](https://travis-matrix-badges.herokuapp.com/repos/akarnokd/RxJava3_BuildMatrix/branches/master/3)](https://travis-ci.org/akarnokd/RxJava3_BuildMatrix.svg?branch=master) | [![image](https://travis-matrix-badges.herokuapp.com/repos/akarnokd/RxJava3_BuildMatrix/branches/master/4)](https://travis-ci.org/akarnokd/RxJava3_BuildMatrix.svg?branch=master) | [![image](https://travis-matrix-badges.herokuapp.com/repos/akarnokd/RxJava3_BuildMatrix/branches/master/5)](https://travis-ci.org/akarnokd/RxJava3_BuildMatrix.svg?branch=master) | [![image](https://travis-matrix-badges.herokuapp.com/repos/akarnokd/RxJava3_BuildMatrix/branches/master/6)](https://travis-ci.org/akarnokd/RxJava3_BuildMatrix.svg?branch=master) | 
 15 |  N/A |  N/A | [![image](https://travis-matrix-badges.herokuapp.com/repos/akarnokd/RxJava3_BuildMatrix/branches/master/7)](https://travis-ci.org/akarnokd/RxJava3_BuildMatrix.svg?branch=master) | [![image](https://travis-matrix-badges.herokuapp.com/repos/akarnokd/RxJava3_BuildMatrix/branches/master/8)](https://travis-ci.org/akarnokd/RxJava3_BuildMatrix.svg?branch=master) | [![image](https://travis-matrix-badges.herokuapp.com/repos/akarnokd/RxJava3_BuildMatrix/branches/master/9)](https://travis-ci.org/akarnokd/RxJava3_BuildMatrix.svg?branch=master) | [![image](https://travis-matrix-badges.herokuapp.com/repos/akarnokd/RxJava3_BuildMatrix/branches/master/10)](https://travis-ci.org/akarnokd/RxJava3_BuildMatrix.svg?branch=master) | [![image](https://travis-matrix-badges.herokuapp.com/repos/akarnokd/RxJava3_BuildMatrix/branches/master/11)](https://travis-ci.org/akarnokd/RxJava3_BuildMatrix.svg?branch=master) | [![image](https://travis-matrix-badges.herokuapp.com/repos/akarnokd/RxJava3_BuildMatrix/branches/master/12)](https://travis-ci.org/akarnokd/RxJava3_BuildMatrix.svg?branch=master) |  | 
@@ -29,6 +29,6 @@ With the newest JDKs, certain older compile targets are no longer supported:
 - JDK 13 dropped target 7 support
 - JDK 14 dropped target 8 support
 - JDK 15 dropped target 9 support
-- JDK 15 dropped target 10 support
+- JDK 16 dropped target 10 support
 
 Note also that RxJava 3 is now a Java 8 library and thus the Java 6 build targets have been removed.
