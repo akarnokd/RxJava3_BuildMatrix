@@ -4,6 +4,7 @@
 # export JDK_NEXT=$(./install-jdk.sh --silent --emit-java-home -F 16 -L GPL)
 # echo JDK_NEXT: $JDK_NEXT
 
+pwd
 wget https://download.java.net/java/early_access/jdk16/6/GPL/openjdk-16-ea+6_linux-x64_bin.tar.gz
 tar -zxvf openjdk-16-ea+6_linux-x64_bin.tar.gz
 export JDK_NEXT="/home/travis/jdk-16"
