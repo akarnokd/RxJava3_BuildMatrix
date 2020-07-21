@@ -6,5 +6,5 @@
 
 wget https://download.java.net/java/early_access/jdk16/6/GPL/openjdk-16-ea+6_linux-x64_bin.tar.gz
 tar -zxvf openjdk-16-ea+6_linux-x64_bin.tar.gz
-export JDK_NEXT=$PWD+"/jdk-16"
+export JDK_NEXT=$PWD/jdk-16
 eval "$JDK_NEXT/bin/java -version"
