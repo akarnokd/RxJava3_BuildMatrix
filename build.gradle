@@ -67,7 +67,7 @@ if (targetStr == null || targetStr.isEmpty()) {
 sourceCompatibility = targetStr
 targetCompatibility = targetStr
 
-// workaround for JDK 14 as Gradle 6 so far doesn't work natively with it
+// workaround for JDK 16 as Gradle 6 so far doesn't work natively with it
 def jdkNextdir = System.getenv("JDK_NEXT")
 if (jdkNextdir != null) {
     println("JDK override: " + jdkNextdir);
@@ -91,7 +91,7 @@ def runJacoco = false
 
 // Jacoco doesn't support Java 15+ and prevents testing
 def jvmVer = System.getProperty("java.version");
-if (!jvmVer.startsWith("15")) {
+if (!jvmVer.startsWith("15") && !jvmVer.startsWith("16")) {
     runJacoco = true;
     println("Jacoco enabled for runtime version " + jvmVer)
 } else {
