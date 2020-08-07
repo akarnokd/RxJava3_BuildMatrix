@@ -12770,7 +12770,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * Resumes the flow with the given {@link Publisher} when the current {@code Flowable} fails instead of
      * signaling the error via {@code onError}.
      * <p>
-     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/onErrorResumeNext.v3.png" alt="">
+     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/onErrorResumeWith.v3.png" alt="">
      * <p>
      * By default, when a {@code Publisher} encounters an error that prevents it from emitting the expected item to
      * its {@link Subscriber}, the {@code Publisher} invokes its {@code Subscriber}'s {@code onError} method, and then quits
@@ -19802,7 +19802,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
     @BackpressureSupport(BackpressureKind.UNBOUNDED_IN)
     @SchedulerSupport(SchedulerSupport.NONE)
     @NonNull
-    public final <@NonNull R, A> Single<R> collect(@NonNull Collector<T, A, R> collector) {
+    public final <@NonNull R, A> Single<R> collect(@NonNull Collector<? super T, A, R> collector) {
         Objects.requireNonNull(collector, "collector is null");
         return RxJavaPlugins.onAssembly(new FlowableCollectWithCollectorSingle<>(this, collector));
     }

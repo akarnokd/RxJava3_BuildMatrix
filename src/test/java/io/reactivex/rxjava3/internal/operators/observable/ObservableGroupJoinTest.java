@@ -81,7 +81,7 @@ public class ObservableGroupJoinTest extends RxJavaTest {
 
     @Before
     public void before() {
-        MockitoAnnotations.initMocks(this);
+        MockitoAnnotations.openMocks(this);
     }
 
     @Test
@@ -479,6 +479,7 @@ public class ObservableGroupJoinTest extends RxJavaTest {
     }
 
     @Test
+    @SuppressUndeliverable
     public void innerErrorRight() {
         Observable.just(1)
         .groupJoin(
