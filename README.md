@@ -1,6 +1,6 @@
 # RxJava 3 built with JDK 9 through 16
 
-<a href='https://travis-ci.org/akarnokd/RxJava3_BuildMatrix/builds'><img src='https://travis-ci.com/akarnokd/RxJava3_BuildMatrix.svg?branch=master'></a>
+<a href='https://travis-ci.com/akarnokd/RxJava3_BuildMatrix/builds'><img src='https://travis-ci.com/akarnokd/RxJava3_BuildMatrix.svg?branch=master'></a>
 [![codecov.io](http://codecov.io/github/akarnokd/RxJava3_BuildMatrix/coverage.svg?branch=master)](https://codecov.io/gh/akarnokd/RxJava3_BuildMatrix/branch/master)
 
 This repository is used for building [RxJava 3](https://github.com/ReactiveX/RxJava) with JDK 9 through 16 in a CI environment. 
