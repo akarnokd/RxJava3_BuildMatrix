@@ -38,11 +38,13 @@ jobs:
       run: chmod +x usejdk16.sh
     - name: "[Optionally] Override JDK"
       if: matrix.config.jdk == '16'
-      run: ./usejdk16.sh
+      run: |
+        ./usejdk16.sh
+        echo 'JDK_NEXT=$JDK_NEXT' >> $GITHUB_ENV
     - name: "Disable daemon"
       run: mkdir -p ~/.gradle && echo "org.gradle.daemon=false" >> ~/.gradle/gradle.properties
     - name: Build with Gradle
-      run: ./gradlew build --stacktrace
+      run: ./gradlew assemble --stacktrace
       env:
         RXJAVA_TARGET:  ${{ matrix.config.target }}
     - name: Upload to Codecov  
