@@ -40,7 +40,7 @@ jobs:
       if: matrix.config.jdk == '16'
       run: |
         ./usejdk16.sh
-        echo 'JDK_NEXT=$JDK_NEXT' >> $GITHUB_ENV
+        echo "JDK_NEXT=$JDK_NEXT" >> $GITHUB_ENV
     - name: "Disable daemon"
       run: mkdir -p ~/.gradle && echo "org.gradle.daemon=false" >> ~/.gradle/gradle.properties
     - name: Build with Gradle
