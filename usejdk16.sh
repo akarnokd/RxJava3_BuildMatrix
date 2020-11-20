@@ -8,3 +8,4 @@ wget https://download.java.net/java/early_access/jdk16/24/GPL/openjdk-16-ea+24_l
 tar -zxvf openjdk-16-ea+24_linux-x64_bin.tar.gz
 export JDK_NEXT=$PWD/jdk-16
 eval "$JDK_NEXT/bin/java -version"
+echo "JDK_NEXT=$JDK_NEXT" >> $GITHUB_ENV

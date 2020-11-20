@@ -38,9 +38,7 @@ jobs:
       run: chmod +x usejdk16.sh
     - name: "[Optionally] Override JDK"
       if: matrix.config.jdk == '16'
-      run: |
-        ./usejdk16.sh
-        echo "JDK_NEXT=$JDK_NEXT" >> $GITHUB_ENV
+      run: ./usejdk16.sh
     - name: "Disable daemon"
       run: mkdir -p ~/.gradle && echo "org.gradle.daemon=false" >> ~/.gradle/gradle.properties
     - name: Build with Gradle
