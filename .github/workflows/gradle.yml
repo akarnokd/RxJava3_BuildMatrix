@@ -12,10 +12,12 @@ on:
 jobs:
   build:
     strategy:
+      fail-fast: false
       matrix:
         config:
-        - { jdk: "9", rt: "9", target: "9" }
-                  
+          # JDK 16
+          - { jdk: "16", rt: "15", target: "11" }
+
     runs-on: ubuntu-latest
 
     steps:
@@ -37,6 +39,8 @@ jobs:
     - name: "[Optionally] Override JDK"
       if: matrix.config.jdk == '16'
       run: ./usejdk16.sh
+    - name: "Disable daemon"
+      run: mkdir -p ~/.gradle && echo "org.gradle.daemon=false" >> ~/.gradle/gradle.properties
     - name: Build with Gradle
       run: ./gradlew build --stacktrace
       env:
