@@ -69,8 +69,6 @@ jobs:
       uses: actions/setup-java@v1
       with:
         java-version: ${{ matrix.config.rt }}
-    - env:
-        RXJAVA_TARGET:  ${{ matrix.config.target }}
     - name: Cache Gradle packages
       uses: actions/cache@v2
       with:
@@ -86,5 +84,7 @@ jobs:
       run: ./usejdk16.sh
     - name: Build with Gradle
       run: ./gradlew build --stacktrace
+      env:
+        RXJAVA_TARGET:  ${{ matrix.config.target }}
     - name: Upload to Codecov  
       uses: codecov/codecov-action@v1
