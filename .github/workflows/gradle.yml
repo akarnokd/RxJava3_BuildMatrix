@@ -1,0 +1,90 @@
+# This workflow will build a Java project with Gradle
+# For more information see: https://help.github.com/actions/language-and-framework-guides/building-and-testing-java-with-gradle
+
+name: Java CI with Gradle
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        config:
+        # JDK 16
+        - { jdk: "16", rt: "15", target: "11" }
+        - { jdk: "16", rt: "15", target: "12" }
+        - { jdk: "16", rt: "15", target: "13" }
+        - { jdk: "16", rt: "15", target: "14" }
+        - { jdk: "16", rt: "15", target: "15" }
+        # - { jdk: "16", rt: "15", target: "16" }
+        # JDK 15
+        - { jdk: "15", rt: "15", target: "10" }
+        - { jdk: "15", rt: "15", target: "11" }
+        - { jdk: "15", rt: "15", target: "12" }
+        - { jdk: "15", rt: "15", target: "13" }
+        - { jdk: "15", rt: "15", target: "14" }
+        - { jdk: "15", rt: "15", target: "15" }
+        # JDK 14
+        - { jdk: "14", rt: "14", target: "9" }
+        - { jdk: "14", rt: "14", target: "10" }
+        - { jdk: "14", rt: "14", target: "11" }
+        - { jdk: "14", rt: "14", target: "12" }
+        - { jdk: "14", rt: "14", target: "13" }
+        - { jdk: "14", rt: "14", target: "14" }
+        # JDK 13
+        - { jdk: "13", rt: "13", target: "8" }
+        - { jdk: "13", rt: "13", target: "9" }
+        - { jdk: "13", rt: "13", target: "10" }
+        - { jdk: "13", rt: "13", target: "11" }
+        - { jdk: "13", rt: "13", target: "12" }
+        - { jdk: "13", rt: "13", target: "13" }
+        # JDK 12
+        - { jdk: "12", rt: "12", target: "8" }
+        - { jdk: "12", rt: "12", target: "9" }
+        - { jdk: "12", rt: "12", target: "10" }
+        - { jdk: "12", rt: "12", target: "11" }
+        - { jdk: "12", rt: "12", target: "12" }
+        # JDK 11
+        - { jdk: "11", rt: "11", target: "8" }
+        - { jdk: "11", rt: "11", target: "9" }
+        - { jdk: "11", rt: "11", target: "10" }
+        - { jdk: "11", rt: "11", target: "11" }
+        # JDK 10
+        - { jdk: "10", rt: "10", target: "8" }
+        - { jdk: "10", rt: "10", target: "9" }
+        - { jdk: "10", rt: "10", target: "10" }
+        # JDK 9
+        - { jdk: "9", rt: "9", target: "8" }
+        - { jdk: "9", rt: "9", target: "9" }
+                  
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up JDK ${{ matrix.config.jdk }} target ${{ matrix.config.target }}
+      uses: actions/setup-java@v1
+      with:
+        java-version: ${{ matrix.config.rt }}
+    - env:
+        RXJAVA_TARGET:  ${{ matrix.config.target }}
+    - name: Cache Gradle packages
+      uses: actions/cache@v2
+      with:
+        path: ~/.gradle/caches
+        key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle') }}
+        restore-keys: ${{ runner.os }}-gradle
+    - name: Grant execute permission for gradlew
+      run: chmod +x gradlew
+    - name: Grant execute permission for usejdk16.sh
+      run: chmod +x usejdk16.sh
+    - name: "[Optionally] Override JDK"
+      if: matrix.config.jdk == '16'
+      run: ./usejdk16.sh
+    - name: Build with Gradle
+      run: ./gradlew build --stacktrace
+    - name: Upload to Codecov  
+      uses: codecov/codecov-action@v1
