@@ -163,13 +163,21 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * Mirrors the one {@link Publisher} in an {@link Iterable} of several {@code Publisher}s that first either emits an item or sends
      * a termination notification.
      * <p>
-     * <img width="640" height="385" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/amb.v3.png" alt="">
+     * <img width="640" height="417" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Flowable.amb.png" alt="">
+     * <p>
+     * When one of the {@code Publisher}s signal an item or terminates first, all subscriptions to the other
+     * {@code Publisher}s are canceled.
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator itself doesn't interfere with backpressure which is determined by the winning
      *  {@code Publisher}'s backpressure behavior.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code amb} does not operate by default on a particular {@link Scheduler}.</dd>
+     *  <dt><b>Error handling:</b></dt>
+     *  <dd>
+     *     If any of the losing {@code Publisher}s signals an error, the error is routed to the global
+     *     error handler via {@link RxJavaPlugins#onError(Throwable)}.
+     *  </dd>
      * </dl>
      *
      * @param <T> the common element type
@@ -193,13 +201,21 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * Mirrors the one {@link Publisher} in an array of several {@code Publisher}s that first either emits an item or sends
      * a termination notification.
      * <p>
-     * <img width="640" height="385" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/amb.v3.png" alt="">
+     * <img width="640" height="417" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Flowable.ambArray.png" alt="">
+     * <p>
+     * When one of the {@code Publisher}s signal an item or terminates first, all subscriptions to the other
+     * {@code Publisher}s are canceled.
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator itself doesn't interfere with backpressure which is determined by the winning
      *  {@code Publisher}'s backpressure behavior.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code ambArray} does not operate by default on a particular {@link Scheduler}.</dd>
+     *  <dt><b>Error handling:</b></dt>
+     *  <dd>
+     *     If any of the losing {@code Publisher}s signals an error, the error is routed to the global
+     *     error handler via {@link RxJavaPlugins#onError(Throwable)}.
+     *  </dd>
      * </dl>
      *
      * @param <T> the common element type
@@ -5927,13 +5943,22 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * Mirrors the {@link Publisher} (current or provided) that first either emits an item or sends a termination
      * notification.
      * <p>
-     * <img width="640" height="385" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/amb.v3.png" alt="">
+     * <img width="640" height="376" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Flowable.ambWith.png" alt="">
+     * <p>
+     * When the current {@code Flowable} signals an item or terminates first, the subscription to the other
+     * {@code Publisher} is canceled. If the other {@code Publisher} signals an item or terminates first,
+     * the subscription to the current {@code Flowable} is canceled.
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator itself doesn't interfere with backpressure which is determined by the winning
      *  {@code Publisher}'s backpressure behavior.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code ambWith} does not operate by default on a particular {@link Scheduler}.</dd>
+     *  <dt><b>Error handling:</b></dt>
+     *  <dd>
+     *     If the losing {@code Publisher} signals an error, the error is routed to the global
+     *     error handler via {@link RxJavaPlugins#onError(Throwable)}.
+     *  </dd>
      * </dl>
      *
      * @param other
@@ -16411,8 +16436,8 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
     }
 
     /**
-     * Returns a {@code Flowable} that emits only the first {@code count} items emitted by the current {@code Flowable}. If the source emits fewer than
-     * {@code count} items then all of its items are emitted.
+     * Returns a {@code Flowable} that emits only the first {@code count} items emitted by the current {@code Flowable}.
+     * If the source emits fewer than {@code count} items then all of its items are emitted.
      * <p>
      * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/take.v3.png" alt="">
      * <p>
@@ -16425,15 +16450,15 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * possibly prevent the creation of excess items by the upstream.
      * <p>
      * The operator requests at most the given {@code count} of items from upstream even
-     * if the downstream requests more than that. For example, given a {@code limit(5)},
+     * if the downstream requests more than that. For example, given a {@code take(5)},
      * if the downstream requests 1, a request of 1 is submitted to the upstream
      * and the operator remembers that only 4 items can be requested now on. A request
      * of 5 at this point will request 4 from the upstream and any subsequent requests will
      * be ignored.
      * <p>
-     * Note that requests are negotiated on an operator boundary and {@code limit}'s amount
+     * Note that requests are negotiated on an operator boundary and {@code take}'s amount
      * may not be preserved further upstream. For example,
-     * {@code source.observeOn(Schedulers.computation()).limit(5)} will still request the
+     * {@code source.observeOn(Schedulers.computation()).take(5)} will still request the
      * default (128) elements from the given {@code source}.
      * <dl>
      *  <dt><b>Backpressure:</b></dt>

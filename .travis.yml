@@ -9,9 +9,8 @@ before_install:
   - mkdir -p ~/.gradle && echo "org.gradle.daemon=false" >> ~/.gradle/gradle.properties
   - export GRADLE_OPTS=-Xmx1024m
   - wget https://github.com/sormuras/bach/raw/master/install-jdk.sh
-  - chmod +x usejdk14.sh
-  - chmod +x usejdk15.sh
   - chmod +x usejdk16.sh
+  - chmod +x usejdk17.sh
   - chmod +x install-jdk.sh
 
 matrix:

@@ -15,52 +15,59 @@ jobs:
       fail-fast: false
       matrix:
         config:
+          # JDK 17
+          - { idx: "01", jdk: "17", rt: "15", target: "12" }
+          - { idx: "02", jdk: "17", rt: "15", target: "13" }
+          - { idx: "03", jdk: "17", rt: "15", target: "14" }
+          - { idx: "04", jdk: "17", rt: "15", target: "15" }
+          # - { idx: "05", jdk: "17", rt: "15", target: "16" }
+          # - { idx: "06", jdk: "17", rt: "15", target: "17" }
           # JDK 16
-          - { idx: "01", jdk: "16", rt: "15", target: "11" }
-          - { idx: "02", jdk: "16", rt: "15", target: "12" }
-          - { idx: "03", jdk: "16", rt: "15", target: "13" }
-          - { idx: "04", jdk: "16", rt: "15", target: "14" }
-          - { idx: "05", jdk: "16", rt: "15", target: "15" }
+          - { idx: "07", jdk: "16", rt: "15", target: "11" }
+          - { idx: "08", jdk: "16", rt: "15", target: "12" }
+          - { idx: "09", jdk: "16", rt: "15", target: "13" }
+          - { idx: "10", jdk: "16", rt: "15", target: "14" }
+          - { idx: "11", jdk: "16", rt: "15", target: "15" }
           # - { idx: "06", jdk: "16", rt: "15", target: "16" }
           # JDK 15
-          - { idx: "07", jdk: "15", rt: "15", target: "10" }
-          - { idx: "08", jdk: "15", rt: "15", target: "11" }
-          - { idx: "09", jdk: "15", rt: "15", target: "12" }
-          - { idx: "10", jdk: "15", rt: "15", target: "13" }
-          - { idx: "11", jdk: "15", rt: "15", target: "14" }
-          - { idx: "12", jdk: "15", rt: "15", target: "15" }
+          - { idx: "12", jdk: "15", rt: "15", target: "10" }
+          - { idx: "13", jdk: "15", rt: "15", target: "11" }
+          - { idx: "14", jdk: "15", rt: "15", target: "12" }
+          - { idx: "15", jdk: "15", rt: "15", target: "13" }
+          - { idx: "16", jdk: "15", rt: "15", target: "14" }
+          - { idx: "17", jdk: "15", rt: "15", target: "15" }
           # JDK 14
-          - { idx: "13", jdk: "14", rt: "14", target: "9" }
-          - { idx: "14", jdk: "14", rt: "14", target: "10" }
-          - { idx: "15", jdk: "14", rt: "14", target: "11" }
-          - { idx: "16", jdk: "14", rt: "14", target: "12" }
-          - { idx: "17", jdk: "14", rt: "14", target: "13" }
-          - { idx: "18", jdk: "14", rt: "14", target: "14" }
+          - { idx: "18", jdk: "14", rt: "14", target: "9" }
+          - { idx: "19", jdk: "14", rt: "14", target: "10" }
+          - { idx: "20", jdk: "14", rt: "14", target: "11" }
+          - { idx: "21", jdk: "14", rt: "14", target: "12" }
+          - { idx: "22", jdk: "14", rt: "14", target: "13" }
+          - { idx: "23", jdk: "14", rt: "14", target: "14" }
           # JDK 13
-          - { idx: "19", jdk: "13", rt: "13", target: "8" }
-          - { idx: "20", jdk: "13", rt: "13", target: "9" }
-          - { idx: "21", jdk: "13", rt: "13", target: "10" }
-          - { idx: "22", jdk: "13", rt: "13", target: "11" }
-          - { idx: "23", jdk: "13", rt: "13", target: "12" }
-          - { idx: "24", jdk: "13", rt: "13", target: "13" }
+          - { idx: "24", jdk: "13", rt: "13", target: "8" }
+          - { idx: "25", jdk: "13", rt: "13", target: "9" }
+          - { idx: "26", jdk: "13", rt: "13", target: "10" }
+          - { idx: "27", jdk: "13", rt: "13", target: "11" }
+          - { idx: "28", jdk: "13", rt: "13", target: "12" }
+          - { idx: "29", jdk: "13", rt: "13", target: "13" }
           # JDK 12
-          - { idx: "25", jdk: "12", rt: "12", target: "8" }
-          - { idx: "26", jdk: "12", rt: "12", target: "9" }
-          - { idx: "27", jdk: "12", rt: "12", target: "10" }
-          - { idx: "28", jdk: "12", rt: "12", target: "11" }
-          - { idx: "29", jdk: "12", rt: "12", target: "12" }
+          - { idx: "30", jdk: "12", rt: "12", target: "8" }
+          - { idx: "31", jdk: "12", rt: "12", target: "9" }
+          - { idx: "32", jdk: "12", rt: "12", target: "10" }
+          - { idx: "33", jdk: "12", rt: "12", target: "11" }
+          - { idx: "34", jdk: "12", rt: "12", target: "12" }
           # JDK 11
-          - { idx: "30", jdk: "11", rt: "11", target: "8" }
-          - { idx: "31", jdk: "11", rt: "11", target: "9" }
-          - { idx: "32", jdk: "11", rt: "11", target: "10" }
-          - { idx: "33", jdk: "11", rt: "11", target: "11" }
+          - { idx: "35", jdk: "11", rt: "11", target: "8" }
+          - { idx: "36", jdk: "11", rt: "11", target: "9" }
+          - { idx: "37", jdk: "11", rt: "11", target: "10" }
+          - { idx: "38", jdk: "11", rt: "11", target: "11" }
           # JDK 10
-          - { idx: "34", jdk: "10", rt: "10", target: "8" }
-          - { idx: "35", jdk: "10", rt: "10", target: "9" }
-          - { idx: "36", jdk: "10", rt: "10", target: "10" }
+          - { idx: "39", jdk: "10", rt: "10", target: "8" }
+          - { idx: "40", jdk: "10", rt: "10", target: "9" }
+          - { idx: "41", jdk: "10", rt: "10", target: "10" }
           # JDK 9
-          - { idx: "37", jdk: "9", rt: "9", target: "8" }
-          - { idx: "38", jdk: "9", rt: "9", target: "9" }
+          - { idx: "42", jdk: "9", rt: "9", target: "8" }
+          - { idx: "43", jdk: "9", rt: "9", target: "9" }
 
     runs-on: ubuntu-latest
 
@@ -80,9 +87,12 @@ jobs:
       run: chmod +x gradlew
     - name: Grant execute permission for usejdk16.sh
       run: chmod +x usejdk16.sh
-    - name: "[Optionally] Override JDK"
+    - name: "[Optionally] Override JDK for 16"
       if: matrix.config.jdk == '16'
       run: ./usejdk16.sh
+    - name: "[Optionally] Override JDK for 17"
+      if: matrix.config.jdk == '17'
+      run: ./usejdk17.sh
     - name: "Disable daemon"
       run: mkdir -p ~/.gradle && echo "org.gradle.daemon=false" >> ~/.gradle/gradle.properties
     - name: Build with Gradle
