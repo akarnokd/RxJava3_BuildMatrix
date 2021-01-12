@@ -90,6 +90,8 @@ jobs:
     - name: "[Optionally] Override JDK for 16"
       if: matrix.config.jdk == '16'
       run: ./usejdk16.sh
+    - name: Grant execute permission for usejdk17.sh
+      run: chmod +x usejdk17.sh
     - name: "[Optionally] Override JDK for 17"
       if: matrix.config.jdk == '17'
       run: ./usejdk17.sh
