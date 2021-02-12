@@ -814,7 +814,7 @@ public abstract class AbstractSchedulerTests extends RxJavaTest {
         }
         Worker worker = getScheduler().createWorker();
         try {
-            schedulePrint(r -> worker.schedule(r));
+            schedulePrint(worker::schedule);
         } finally {
             worker.dispose();
         }
