@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2016-present, RxJava Contributors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
@@ -10,6 +10,7 @@
  * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See
  * the License for the specific language governing permissions and limitations under the License.
  */
+
 package io.reactivex.rxjava3.core;
 
 import java.util.*;
@@ -1907,11 +1908,12 @@ public abstract class Completable implements CompletableSource {
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code doOnLifecycle} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
-     * @param onSubscribe the consumer called when a {@link CompletableObserver} subscribes.
-     * @param onError the consumer called when this emits an {@code onError} event
-     * @param onComplete the runnable called just before when the current {@code Completable} completes normally
-     * @param onAfterTerminate the runnable called after this {@code Completable} completes normally
-     * @param onDispose the {@link Runnable} called when the downstream disposes the subscription
+     * @param onSubscribe the {@link Consumer} called when a {@link CompletableObserver} subscribes.
+     * @param onError the {@code Consumer} called when this emits an {@code onError} event
+     * @param onComplete the {@link Action} called just before when the current {@code Completable} completes normally
+     * @param onTerminate the {@code Action} called just before this {@code Completable} terminates
+     * @param onAfterTerminate the {@code Action} called after this {@code Completable} completes normally
+     * @param onDispose the {@code Action} called when the downstream disposes the subscription
      * @return the new {@code Completable} instance
      * @throws NullPointerException if {@code onSubscribe}, {@code onError}, {@code onComplete}
      * {@code onTerminate}, {@code onAfterTerminate} or {@code onDispose} is {@code null}

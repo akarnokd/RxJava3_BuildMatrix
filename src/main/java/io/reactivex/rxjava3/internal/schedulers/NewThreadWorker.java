@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2016-present, RxJava Contributors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
@@ -59,7 +59,7 @@ public class NewThreadWorker extends Scheduler.Worker implements Disposable {
      * @return the ScheduledRunnable instance
      */
     public Disposable scheduleDirect(final Runnable run, long delayTime, TimeUnit unit) {
-        ScheduledDirectTask task = new ScheduledDirectTask(RxJavaPlugins.onSchedule(run));
+        ScheduledDirectTask task = new ScheduledDirectTask(RxJavaPlugins.onSchedule(run), true);
         try {
             Future<?> f;
             if (delayTime <= 0L) {
@@ -104,7 +104,7 @@ public class NewThreadWorker extends Scheduler.Worker implements Disposable {
 
             return periodicWrapper;
         }
-        ScheduledDirectPeriodicTask task = new ScheduledDirectPeriodicTask(decoratedRun);
+        ScheduledDirectPeriodicTask task = new ScheduledDirectPeriodicTask(decoratedRun, true);
         try {
             Future<?> f = executor.scheduleAtFixedRate(task, initialDelay, period, unit);
             task.setFuture(f);

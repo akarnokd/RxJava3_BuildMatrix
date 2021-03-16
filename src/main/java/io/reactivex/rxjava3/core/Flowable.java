@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2016-present, RxJava Contributors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
@@ -10,6 +10,7 @@
  * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See
  * the License for the specific language governing permissions and limitations under the License.
  */
+
 package io.reactivex.rxjava3.core;
 
 import java.util.*;
@@ -9722,6 +9723,10 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      *  <dd>{@code doOnEach} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      *
+     * @param onNext the {@link Consumer} to invoke when the current {@code Flowable} calls {@code onNext}
+     * @param onError the {@code Consumer} to invoke when the current {@code Flowable} calls {@code onError}
+     * @param onComplete the {@link Action} to invoke when the current {@code Flowable} calls {@code onComplete}
+     * @param onAfterTerminate the {@code Action} to invoke when the current {@code Flowable} calls {@code onAfterTerminate}
      * @return the new {@code Flowable} instance
      * @throws NullPointerException if {@code onNext}, {@code onError}, {@code onComplete} or {@code onAfterTerminate} is {@code null}
      * @see <a href="http://reactivex.io/documentation/operators/do.html">ReactiveX operators documentation: Do</a>
