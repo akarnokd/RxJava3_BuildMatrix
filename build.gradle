@@ -22,18 +22,10 @@ ext {
 }
 String targetStr = System.getenv("RXJAVA_TARGET")
 if (targetStr == null || targetStr.isEmpty()) {
-    targetStr = '11'
+    targetStr = '8'
     logger.lifecycle("RXJAVA_TARGET env not found, using default " + targetStr)
 } else {
     logger.lifecycle("Source compatibility: " + targetStr)
-}
-boolean sniff = targetStr.equals("8");
-if (sniff) {
-    plugins {
-        id("ru.vyarus.animalsniffer") version "1.5.3"
-    }
-} else {
-    logger.lifecycle("AnimalSniffer can't be used due to target version " + targetStr)
 }
 
 def releaseTag = System.getenv("BUILD_TAG")
@@ -86,10 +78,6 @@ repositories {
 }
 
 dependencies {
-    if (sniff) {
-        signature "org.codehaus.mojo.signature:java18:1.0@signature"
-    }
-
     api "org.reactivestreams:reactive-streams:$reactiveStreamsVersion"
     jmh "org.reactivestreams:reactive-streams:$reactiveStreamsVersion"
 
@@ -124,12 +112,6 @@ javadoc {
             "https://docs.oracle.com/javase/8/docs/api/",
             "http://www.reactive-streams.org/reactive-streams-${reactiveStreamsVersion}-javadoc/"
     )
-}
-
-if (sniff) {
-    animalsniffer {
-        annotation = "io.reactivex.rxjava3.internal.util.SuppressAnimalSniffer"
-    }
 }
 
 jar {
