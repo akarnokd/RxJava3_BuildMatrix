@@ -16,7 +16,7 @@ ext {
     junitVersion = "4.13.2"
     testNgVersion = "7.4.0"
     mockitoVersion = "3.9.0"
-    jmhLibVersion = "1.21"
+    jmhLibVersion = "1.25"
     guavaVersion = "30.1.1-jre"
     jacocoVersion = "0.8.4"
     checkstyleVersion = "8.41"
@@ -128,15 +128,14 @@ jar {
     )
 }
 
-/*
-license {
-    header rootProject.file("config/license/HEADER")
-    ext.year = Calendar.getInstance().get(Calendar.YEAR)
-    skipExistingHeaders true
-    ignoreFailures true
-    excludes(["**/*.md", "**/*.txt"])
-}
-*/
+
+// license {
+//     header rootProject.file("config/license/HEADER")
+//     ext.year = Calendar.getInstance().get(Calendar.YEAR)
+//     skipExistingHeaders true
+//     ignoreFailures true
+//     excludes(["**/*.md", "**/*.txt"])
+// }
 
 jmh {
     jmhVersion = jmhLibVersion
