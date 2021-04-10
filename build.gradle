@@ -4,7 +4,8 @@ plugins {
     id("eclipse")
     id("maven-publish")
     id("me.champeau.gradle.jmh") version "0.5.3"
-    id("com.github.hierynomus.license") version "0.15.0"
+    // Does not work with Gradle 7
+    // id("com.github.hierynomus.license") version "0.15.0"
     id("com.jfrog.artifactory") version "4.21.0"
     id("biz.aQute.bnd.builder") version "5.3.0"
     id("com.vanniktech.maven.publish") version "0.14.2"
@@ -127,6 +128,7 @@ jar {
     )
 }
 
+/*
 license {
     header rootProject.file("config/license/HEADER")
     ext.year = Calendar.getInstance().get(Calendar.YEAR)
@@ -134,6 +136,7 @@ license {
     ignoreFailures true
     excludes(["**/*.md", "**/*.txt"])
 }
+*/
 
 jmh {
     jmhVersion = jmhLibVersion
