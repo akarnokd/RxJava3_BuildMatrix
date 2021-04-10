@@ -1,0 +1,49 @@
+# This workflow will build a Java project with Gradle
+# For more information see: https://help.github.com/actions/language-and-framework-guides/building-and-testing-java-with-gradle
+
+name: Build_JDK14
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        config:
+          # JDK 14
+          - { idx: "18", jdk: "14", rt: "14", target: "9" }
+          - { idx: "19", jdk: "14", rt: "14", target: "10" }
+          - { idx: "20", jdk: "14", rt: "14", target: "11" }
+          - { idx: "21", jdk: "14", rt: "14", target: "12" }
+          - { idx: "22", jdk: "14", rt: "14", target: "13" }
+          - { idx: "23", jdk: "14", rt: "14", target: "14" }
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up JDK ${{ matrix.config.jdk }} target ${{ matrix.config.target }}
+      uses: actions/setup-java@v1
+      with:
+        java-version: ${{ matrix.config.rt }}
+    - name: Cache Gradle packages
+      uses: actions/cache@v2
+      with:
+        path: ~/.gradle/caches
+        key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle') }}
+        restore-keys: ${{ runner.os }}-gradle
+    - name: Grant execute permission for gradlew
+      run: chmod +x gradlew
+    - name: "Disable daemon"
+      run: mkdir -p ~/.gradle && echo "org.gradle.daemon=false" >> ~/.gradle/gradle.properties
+    - name: Build with Gradle
+      run: ./gradlew build --stacktrace
+      env:
+        RXJAVA_TARGET:  ${{ matrix.config.target }}
+    - name: Upload to Codecov  
+      uses: codecov/codecov-action@v1
