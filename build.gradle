@@ -5,8 +5,7 @@ plugins {
     id("maven-publish")
     id("me.champeau.gradle.jmh") version "0.5.3"
     // Does not work with Gradle 7
-    // id("com.github.hierynomus.license") version "0.15.0"
-    id("com.jfrog.artifactory") version "4.21.0"
+    id("com.github.hierynomus.license") version "0.16.1"
     id("biz.aQute.bnd.builder") version "5.3.0"
     id("com.vanniktech.maven.publish") version "0.15.1"
 }
@@ -18,7 +17,7 @@ ext {
     mockitoVersion = "3.9.0"
     jmhLibVersion = "1.25"
     guavaVersion = "30.1.1-jre"
-    jacocoVersion = "0.8.4"
+    jacocoVersion = "0.8.7"
     checkstyleVersion = "8.41"
 }
 String targetStr = System.getenv("RXJAVA_TARGET")
@@ -61,9 +60,9 @@ if (jdkNextdir != null) {
 
 def runJacoco = false
 
-// Jacoco doesn't support Java 14+ and prevents testing
+// Jacoco doesn't fully support Java 17+ and prevents testing
 def jvmVer = System.getProperty("java.version");
-if (!jvmVer.startsWith("14") && !jvmVer.startsWith("15") && !jvmVer.startsWith("16") && !jvmVer.startsWith("17")) {
+if (!jvmVer.startsWith("17")) {
     runJacoco = true;
     logger.lifecycle("Jacoco enabled for runtime version " + jvmVer)
 } else {
@@ -129,13 +128,13 @@ jar {
 }
 
 
-// license {
-//     header rootProject.file("config/license/HEADER")
-//     ext.year = Calendar.getInstance().get(Calendar.YEAR)
-//     skipExistingHeaders true
-//     ignoreFailures true
-//     excludes(["**/*.md", "**/*.txt"])
-// }
+license {
+     header rootProject.file("config/license/HEADER")
+     ext.year = Calendar.getInstance().get(Calendar.YEAR)
+     skipExistingHeaders true
+     ignoreFailures true
+     excludes(["**/*.md", "**/*.txt"])
+}
 
 jmh {
     jmhVersion = jmhLibVersion
@@ -223,48 +222,18 @@ checkstyle {
 
 apply from: file("gradle/javadoc_cleanup.gradle")
 
-def fixPom() {
-    // Reactive-Streams as compile dependency
-    publishing.publications.all {
-        pom.withXml {
-            asNode().dependencies."*".findAll() {
-                it.scope.text() == "runtime" && project.configurations.compile.allDependencies.find { dep ->
-                    dep.name == it.artifactId.text()
-                }
-            }.each { it.scope*.value = "compile"}
-        }
-    }
-}
-
 if (rootProject.hasProperty("releaseMode")) {
     logger.lifecycle("ReleaseMode: {}", rootProject.releaseMode)
 
     if ("branch".equals(rootProject.releaseMode)) {
-        // From https://github.com/ReactiveX/RxAndroid/blob/2.x/rxandroid/build.gradle#L94
-        artifactory {
-            contextUrl = "https://oss.jfrog.org"
-
-            publish {
-                repository {
-                    repoKey = "oss-snapshot-local"
-
-                    username = rootProject.bintrayUser
-                    password = rootProject.bintrayKey
-                }
-
-                defaults {
-                    publishConfigs("archives")
-                }
-
-                fixPom()
+        mavenPublish {
+            nexus {
+                stagingProfile = "io.reactivex"
             }
         }
-
-        build.finalizedBy(artifactoryPublish)
     }
 
     if ("full".equals(rootProject.releaseMode)) {
-        fixPom()
 
         signing {
             if (project.hasProperty("SIGNING_PRIVATE_KEY") && project.hasProperty("SIGNING_PASSWORD")) {
