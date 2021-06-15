@@ -16,11 +16,11 @@ jobs:
       matrix:
         config:
           # JDK 15
-          - { idx: "12", jdk: "15", rt: "15", target: "10" }
-          - { idx: "13", jdk: "15", rt: "15", target: "11" }
-          - { idx: "14", jdk: "15", rt: "15", target: "12" }
-          - { idx: "15", jdk: "15", rt: "15", target: "13" }
-          - { idx: "16", jdk: "15", rt: "15", target: "14" }
+          #- { idx: "12", jdk: "15", rt: "15", target: "10" }
+          #- { idx: "13", jdk: "15", rt: "15", target: "11" }
+          #- { idx: "14", jdk: "15", rt: "15", target: "12" }
+          #- { idx: "15", jdk: "15", rt: "15", target: "13" }
+          #- { idx: "16", jdk: "15", rt: "15", target: "14" }
           - { idx: "17", jdk: "15", rt: "15", target: "15" }
 
     runs-on: ubuntu-latest

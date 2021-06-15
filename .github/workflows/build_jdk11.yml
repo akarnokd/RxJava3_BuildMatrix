@@ -16,9 +16,9 @@ jobs:
       matrix:
         config:
           # JDK 11
-          - { idx: "35", jdk: "11", rt: "11", target: "8" }
-          - { idx: "36", jdk: "11", rt: "11", target: "9" }
-          - { idx: "37", jdk: "11", rt: "11", target: "10" }
+          #- { idx: "35", jdk: "11", rt: "11", target: "8" }
+          #- { idx: "36", jdk: "11", rt: "11", target: "9" }
+          #- { idx: "37", jdk: "11", rt: "11", target: "10" }
           - { idx: "38", jdk: "11", rt: "11", target: "11" }
 
     runs-on: ubuntu-latest
