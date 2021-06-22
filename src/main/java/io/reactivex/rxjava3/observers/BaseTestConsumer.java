@@ -124,6 +124,15 @@ public abstract class BaseTestConsumer<T, U extends BaseTestConsumer<T, U>> {
         b
         .append(')')
         ;
+        if (timeout) {
+            b.append("\nThread dump\n-----------\n");
+            for (Map.Entry<Thread, StackTraceElement[]> e : Thread.getAllStackTraces().entrySet()) {
+                b.append("Thread: ").append(e.getKey().getName()).append("\n");
+                for (StackTraceElement se : e.getValue()) {
+                    b.append(" at ").append(se).append("\n");
+                }
+            }
+        }
 
         AssertionError ae = new AssertionError(b.toString());
         if (!errors.isEmpty()) {
