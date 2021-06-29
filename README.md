@@ -14,6 +14,8 @@
 | 11  | <a href='https://github.com/akarnokd/RxJava3_BuildMatrix/actions?query=workflow%3A%22Build_JDK11%22'><img src='https://github.com/akarnokd/RxJava3_BuildMatrix/workflows/Build_JDK11/badge.svg'></a> |
 | 10  | <a href='https://github.com/akarnokd/RxJava3_BuildMatrix/actions?query=workflow%3A%22Build_JDK10%22'><img src='https://github.com/akarnokd/RxJava3_BuildMatrix/workflows/Build_JDK10/badge.svg'></a> |
 | 9  | <a href='https://github.com/akarnokd/RxJava3_BuildMatrix/actions?query=workflow%3A%22Build_JDK09%22'><img src='https://github.com/akarnokd/RxJava3_BuildMatrix/workflows/Build_JDK09/badge.svg'></a> |
+| Loom  | <a href='https://github.com/akarnokd/RxJava3_BuildMatrix/actions?query=workflow%3A%22Build_Loom%22'><img src='https://github.com/akarnokd/RxJava3_BuildMatrix/workflows/Build_Loom/badge.svg'></a> |
+
 
 (GitHub actions do not have a means to display the individual matrix results in a workflow.)
 
