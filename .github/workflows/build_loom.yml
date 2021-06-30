@@ -34,7 +34,7 @@ jobs:
         restore-keys: ${{ runner.os }}-gradle
     - name: Grant execute permission for gradlew
       run: chmod +x gradlew
-    - name: Grant execute permission for usejdk18.sh
+    - name: Grant execute permission for use_loom.sh
       run: chmod +x use_loom.sh
     - name: "Override JDK for Loom"
       run: ./use_loom.sh
