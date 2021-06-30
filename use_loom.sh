@@ -8,3 +8,5 @@ echo "JDK_NEXT=$JDK_NEXT" >> $GITHUB_ENV
 
 echo "Using older Gradle"
 mv -f gradle/wrapper/gradle-wrapper_loom.properties gradle/wrapper/gradle-wrapper.properties
+echo "Using Loom gradle.build"
+mv -f build_loom.gradle build.gradle

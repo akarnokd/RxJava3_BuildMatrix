@@ -1,0 +1,249 @@
+plugins {
+    id("java-library")
+    id("checkstyle")
+    id("eclipse")
+    id("maven-publish")
+    id("me.champeau.gradle.jmh") version "0.5.3"
+    // Does not work with Gradle 7
+    id("com.github.hierynomus.license") version "0.15.0"
+    id("biz.aQute.bnd.builder") version "5.3.0"
+    id("com.vanniktech.maven.publish") version "0.16.0"
+}
+
+ext {
+    reactiveStreamsVersion = "1.0.3"
+    junitVersion = "4.13.2"
+    testNgVersion = "7.4.0"
+    mockitoVersion = "3.11.2"
+    jmhLibVersion = "1.25"
+    guavaVersion = "30.1.1-jre"
+    jacocoVersion = "0.8.7"
+    checkstyleVersion = "8.41"
+}
+String targetStr = System.getenv("RXJAVA_TARGET")
+if (targetStr == null || targetStr.isEmpty()) {
+    targetStr = '8'
+    logger.lifecycle("RXJAVA_TARGET env not found, using default " + targetStr)
+} else {
+    logger.lifecycle("Source compatibility: " + targetStr)
+}
+
+def releaseTag = System.getenv("BUILD_TAG")
+if (releaseTag != null && !releaseTag.isEmpty()) {
+    if (releaseTag.startsWith("v")) {
+        releaseTag = releaseTag.substring(1)
+    }
+    project.setProperty("VERSION_NAME" , releaseTag)
+
+    logger.info("Releasing with version: {}", version)
+}
+
+group = "io.reactivex.rxjava3"
+version = project.properties["VERSION_NAME"]
+description = "RxJava: Reactive Extensions for the JVM – a library for composing asynchronous and event-based programs using observable sequences for the Java VM."
+
+
+sourceCompatibility = targetStr
+targetCompatibility = targetStr
+
+// workaround for newer JDKs as Gradle tend not to work with them
+def jdkNextdir = System.getenv("JDK_NEXT")
+if (jdkNextdir != null) {
+    logger.lifecycle("JDK override: " + jdkNextdir);
+    compileJava.options.fork = true
+    compileTestJava.options.fork = true
+    compileJava.options.forkOptions.executable = jdkNextdir + "/bin/javac"
+    javadoc.executable = jdkNextdir + "/bin/javadoc"
+    test.executable = jdkNextdir + "/bin/java"
+    compileTestJava.options.forkOptions.executable = compileJava.options.forkOptions.executable
+}
+
+def runJacoco = false
+
+// Jacoco doesn't fully support Java 17+ and prevents testing
+def jvmVer = System.getProperty("java.version");
+if (!jvmVer.startsWith("17") && !jvmVer.startsWith("18")) {
+    runJacoco = true;
+    logger.lifecycle("Jacoco enabled for runtime version " + jvmVer)
+} else {
+    logger.lifecycle("Jacoco disabled for runtime version " + jvmVer)
+}
+
+if (runJacoco) {
+    apply plugin: "jacoco"
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    api "org.reactivestreams:reactive-streams:$reactiveStreamsVersion"
+    jmh "org.reactivestreams:reactive-streams:$reactiveStreamsVersion"
+
+    testImplementation "junit:junit:$junitVersion"
+    testImplementation "org.mockito:mockito-core:$mockitoVersion"
+
+    testImplementation "org.reactivestreams:reactive-streams-tck:$reactiveStreamsVersion"
+    testImplementation "org.testng:testng:$testNgVersion"
+    testImplementation "com.google.guava:guava:$guavaVersion"
+}
+
+tasks.withType(JavaCompile) {
+    options.compilerArgs << "-parameters"
+}
+
+javadoc {
+    failOnError = false
+    exclude "**/internal/**"
+    exclude "**/test/**"
+    exclude "**/perf/**"
+    exclude "**/jmh/**"
+    options {
+        windowTitle = "RxJava Javadoc ${project.version}"
+    }
+    // Clear the following options to make the docs consistent with the old format
+    options.addStringOption("top").value = ""
+    options.addStringOption("doctitle").value = ""
+    options.addStringOption("header").value = ""
+    options.stylesheetFile = rootProject.file("gradle/stylesheet.css")
+
+    options.links(
+            "https://docs.oracle.com/javase/8/docs/api/",
+            "http://www.reactive-streams.org/reactive-streams-${reactiveStreamsVersion}-javadoc/"
+    )
+}
+
+jar {
+    bnd(
+            "Bundle-Name": "rxjava",
+            "Bundle-Vendor": "RxJava Contributors",
+            "Bundle-Description": "Reactive Extensions for the JVM – a library for composing asynchronous and event-based programs using observable sequences for the Java VM.",
+            "Import-Package": "!org.junit,!junit.framework,!org.mockito.*,!org.testng.*,*",
+            "Bundle-DocURL": "https://github.com/ReactiveX/RxJava",
+            "Eclipse-ExtensibleAPI": "true",
+            "Automatic-Module-Name": "io.reactivex.rxjava3",
+            "Export-Package": "!io.reactivex.rxjava3.internal.*, io.reactivex.rxjava3.*"
+    )
+}
+
+
+license {
+     header rootProject.file("config/license/HEADER")
+     ext.year = Calendar.getInstance().get(Calendar.YEAR)
+     skipExistingHeaders true
+     ignoreFailures true
+     excludes(["**/*.md", "**/*.txt"])
+}
+
+jmh {
+    jmhVersion = jmhLibVersion
+    humanOutputFile = null
+    includeTests = false
+    jvmArgs = ["-Djmh.ignoreLock=true"]
+    jvmArgsAppend = ["-Djmh.separateClasspathJAR=true"]
+
+    if (project.hasProperty("jmh")) {
+        include = [".*" + project.jmh + ".*"]
+        logger.info("JMH: {}", include)
+    }
+}
+
+plugins.withType(EclipsePlugin) {
+    project.eclipse.classpath.plusConfigurations += [configurations.jmh]
+}
+
+test {
+    testLogging  {
+        // showing skipped occasionally should prevent CI timeout due to lack of standard output
+        events=["skipped", "failed"] // "started", "passed"
+        // showStandardStreams = true
+        exceptionFormat="full"
+
+        debug.events = ["skipped", "failed"]
+        debug.exceptionFormat="full"
+
+        info.events = ["failed", "skipped"]
+        info.exceptionFormat="full"
+
+        warn.events = ["failed", "skipped"]
+        warn.exceptionFormat="full"
+    }
+
+    maxHeapSize = "1200m"
+
+    if (System.getenv("CI") == null) {
+        maxParallelForks = Runtime.runtime.availableProcessors().intdiv(2) ?: 1
+    }
+}
+
+task testng(type: Test) {
+    useTestNG()
+    testLogging  {
+        events=["skipped", "failed"]
+        exceptionFormat="full"
+
+        debug.events = ["skipped", "failed"]
+        debug.exceptionFormat="full"
+
+        info.events = ["failed", "skipped"]
+        info.exceptionFormat="full"
+
+        warn.events = ["failed", "skipped"]
+        warn.exceptionFormat="full"
+    }
+}
+
+check.dependsOn testng
+
+if (runJacoco) {
+    jacoco {
+        toolVersion = jacocoVersion
+    }
+
+    jacocoTestReport {
+        reports {
+            xml.enabled = true
+            html.enabled = true
+        }
+    }
+
+    build.dependsOn jacocoTestReport
+}
+
+checkstyle {
+    configFile = rootProject.file("config/checkstyle/checkstyle.xml")
+    toolVersion = checkstyleVersion
+    configProperties = [
+            "checkstyle.suppressions.file": rootProject.file("config/checkstyle/suppressions.xml"),
+            "checkstyle.header.file": rootProject.file("config/license/HEADER_JAVA")
+    ]
+}
+
+apply from: file("gradle/javadoc_cleanup.gradle")
+
+if (rootProject.hasProperty("releaseMode")) {
+    logger.lifecycle("ReleaseMode: {}", rootProject.releaseMode)
+
+    if ("branch".equals(rootProject.releaseMode)) {
+        mavenPublish {
+            nexus {
+                stagingProfile = "io.reactivex"
+            }
+        }
+    }
+
+    if ("full".equals(rootProject.releaseMode)) {
+
+        signing {
+            if (project.hasProperty("SIGNING_PRIVATE_KEY") && project.hasProperty("SIGNING_PASSWORD")) {
+                useInMemoryPgpKeys(project.getProperty("SIGNING_PRIVATE_KEY"), project.getProperty("SIGNING_PASSWORD"))
+            }
+        }
+        mavenPublish {
+            nexus {
+                stagingProfile = "io.reactivex"
+            }
+        }
+    }
+}
