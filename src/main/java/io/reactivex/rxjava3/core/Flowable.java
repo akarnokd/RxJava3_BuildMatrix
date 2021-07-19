@@ -20,7 +20,7 @@ import java.util.stream.*;
 import org.reactivestreams.*;
 
 import io.reactivex.rxjava3.annotations.*;
-import io.reactivex.rxjava3.disposables.Disposable;
+import io.reactivex.rxjava3.disposables.*;
 import io.reactivex.rxjava3.exceptions.*;
 import io.reactivex.rxjava3.flowables.*;
 import io.reactivex.rxjava3.functions.*;
@@ -12725,15 +12725,15 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code onBackpressureReduce} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
+     * <p>History: 3.0.9 - experimental
      * @param reducer the bi-function to call when there is more than one non-emitted value to downstream,
      *                 the first argument of the bi-function is previous item and the second one is currently
      *                 emitting from upstream
      * @return the new {@code Flowable} instance
      * @throws NullPointerException if {@code reducer} is {@code null}
-     * @since 3.0.9 - experimental
+     * @since 3.1.0
      * @see #onBackpressureReduce(Supplier, BiFunction)
      */
-    @Experimental
     @CheckReturnValue
     @BackpressureSupport(BackpressureKind.UNBOUNDED_IN)
     @SchedulerSupport(SchedulerSupport.NONE)
@@ -12764,6 +12764,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code onBackpressureReduce} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
+     * <p>History: 3.0.9 - experimental
      * @param <R> the aggregate type emitted when the downstream requests more items
      * @param supplier the factory to call to create new item of type R to pass it as the first argument to {@code reducer}.
      *                 It is called when previous returned value by {@code reducer} already sent to
@@ -12774,9 +12775,8 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * @return the new {@code Flowable} instance
      * @throws NullPointerException if {@code supplier} or {@code reducer} is {@code null}
      * @see #onBackpressureReduce(BiFunction)
-     * @since 3.0.9 - experimental
+     * @since 3.1.0
      */
-    @Experimental
     @CheckReturnValue
     @BackpressureSupport(BackpressureKind.UNBOUNDED_IN)
     @SchedulerSupport(SchedulerSupport.NONE)
@@ -15699,6 +15699,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      *
      * @return the new {@link Disposable} instance that allows cancelling the flow
      * @see <a href="http://reactivex.io/documentation/operators/subscribe.html">ReactiveX operators documentation: Subscribe</a>
+     * @see #subscribe(Consumer, Consumer, Action, DisposableContainer)
      */
     @BackpressureSupport(BackpressureKind.UNBOUNDED_IN)
     @SchedulerSupport(SchedulerSupport.NONE)
@@ -15727,6 +15728,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * @throws NullPointerException
      *             if {@code onNext} is {@code null}
      * @see <a href="http://reactivex.io/documentation/operators/subscribe.html">ReactiveX operators documentation: Subscribe</a>
+     * @see #subscribe(Consumer, Consumer, Action, DisposableContainer)
      */
     @CheckReturnValue
     @BackpressureSupport(BackpressureKind.UNBOUNDED_IN)
@@ -15753,9 +15755,10 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      *             the {@code Consumer<Throwable>} you have designed to accept any error notification from the
      *             current {@code Flowable}
      * @return the new {@link Disposable} instance that allows cancelling the flow
-     * @see <a href="http://reactivex.io/documentation/operators/subscribe.html">ReactiveX operators documentation: Subscribe</a>
      * @throws NullPointerException
      *             if {@code onNext} or {@code onError} is {@code null}
+     * @see <a href="http://reactivex.io/documentation/operators/subscribe.html">ReactiveX operators documentation: Subscribe</a>
+     * @see #subscribe(Consumer, Consumer, Action, DisposableContainer)
      */
     @CheckReturnValue
     @BackpressureSupport(BackpressureKind.UNBOUNDED_IN)
@@ -15788,6 +15791,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * @throws NullPointerException
      *             if {@code onNext}, {@code onError} or {@code onComplete} is {@code null}
      * @see <a href="http://reactivex.io/documentation/operators/subscribe.html">ReactiveX operators documentation: Subscribe</a>
+     * @see #subscribe(Consumer, Consumer, Action, DisposableContainer)
      */
     @CheckReturnValue
     @BackpressureSupport(BackpressureKind.UNBOUNDED_IN)
@@ -15804,6 +15808,51 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
         subscribe(ls);
 
         return ls;
+    }
+
+    /**
+     * Wraps the given onXXX callbacks into a {@link Disposable} {@link Subscriber},
+     * adds it to the given {@link DisposableContainer} and ensures, that if the upstream
+     * terminates or this particular {@code Disposable} is disposed, the {@code Subscriber} is removed
+     * from the given container.
+     * <p>
+     * The {@coded Subscriber} will be removed after the callback for the terminal event has been invoked.
+     * <dl>
+     *  <dt><b>Backpressure:</b></dt>
+     *  <dd>The operator consumes the current {@code Flowable} in an unbounded manner (i.e., no
+     *  backpressure is applied to it).</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code subscribe} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     * @param onNext the callback for upstream items
+     * @param onError the callback for an upstream error if any
+     * @param onComplete the callback for the upstream completion if any
+     * @param container the {@code DisposableContainer} (such as {@link CompositeDisposable}) to add and remove the
+     *                  created {@code Disposable} {@code Subscriber}
+     * @return the {@code Disposable} that allows disposing the particular subscription.
+     * @throws NullPointerException
+     *             if {@code onNext}, {@code onError},
+     *             {@code onComplete} or {@code container} is {@code null}
+     * @since 3.1.0
+     */
+    @BackpressureSupport(BackpressureKind.SPECIAL)
+    @SchedulerSupport(SchedulerSupport.NONE)
+    @NonNull
+    public final Disposable subscribe(
+            @NonNull Consumer<? super T> onNext,
+            @NonNull Consumer<? super Throwable> onError,
+            @NonNull Action onComplete,
+            @NonNull DisposableContainer container) {
+        Objects.requireNonNull(onNext, "onNext is null");
+        Objects.requireNonNull(onError, "onError is null");
+        Objects.requireNonNull(onComplete, "onComplete is null");
+        Objects.requireNonNull(container, "container is null");
+
+        DisposableAutoReleaseSubscriber<T> subscriber = new DisposableAutoReleaseSubscriber<>(
+                container, onNext, onError, onComplete);
+        container.add(subscriber);
+        subscribe(subscriber);
+        return subscriber;
     }
 
     @BackpressureSupport(BackpressureKind.SPECIAL)
@@ -19233,6 +19282,13 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
     /**
      * Merges the specified {@link Publisher} into the current {@code Flowable} sequence by using the {@code resultSelector}
      * function only when the current {@code Flowable} (this instance) emits an item.
+     *
+     * <p>Note that this operator doesn't emit anything until the other source has produced at
+     * least one value. The resulting emission only happens when the current {@code Flowable} emits (and
+     * not when the other source emits, unlike combineLatest).
+     * If the other source doesn't produce any value and just completes, the sequence is completed immediately.
+     * If the upstream completes before the other source has produced at least one value, the sequence completes
+     * without emission.
      * <p>
      * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/withLatestFrom.v3.png" alt="">
      *
@@ -19277,6 +19333,8 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * least one value. The resulting emission only happens when the current {@code Flowable} emits (and
      * not when any of the other sources emit, unlike combineLatest).
      * If a source doesn't produce any value and just completes, the sequence is completed immediately.
+     * If the upstream completes before all other sources have produced at least one value, the sequence completes
+     * without emission.
      *
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
@@ -19317,6 +19375,8 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * least one value. The resulting emission only happens when the current {@code Flowable} emits (and
      * not when any of the other sources emit, unlike combineLatest).
      * If a source doesn't produce any value and just completes, the sequence is completed immediately.
+     * If the upstream completes before all other sources have produced at least one value, the sequence completes
+     * without emission.
      *
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
@@ -19362,6 +19422,8 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * least one value. The resulting emission only happens when the current {@code Flowable} emits (and
      * not when any of the other sources emit, unlike combineLatest).
      * If a source doesn't produce any value and just completes, the sequence is completed immediately.
+     * If the upstream completes before all other sources have produced at least one value, the sequence completes
+     * without emission.
      *
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
@@ -19411,6 +19473,8 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * least one value. The resulting emission only happens when the current {@code Flowable} emits (and
      * not when any of the other sources emit, unlike combineLatest).
      * If a source doesn't produce any value and just completes, the sequence is completed immediately.
+     * If the upstream completes before all other sources have produced at least one value, the sequence completes
+     * without emission.
      *
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
@@ -19445,6 +19509,8 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * least one value. The resulting emission only happens when the current {@code Flowable} emits (and
      * not when any of the other sources emit, unlike combineLatest).
      * If a source doesn't produce any value and just completes, the sequence is completed immediately.
+     * If the upstream completes before all other sources have produced at least one value, the sequence completes
+     * without emission.
      *
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
