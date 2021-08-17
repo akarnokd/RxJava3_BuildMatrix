@@ -16,7 +16,7 @@ jobs:
       matrix:
         config:
           # JDK 17
-          - { idx: "01", jdk: "17-Loom", rt: "15", target: "15" }
+          - { idx: "01", jdk: "17-Loom", rt: "17-ea", target: "17" }
 
     runs-on: ubuntu-latest
 
