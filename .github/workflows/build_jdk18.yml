@@ -21,7 +21,7 @@ jobs:
           - { idx: "03", jdk: "18", rt: "17-ea", target: "15" }
           - { idx: "04", jdk: "18", rt: "17-ea", target: "16" }
           - { idx: "06", jdk: "18", rt: "17-ea", target: "17" }
-          # - { idx: "07", jdk: "18", rt: "17-ea", target: "18" }
+          - { idx: "07", jdk: "18", rt: "17-ea", target: "18" }
 
     runs-on: ubuntu-latest
 
