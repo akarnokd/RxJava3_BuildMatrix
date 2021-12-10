@@ -52,10 +52,13 @@ if (jdkNextdir != null) {
     logger.lifecycle("JDK override: " + jdkNextdir);
     compileJava.options.fork = true
     compileTestJava.options.fork = true
+    compileJmhJava.options.fork = true
+    
     compileJava.options.forkOptions.executable = jdkNextdir + "/bin/javac"
     javadoc.executable = jdkNextdir + "/bin/javadoc"
     test.executable = jdkNextdir + "/bin/java"
     compileTestJava.options.forkOptions.executable = compileJava.options.forkOptions.executable
+    compileJmhJava.options.forkOptions.executable = compileJava.options.forkOptions.executable
 }
 
 def runJacoco = false
