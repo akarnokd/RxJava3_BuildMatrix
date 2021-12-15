@@ -65,7 +65,7 @@ def runJacoco = false
 
 // Jacoco doesn't fully support Java 17+ and prevents testing
 def jvmVer = System.getProperty("java.version");
-if (!jvmVer.startsWith("17") && !jvmVer.startsWith("18")) {
+if (!jvmVer.startsWith("17") && !jvmVer.startsWith("18") && !jvmVer.startsWith("19")) {
     runJacoco = true;
     logger.lifecycle("Jacoco enabled for runtime version " + jvmVer)
 } else {
