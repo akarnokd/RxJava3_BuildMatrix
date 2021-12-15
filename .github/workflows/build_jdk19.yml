@@ -39,8 +39,8 @@ jobs:
         restore-keys: ${{ runner.os }}-gradle
     - name: Grant execute permission for gradlew
       run: chmod +x gradlew
-    - name: Grant execute permission for usejdk18.sh
-      run: chmod +x usejdk18.sh
+    - name: Grant execute permission for usejdk19.sh
+      run: chmod +x usejdk19.sh
     - name: "[Optionally] Override JDK for 19"
       if: matrix.config.jdk == '19'
       run: ./usejdk19.sh
