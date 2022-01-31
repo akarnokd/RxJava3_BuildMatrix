@@ -1,7 +1,7 @@
 #!/bin/bash
 
-wget -nv https://download.java.net/java/early_access/loom/1/openjdk-19-loom+1-11_linux-x64_bin.tar.gz
-tar -zxvf openjdk-19-loom+1-11_linux-x64_bin.tar.gz
+wget -nv https://download.java.net/java/early_access/loom/2/openjdk-19-loom+2-58_linux-x64_bin.tar.gz
+tar -zxvf openjdk-19-loom+2-58_linux-x64_bin.tar.gz
 export JDK_NEXT=${PWD}/jdk-19
 eval "$JDK_NEXT/bin/java -version"
 echo "JDK_NEXT=$JDK_NEXT" >> $GITHUB_ENV
