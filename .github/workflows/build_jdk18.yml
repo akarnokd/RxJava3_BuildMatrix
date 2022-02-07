@@ -57,7 +57,7 @@ jobs:
       uses: actions/upload-artifact@v2
       with:
         name: Unit Test Results (${{ matrix.config.jdk }} target ${{ matrix.config.target }})
-        path: build/reports/tests/testng/*.xml
+        path: build/reports/tests/testng/*
 
   publish-test-results:
     name: "Publish Unit Tests Results"
@@ -74,4 +74,4 @@ jobs:
       - name: Publish Unit Test Results
         uses: EnricoMi/publish-unit-test-result-action@v1
         with:
-          files: artifacts/**/*.xml
+          files: artifacts/**/*
