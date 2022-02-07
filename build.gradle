@@ -57,6 +57,7 @@ if (jdkNextdir != null) {
     compileJava.options.forkOptions.executable = jdkNextdir + "/bin/javac"
     javadoc.executable = jdkNextdir + "/bin/javadoc"
     test.executable = jdkNextdir + "/bin/java"
+    testng.executable = jdkNextdir + "/bin/java"
     compileTestJava.options.forkOptions.executable = compileJava.options.forkOptions.executable
     compileJmhJava.options.forkOptions.executable = compileJava.options.forkOptions.executable
 }
