@@ -182,7 +182,9 @@ test {
 }
 
 task testng(type: Test) {
-    useTestNG()
+    useTestNG() {
+        useDefaultListeners = true
+    }
     testLogging  {
         events=["skipped", "failed"]
         exceptionFormat="full"
@@ -196,8 +198,6 @@ task testng(type: Test) {
         warn.events = ["failed", "skipped"]
         warn.exceptionFormat="full"
     }
-    reports.html.enabled = true
-    reports.xml.enabled = true
 }
 
 check.dependsOn testng
