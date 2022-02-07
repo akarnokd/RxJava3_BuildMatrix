@@ -4,7 +4,7 @@
 
 | JDK | Status |
 |----:|--------|
-| 18  | <a href='https://github.com/akarnokd/RxJava3_BuildMatrix/actions?query=workflow%3A%22Build_JDK19%22'><img src='https://github.com/akarnokd/RxJava3_BuildMatrix/workflows/Build_JDK19/badge.svg'></a> |
+| 19  | <a href='https://github.com/akarnokd/RxJava3_BuildMatrix/actions?query=workflow%3A%22Build_JDK19%22'><img src='https://github.com/akarnokd/RxJava3_BuildMatrix/workflows/Build_JDK19/badge.svg'></a> |
 | 18  | <a href='https://github.com/akarnokd/RxJava3_BuildMatrix/actions?query=workflow%3A%22Build_JDK18%22'><img src='https://github.com/akarnokd/RxJava3_BuildMatrix/workflows/Build_JDK18/badge.svg'></a> |
 | 17  | <a href='https://github.com/akarnokd/RxJava3_BuildMatrix/actions?query=workflow%3A%22Build_JDK17%22'><img src='https://github.com/akarnokd/RxJava3_BuildMatrix/workflows/Build_JDK17/badge.svg'></a> |
 | 16  | <a href='https://github.com/akarnokd/RxJava3_BuildMatrix/actions?query=workflow%3A%22Build_JDK16%22'><img src='https://github.com/akarnokd/RxJava3_BuildMatrix/workflows/Build_JDK16/badge.svg'></a> |
