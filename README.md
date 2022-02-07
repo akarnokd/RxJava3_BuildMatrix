@@ -1,4 +1,4 @@
-# RxJava 3 built with JDK 9 through 18
+# RxJava 3 built with JDK 9 through 19
 
 [![codecov.io](http://codecov.io/github/akarnokd/RxJava3_BuildMatrix/coverage.svg?branch=master)](https://codecov.io/gh/akarnokd/RxJava3_BuildMatrix/branch/master)
 
@@ -36,5 +36,6 @@ With the newest JDKs, certain older compile targets are no longer supported:
 - JDK 16 dropped target 10 support
 - JDK 17 dropped target 11 support
 - JDK 18 dropped target 12 support
+- JDK 19 dropped target 12 support
 
 Note also that RxJava 3 is now a Java 8 library and thus the Java 6 build targets have been removed.
