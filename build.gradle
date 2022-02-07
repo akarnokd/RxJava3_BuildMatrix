@@ -198,6 +198,7 @@ task testng(type: Test) {
         warn.events = ["failed", "skipped"]
         warn.exceptionFormat="full"
     }
+    executable = test.executable
 }
 
 check.dependsOn testng
