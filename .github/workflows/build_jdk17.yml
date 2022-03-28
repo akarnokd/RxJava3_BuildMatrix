@@ -16,11 +16,11 @@ jobs:
       matrix:
         config:
           # JDK 17
-          - { idx: "01", jdk: "17", rt: "17-ea", target: "12" }
-          - { idx: "02", jdk: "17", rt: "17-ea", target: "13" }
-          - { idx: "03", jdk: "17", rt: "17-ea", target: "14" }
-          - { idx: "04", jdk: "17", rt: "17-ea", target: "15" }
-          - { idx: "05", jdk: "17", rt: "17-ea", target: "16" }
+          #- { idx: "01", jdk: "17", rt: "17-ea", target: "12" }
+          #- { idx: "02", jdk: "17", rt: "17-ea", target: "13" }
+          #- { idx: "03", jdk: "17", rt: "17-ea", target: "14" }
+          #- { idx: "04", jdk: "17", rt: "17-ea", target: "15" }
+          #- { idx: "05", jdk: "17", rt: "17-ea", target: "16" }
           - { idx: "06", jdk: "17", rt: "17-ea", target: "17" }
 
     runs-on: ubuntu-latest
