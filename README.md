@@ -1,26 +1,27 @@
-# RxJava 3 built with JDK 9 through 19
+# RxJava 3 built with JDK 9 through 20
 
 [![codecov.io](http://codecov.io/github/akarnokd/RxJava3_BuildMatrix/coverage.svg?branch=master)](https://codecov.io/gh/akarnokd/RxJava3_BuildMatrix/branch/master)
 
-| JDK | Status |
-|----:|--------|
-| 19  | <a href='https://github.com/akarnokd/RxJava3_BuildMatrix/actions?query=workflow%3A%22Build_JDK19%22'><img src='https://github.com/akarnokd/RxJava3_BuildMatrix/workflows/Build_JDK19/badge.svg'></a> |
-| 18  | <a href='https://github.com/akarnokd/RxJava3_BuildMatrix/actions?query=workflow%3A%22Build_JDK18%22'><img src='https://github.com/akarnokd/RxJava3_BuildMatrix/workflows/Build_JDK18/badge.svg'></a> |
-| 17  | <a href='https://github.com/akarnokd/RxJava3_BuildMatrix/actions?query=workflow%3A%22Build_JDK17%22'><img src='https://github.com/akarnokd/RxJava3_BuildMatrix/workflows/Build_JDK17/badge.svg'></a> |
-| 16  | <a href='https://github.com/akarnokd/RxJava3_BuildMatrix/actions?query=workflow%3A%22Build_JDK16%22'><img src='https://github.com/akarnokd/RxJava3_BuildMatrix/workflows/Build_JDK16/badge.svg'></a> |
-| 15  | <a href='https://github.com/akarnokd/RxJava3_BuildMatrix/actions?query=workflow%3A%22Build_JDK15%22'><img src='https://github.com/akarnokd/RxJava3_BuildMatrix/workflows/Build_JDK15/badge.svg'></a> |
-| 14  | <a href='https://github.com/akarnokd/RxJava3_BuildMatrix/actions?query=workflow%3A%22Build_JDK14%22'><img src='https://github.com/akarnokd/RxJava3_BuildMatrix/workflows/Build_JDK14/badge.svg'></a> |
-| 13  | <a href='https://github.com/akarnokd/RxJava3_BuildMatrix/actions?query=workflow%3A%22Build_JDK13%22'><img src='https://github.com/akarnokd/RxJava3_BuildMatrix/workflows/Build_JDK13/badge.svg'></a> |
-| 12  | <a href='https://github.com/akarnokd/RxJava3_BuildMatrix/actions?query=workflow%3A%22Build_JDK12%22'><img src='https://github.com/akarnokd/RxJava3_BuildMatrix/workflows/Build_JDK12/badge.svg'></a> |
-| 11  | <a href='https://github.com/akarnokd/RxJava3_BuildMatrix/actions?query=workflow%3A%22Build_JDK11%22'><img src='https://github.com/akarnokd/RxJava3_BuildMatrix/workflows/Build_JDK11/badge.svg'></a> |
-| 10  | <a href='https://github.com/akarnokd/RxJava3_BuildMatrix/actions?query=workflow%3A%22Build_JDK10%22'><img src='https://github.com/akarnokd/RxJava3_BuildMatrix/workflows/Build_JDK10/badge.svg'></a> |
-| 9  | <a href='https://github.com/akarnokd/RxJava3_BuildMatrix/actions?query=workflow%3A%22Build_JDK09%22'><img src='https://github.com/akarnokd/RxJava3_BuildMatrix/workflows/Build_JDK09/badge.svg'></a> |
-| Loom  | <a href='https://github.com/akarnokd/RxJava3_BuildMatrix/actions?query=workflow%3A%22Build_Loom%22'><img src='https://github.com/akarnokd/RxJava3_BuildMatrix/workflows/Build_Loom/badge.svg'></a> |
+|  JDK | Status                                                                                                                                                                                               |
+|-----:|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+|   20 | <a href='https://github.com/akarnokd/RxJava3_BuildMatrix/actions?query=workflow%3A%22Build_JDK20%22'><img src='https://github.com/akarnokd/RxJava3_BuildMatrix/workflows/Build_JDK20/badge.svg'></a> |
+|   19 | <a href='https://github.com/akarnokd/RxJava3_BuildMatrix/actions?query=workflow%3A%22Build_JDK19%22'><img src='https://github.com/akarnokd/RxJava3_BuildMatrix/workflows/Build_JDK19/badge.svg'></a> |
+|   18 | <a href='https://github.com/akarnokd/RxJava3_BuildMatrix/actions?query=workflow%3A%22Build_JDK18%22'><img src='https://github.com/akarnokd/RxJava3_BuildMatrix/workflows/Build_JDK18/badge.svg'></a> |
+|   17 | <a href='https://github.com/akarnokd/RxJava3_BuildMatrix/actions?query=workflow%3A%22Build_JDK17%22'><img src='https://github.com/akarnokd/RxJava3_BuildMatrix/workflows/Build_JDK17/badge.svg'></a> |
+|   16 | <a href='https://github.com/akarnokd/RxJava3_BuildMatrix/actions?query=workflow%3A%22Build_JDK16%22'><img src='https://github.com/akarnokd/RxJava3_BuildMatrix/workflows/Build_JDK16/badge.svg'></a> |
+|   15 | <a href='https://github.com/akarnokd/RxJava3_BuildMatrix/actions?query=workflow%3A%22Build_JDK15%22'><img src='https://github.com/akarnokd/RxJava3_BuildMatrix/workflows/Build_JDK15/badge.svg'></a> |
+|   14 | <a href='https://github.com/akarnokd/RxJava3_BuildMatrix/actions?query=workflow%3A%22Build_JDK14%22'><img src='https://github.com/akarnokd/RxJava3_BuildMatrix/workflows/Build_JDK14/badge.svg'></a> |
+|   13 | <a href='https://github.com/akarnokd/RxJava3_BuildMatrix/actions?query=workflow%3A%22Build_JDK13%22'><img src='https://github.com/akarnokd/RxJava3_BuildMatrix/workflows/Build_JDK13/badge.svg'></a> |
+|   12 | <a href='https://github.com/akarnokd/RxJava3_BuildMatrix/actions?query=workflow%3A%22Build_JDK12%22'><img src='https://github.com/akarnokd/RxJava3_BuildMatrix/workflows/Build_JDK12/badge.svg'></a> |
+|   11 | <a href='https://github.com/akarnokd/RxJava3_BuildMatrix/actions?query=workflow%3A%22Build_JDK11%22'><img src='https://github.com/akarnokd/RxJava3_BuildMatrix/workflows/Build_JDK11/badge.svg'></a> |
+|   10 | <a href='https://github.com/akarnokd/RxJava3_BuildMatrix/actions?query=workflow%3A%22Build_JDK10%22'><img src='https://github.com/akarnokd/RxJava3_BuildMatrix/workflows/Build_JDK10/badge.svg'></a> |
+|    9 | <a href='https://github.com/akarnokd/RxJava3_BuildMatrix/actions?query=workflow%3A%22Build_JDK09%22'><img src='https://github.com/akarnokd/RxJava3_BuildMatrix/workflows/Build_JDK09/badge.svg'></a> |
+| Loom | <a href='https://github.com/akarnokd/RxJava3_BuildMatrix/actions?query=workflow%3A%22Build_Loom%22'><img src='https://github.com/akarnokd/RxJava3_BuildMatrix/workflows/Build_Loom/badge.svg'></a>   |
 
 
 (GitHub actions do not have a means to display the individual matrix results in a workflow.)
 
-This repository is used for building [RxJava 3](https://github.com/ReactiveX/RxJava) with JDK 9 through 18 in a CI environment. 
+This repository is used for building [RxJava 3](https://github.com/ReactiveX/RxJava) with JDK 9 through 20 in a CI environment. 
 
 It **does not use the JDK 9 `Flow` API** nor does this repository create maven jars.
 
@@ -37,5 +38,6 @@ With the newest JDKs, certain older compile targets are no longer supported:
 - JDK 17 dropped target 11 support
 - JDK 18 dropped target 12 support
 - JDK 19 dropped target 13 support
+- JDK 20 dropped target 14 support
 
 Note also that RxJava 3 is now a Java 8 library and thus the Java 6 build targets have been removed.

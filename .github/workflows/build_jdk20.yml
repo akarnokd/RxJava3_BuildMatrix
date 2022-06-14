@@ -1,7 +1,7 @@
 # This workflow will build a Java project with Gradle
 # For more information see: https://help.github.com/actions/language-and-framework-guides/building-and-testing-java-with-gradle
 
-name: Build_JDK18
+name: Build_JDK20
 
 on:
   push:
@@ -15,14 +15,13 @@ jobs:
       fail-fast: false
       matrix:
         config:
-          # JDK 18
-          - { idx: "01", jdk: "18", rt: "18", target: "13" }
-          - { idx: "02", jdk: "18", rt: "18", target: "14" }
-          - { idx: "03", jdk: "18", rt: "18", target: "15" }
-          - { idx: "04", jdk: "18", rt: "18", target: "16" }
-          - { idx: "06", jdk: "18", rt: "18", target: "17" }
-          - { idx: "07", jdk: "18", rt: "18", target: "18" }
-          - { idx: "07", jdk: "18", rt: "18", target: "18" }
+          # JDK 20
+          - { idx: "03", jdk: "20", rt: "18", target: "15" }
+          - { idx: "04", jdk: "20", rt: "18", target: "16" }
+          - { idx: "06", jdk: "20", rt: "18", target: "17" }
+          - { idx: "07", jdk: "20", rt: "18", target: "18" }
+          - { idx: "08", jdk: "20", rt: "18", target: "19" }
+          - { idx: "09", jdk: "20", rt: "18", target: "20" }
 
     runs-on: ubuntu-latest
 
@@ -40,11 +39,11 @@ jobs:
         restore-keys: ${{ runner.os }}-gradle
     - name: Grant execute permission for gradlew
       run: chmod +x gradlew
-    - name: Grant execute permission for usejdk18.sh
-      run: chmod +x usejdk18.sh
-    - name: "[Optionally] Override JDK for 18"
-      if: matrix.config.jdk == '18'
-      run: ./usejdk18.sh
+    - name: Grant execute permission for usejdk19.sh
+      run: chmod +x usejdk20.sh
+    - name: "[Optionally] Override JDK for 20"
+      if: matrix.config.jdk == '20'
+      run: ./usejdk20.sh
     - name: "Disable daemon"
       run: mkdir -p ~/.gradle && echo "org.gradle.daemon=false" >> ~/.gradle/gradle.properties
     - name: Build with Gradle
@@ -58,7 +57,7 @@ jobs:
       uses: actions/upload-artifact@v2
       with:
         name: Unit Test Results (${{ matrix.config.jdk }} target ${{ matrix.config.target }})
-        path: build/reports/tests/testng/*
+        path: build/reports/tests/*
 
   publish-test-results:
     name: "Publish Unit Tests Results"
