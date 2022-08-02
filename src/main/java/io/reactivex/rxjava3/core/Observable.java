@@ -1790,7 +1790,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
     @CheckReturnValue
     @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
-    public static <@NonNull T> Observable<T> defer(@NonNull Supplier<? extends ObservableSource<? extends T>> supplier) {
+    public static <@NonNull T> Observable<T> defer(@NonNull Supplier<? extends @NonNull ObservableSource<? extends T>> supplier) {
         Objects.requireNonNull(supplier, "supplier is null");
         return RxJavaPlugins.onAssembly(new ObservableDefer<>(supplier));
     }
@@ -1839,7 +1839,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
     @CheckReturnValue
     @NonNull
     @SchedulerSupport(SchedulerSupport.NONE)
-    public static <@NonNull T> Observable<T> error(@NonNull Supplier<? extends Throwable> supplier) {
+    public static <@NonNull T> Observable<T> error(@NonNull Supplier<? extends @NonNull Throwable> supplier) {
         Objects.requireNonNull(supplier, "supplier is null");
         return RxJavaPlugins.onAssembly(new ObservableError<>(supplier));
     }
@@ -5520,7 +5520,6 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * @see #blockingForEach(Consumer, int)
      */
     @SchedulerSupport(SchedulerSupport.NONE)
-    @NonNull
     public final void blockingForEach(@NonNull Consumer<? super T> onNext) {
         blockingForEach(onNext, bufferSize());
     }
@@ -5560,7 +5559,6 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * @see #subscribe(Consumer)
      */
     @SchedulerSupport(SchedulerSupport.NONE)
-    @NonNull
     public final void blockingForEach(@NonNull Consumer<? super T> onNext, int capacityHint) {
         Objects.requireNonNull(onNext, "onNext is null");
         Iterator<T> it = blockingIterable(capacityHint).iterator();
@@ -8953,7 +8951,7 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * Returns a {@link Single} that emits only the very first item emitted by the current {@code Observable}, or a default item
      * if the current {@code Observable} completes without emitting any items.
      * <p>
-     * <img width="640" height="285" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/first.s.png" alt="">
+     * <img width="640" height="283" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/first.s.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code first} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -12036,7 +12034,6 @@ public abstract class Observable<@NonNull T> implements ObservableSource<T> {
      * @throws NullPointerException if {@code observer} is {@code null}
      */
     @SchedulerSupport(SchedulerSupport.NONE)
-    @NonNull
     public final void safeSubscribe(@NonNull Observer<? super T> observer) {
         Objects.requireNonNull(observer, "observer is null");
         if (observer instanceof SafeObserver) {

@@ -2040,7 +2040,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
     @NonNull
     @BackpressureSupport(BackpressureKind.PASS_THROUGH)
     @SchedulerSupport(SchedulerSupport.NONE)
-    public static <@NonNull T> Flowable<T> defer(@NonNull Supplier<? extends Publisher<? extends T>> supplier) {
+    public static <@NonNull T> Flowable<T> defer(@NonNull Supplier<? extends @NonNull Publisher<? extends T>> supplier) {
         Objects.requireNonNull(supplier, "supplier is null");
         return RxJavaPlugins.onAssembly(new FlowableDefer<>(supplier));
     }
@@ -2095,7 +2095,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
     @NonNull
     @BackpressureSupport(BackpressureKind.PASS_THROUGH)
     @SchedulerSupport(SchedulerSupport.NONE)
-    public static <@NonNull T> Flowable<T> error(@NonNull Supplier<? extends Throwable> supplier) {
+    public static <@NonNull T> Flowable<T> error(@NonNull Supplier<? extends @NonNull Throwable> supplier) {
         Objects.requireNonNull(supplier, "supplier is null");
         return RxJavaPlugins.onAssembly(new FlowableError<>(supplier));
     }
@@ -10148,7 +10148,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * Returns a {@link Single} that emits only the very first item emitted by this {@code Flowable}, or a default
      * item if this {@code Flowable} completes without emitting anything.
      * <p>
-     * <img width="640" height="285" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/first.s.png" alt="">
+     * <img width="640" height="298" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Flowable.first.s.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator honors backpressure from downstream and consumes the current {@code Flowable} in a bounded manner.</dd>
