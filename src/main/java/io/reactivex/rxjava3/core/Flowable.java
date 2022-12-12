@@ -14672,7 +14672,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
     public final Flowable<T> sample(long period, @NonNull TimeUnit unit, @NonNull Scheduler scheduler) {
         Objects.requireNonNull(unit, "unit is null");
         Objects.requireNonNull(scheduler, "scheduler is null");
-        return RxJavaPlugins.onAssembly(new FlowableSampleTimed<>(this, period, unit, scheduler, false));
+        return RxJavaPlugins.onAssembly(new FlowableSampleTimed<>(this, period, unit, scheduler, false, null));
     }
 
     /**
@@ -14713,7 +14713,51 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
     public final Flowable<T> sample(long period, @NonNull TimeUnit unit, @NonNull Scheduler scheduler, boolean emitLast) {
         Objects.requireNonNull(unit, "unit is null");
         Objects.requireNonNull(scheduler, "scheduler is null");
-        return RxJavaPlugins.onAssembly(new FlowableSampleTimed<>(this, period, unit, scheduler, emitLast));
+        return RxJavaPlugins.onAssembly(new FlowableSampleTimed<>(this, period, unit, scheduler, emitLast, null));
+    }
+
+    /**
+     * Returns a {@code Flowable} that emits the most recently emitted item (if any) emitted by the current {@code Flowable}
+     * within periodic time intervals, where the intervals are defined on a particular {@link Scheduler}
+     * and optionally emit the very last upstream item when the upstream completes.
+     * <p>
+     * <img width="640" height="277" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/sample.s.emitlast.png" alt="">
+     * <dl>
+     *  <dt><b>Backpressure:</b></dt>
+     *  <dd>This operator does not support backpressure as it uses time to control data flow.</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>You specify which {@code Scheduler} this operator will use.</dd>
+     * </dl>
+     *
+     * @param period
+     *            the sampling rate
+     * @param unit
+     *            the {@link TimeUnit} in which {@code period} is defined
+     * @param scheduler
+     *            the {@code Scheduler} to use when sampling
+     * @param emitLast
+     *            if {@code true} and the upstream completes while there is still an unsampled item available,
+     *            that item is emitted to downstream before completion
+     *            if {@code false}, an unsampled last item is ignored.
+     * @param onDropped
+     *            called with the current entry when it has been replaced by a new one
+     * @return the new {@code Flowable} instance
+     * @throws NullPointerException if {@code unit} or {@code scheduler} is {@code null} or {@code onDropped} is {@code null}
+     * @see <a href="http://reactivex.io/documentation/operators/sample.html">ReactiveX operators documentation: Sample</a>
+     * @see <a href="https://github.com/ReactiveX/RxJava/wiki/Backpressure">RxJava wiki: Backpressure</a>
+     * @see #throttleLast(long, TimeUnit, Scheduler)
+     * @since 3.1.6 - Experimental
+     */
+    @CheckReturnValue
+    @NonNull
+    @BackpressureSupport(BackpressureKind.ERROR)
+    @SchedulerSupport(SchedulerSupport.CUSTOM)
+    @Experimental
+    public final Flowable<T> sample(long period, @NonNull TimeUnit unit, @NonNull Scheduler scheduler, boolean emitLast, @NonNull Consumer<? super T> onDropped) {
+        Objects.requireNonNull(unit, "unit is null");
+        Objects.requireNonNull(scheduler, "scheduler is null");
+        Objects.requireNonNull(onDropped, "onDropped is null");
+        return RxJavaPlugins.onAssembly(new FlowableSampleTimed<>(this, period, unit, scheduler, emitLast, onDropped));
     }
 
     /**
@@ -15816,7 +15860,7 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
      * terminates or this particular {@code Disposable} is disposed, the {@code Subscriber} is removed
      * from the given container.
      * <p>
-     * The {@coded Subscriber} will be removed after the callback for the terminal event has been invoked.
+     * The {@code Subscriber} will be removed after the callback for the terminal event has been invoked.
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator consumes the current {@code Flowable} in an unbounded manner (i.e., no
@@ -17096,7 +17140,50 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
     public final Flowable<T> throttleFirst(long skipDuration, @NonNull TimeUnit unit, @NonNull Scheduler scheduler) {
         Objects.requireNonNull(unit, "unit is null");
         Objects.requireNonNull(scheduler, "scheduler is null");
-        return RxJavaPlugins.onAssembly(new FlowableThrottleFirstTimed<>(this, skipDuration, unit, scheduler));
+        return RxJavaPlugins.onAssembly(new FlowableThrottleFirstTimed<>(this, skipDuration, unit, scheduler, null));
+    }
+
+    /**
+     * Returns a {@code Flowable} that emits only the first item emitted by the current {@code Flowable} during sequential
+     * time windows of a specified duration, where the windows are managed by a specified {@link Scheduler}.
+     * <p>
+     * This differs from {@link #throttleLast} in that this only tracks the passage of time whereas
+     * {@link #throttleLast} ticks at scheduled intervals.
+     * <p>
+     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/throttleFirst.s.v3.png" alt="">
+     * <dl>
+     *  <dt><b>Backpressure:</b></dt>
+     *  <dd>This operator does not support backpressure as it uses time to control data flow.</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>You specify which {@code Scheduler} this operator will use.</dd>
+     * </dl>
+     *
+     * @param skipDuration
+     *            time to wait before emitting another item after emitting the last item
+     * @param unit
+     *            the unit of time of {@code skipDuration}
+     * @param scheduler
+     *            the {@code Scheduler} to use internally to manage the timers that handle timeout for each
+     *            event
+     * @param onDropped
+     *            called when an item doesn't get delivered to the downstream
+     *
+     * @return the new {@code Flowable} instance
+     * @throws NullPointerException if {@code unit} or {@code scheduler} or {@code onDropped} is {@code null}
+     * @see <a href="http://reactivex.io/documentation/operators/sample.html">ReactiveX operators documentation: Sample</a>
+     * @see <a href="https://github.com/ReactiveX/RxJava/wiki/Backpressure">RxJava wiki: Backpressure</a>
+     * @since 3.1.6 - Experimental
+     */
+    @CheckReturnValue
+    @NonNull
+    @BackpressureSupport(BackpressureKind.ERROR)
+    @SchedulerSupport(SchedulerSupport.CUSTOM)
+    @Experimental
+    public final Flowable<T> throttleFirst(long skipDuration, @NonNull TimeUnit unit, @NonNull Scheduler scheduler, @NonNull Consumer<? super T> onDropped) {
+        Objects.requireNonNull(unit, "unit is null");
+        Objects.requireNonNull(scheduler, "scheduler is null");
+        Objects.requireNonNull(onDropped, "onDropped is null");
+        return RxJavaPlugins.onAssembly(new FlowableThrottleFirstTimed<>(this, skipDuration, unit, scheduler, onDropped));
     }
 
     /**
@@ -17168,6 +17255,47 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
     @NonNull
     public final Flowable<T> throttleLast(long intervalDuration, @NonNull TimeUnit unit, @NonNull Scheduler scheduler) {
         return sample(intervalDuration, unit, scheduler);
+    }
+
+    /**
+     * Returns a {@code Flowable} that emits only the last item emitted by the current {@code Flowable} during sequential
+     * time windows of a specified duration, where the duration is governed by a specified {@link Scheduler}.
+     * <p>
+     * This differs from {@link #throttleFirst(long, TimeUnit, Scheduler)} in that this ticks along at a scheduled interval whereas
+     * {@code throttleFirst} does not tick, it just tracks the passage of time.
+     * <p>
+     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/throttleLast.s.v3.png" alt="">
+     * <dl>
+     *  <dt><b>Backpressure:</b></dt>
+     *  <dd>This operator does not support backpressure as it uses time to control data flow.</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>You specify which {@code Scheduler} this operator will use.</dd>
+     * </dl>
+     *
+     * @param intervalDuration
+     *            duration of windows within which the last item emitted by the current {@code Flowable} will be
+     *            emitted
+     * @param unit
+     *            the unit of time of {@code intervalDuration}
+     * @param scheduler
+     *            the {@code Scheduler} to use internally to manage the timers that handle timeout for each
+     *            event
+     * @param onDropped
+     *          called with the current entry when it has been replaced by a new one
+     * @return the new {@code Flowable} instance
+     * @throws NullPointerException if {@code unit} or {@code scheduler} is {@code null} or {@code onDropped} is {@code null}
+     * @see <a href="http://reactivex.io/documentation/operators/sample.html">ReactiveX operators documentation: Sample</a>
+     * @see <a href="https://github.com/ReactiveX/RxJava/wiki/Backpressure">RxJava wiki: Backpressure</a>
+     * @see #sample(long, TimeUnit, Scheduler)
+     * @since 3.1.6 - Experimental
+     */
+    @CheckReturnValue
+    @BackpressureSupport(BackpressureKind.ERROR)
+    @SchedulerSupport(SchedulerSupport.CUSTOM)
+    @NonNull
+    @Experimental
+    public final Flowable<T> throttleLast(long intervalDuration, @NonNull TimeUnit unit, @NonNull Scheduler scheduler, @NonNull Consumer<? super T> onDropped) {
+        return sample(intervalDuration, unit, scheduler, false, onDropped);
     }
 
     /**
@@ -17327,7 +17455,61 @@ public abstract class Flowable<@NonNull T> implements Publisher<T> {
     public final Flowable<T> throttleLatest(long timeout, @NonNull TimeUnit unit, @NonNull Scheduler scheduler, boolean emitLast) {
         Objects.requireNonNull(unit, "unit is null");
         Objects.requireNonNull(scheduler, "scheduler is null");
-        return RxJavaPlugins.onAssembly(new FlowableThrottleLatest<>(this, timeout, unit, scheduler, emitLast));
+        return RxJavaPlugins.onAssembly(new FlowableThrottleLatest<>(this, timeout, unit, scheduler, emitLast, null));
+    }
+
+    /**
+     * Throttles items from the upstream {@code Flowable} by first emitting the next
+     * item from upstream, then periodically emitting the latest item (if any) when
+     * the specified timeout elapses between them, invoking the consumer for any dropped item.
+     * <p>
+     * <img width="640" height="326" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/throttleLatest.se.png" alt="">
+     * <p>
+     * If no items were emitted from the upstream during this timeout phase, the next
+     * upstream item is emitted immediately and the timeout window starts from then.
+     * <dl>
+     *  <dt><b>Backpressure:</b></dt>
+     *  <dd>This operator does not support backpressure as it uses time to control data flow.
+     *  If the downstream is not ready to receive items, a
+     *  {@link io.reactivex.rxjava3.exceptions.MissingBackpressureException MissingBackpressureException}
+     *  will be signaled.</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>You specify which {@link Scheduler} this operator will use.</dd>
+     *  <dt><b>Error handling:</b></dt>
+     *  <dd>
+     *  If the upstream signals an {@code onError} or {@code onDropped} callback crashes,
+     *  the error is delivered immediately to the downstream. If both happen, a {@link CompositeException}
+     *  is created, containing both the upstream and the callback error.
+     *  If the {@code onDropped} callback crashes during cancellation, the exception is forwarded
+     *  to the global error handler via {@link RxJavaPlugins#onError(Throwable)}.
+     *  </dd>
+     * </dl>
+     * @param timeout the time to wait after an item emission towards the downstream
+     *                before trying to emit the latest item from upstream again
+     * @param unit    the time unit
+     * @param scheduler the {@code Scheduler} where the timed wait and latest item
+     *                  emission will be performed
+     * @param emitLast If {@code true}, the very last item from the upstream will be emitted
+     *                 immediately when the upstream completes, regardless if there is
+     *                 a timeout window active or not. If {@code false}, the very last
+     *                 upstream item is ignored and the flow terminates.
+     * @param onDropped called when an item is replaced by a newer item that doesn't get delivered
+     *                 to the downstream, including the very last item if {@code emitLast} is {@code false}
+     *                 and the current undelivered item when the sequence gets canceled.
+     * @return the new {@code Flowable} instance
+     * @throws NullPointerException if {@code unit}, {@code scheduler} or {@code onDropped} is {@code null}
+     * @since 3.1.6 - Experimental
+     */
+    @CheckReturnValue
+    @NonNull
+    @BackpressureSupport(BackpressureKind.ERROR)
+    @SchedulerSupport(SchedulerSupport.CUSTOM)
+    @Experimental
+    public final Flowable<T> throttleLatest(long timeout, @NonNull TimeUnit unit, @NonNull Scheduler scheduler, boolean emitLast, @NonNull Consumer<? super T> onDropped) {
+        Objects.requireNonNull(unit, "unit is null");
+        Objects.requireNonNull(scheduler, "scheduler is null");
+        Objects.requireNonNull(onDropped, "onDropped is null");
+        return RxJavaPlugins.onAssembly(new FlowableThrottleLatest<>(this, timeout, unit, scheduler, emitLast, onDropped));
     }
 
     /**
