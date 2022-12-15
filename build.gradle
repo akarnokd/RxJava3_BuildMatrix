@@ -14,7 +14,7 @@ ext {
     reactiveStreamsVersion = "1.0.4"
     junitVersion = "4.13.2"
     testNgVersion = "7.5"
-    mockitoVersion = "4.6.0"
+    mockitoVersion = "4.10.0"
     jmhLibVersion = "1.25"
     guavaVersion = "31.1-jre"
     jacocoVersion = "0.8.7"
