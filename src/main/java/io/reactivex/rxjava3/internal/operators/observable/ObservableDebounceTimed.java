@@ -19,6 +19,8 @@ import java.util.concurrent.atomic.*;
 import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.core.Scheduler.Worker;
 import io.reactivex.rxjava3.disposables.Disposable;
+import io.reactivex.rxjava3.exceptions.Exceptions;
+import io.reactivex.rxjava3.functions.Consumer;
 import io.reactivex.rxjava3.internal.disposables.DisposableHelper;
 import io.reactivex.rxjava3.observers.SerializedObserver;
 import io.reactivex.rxjava3.plugins.RxJavaPlugins;
@@ -27,19 +29,20 @@ public final class ObservableDebounceTimed<T> extends AbstractObservableWithUpst
     final long timeout;
     final TimeUnit unit;
     final Scheduler scheduler;
+    final Consumer<? super T> onDropped;
 
-    public ObservableDebounceTimed(ObservableSource<T> source, long timeout, TimeUnit unit, Scheduler scheduler) {
+    public ObservableDebounceTimed(ObservableSource<T> source, long timeout, TimeUnit unit, Scheduler scheduler, Consumer<? super T> onDropped) {
         super(source);
         this.timeout = timeout;
         this.unit = unit;
         this.scheduler = scheduler;
+        this.onDropped = onDropped;
     }
 
     @Override
     public void subscribeActual(Observer<? super T> t) {
         source.subscribe(new DebounceTimedObserver<>(
-                new SerializedObserver<>(t),
-                timeout, unit, scheduler.createWorker()));
+                new SerializedObserver<>(t), timeout, unit, scheduler.createWorker(), onDropped));
     }
 
     static final class DebounceTimedObserver<T>
@@ -48,20 +51,22 @@ public final class ObservableDebounceTimed<T> extends AbstractObservableWithUpst
         final long timeout;
         final TimeUnit unit;
         final Scheduler.Worker worker;
+        final Consumer<? super T> onDropped;
 
         Disposable upstream;
 
-        Disposable timer;
+        DebounceEmitter<T> timer;
 
         volatile long index;
 
         boolean done;
 
-        DebounceTimedObserver(Observer<? super T> actual, long timeout, TimeUnit unit, Worker worker) {
+        DebounceTimedObserver(Observer<? super T> actual, long timeout, TimeUnit unit, Worker worker, Consumer<? super T> onDropped) {
             this.downstream = actual;
             this.timeout = timeout;
             this.unit = unit;
             this.worker = worker;
+            this.onDropped = onDropped;
         }
 
         @Override
@@ -80,15 +85,25 @@ public final class ObservableDebounceTimed<T> extends AbstractObservableWithUpst
             long idx = index + 1;
             index = idx;
 
-            Disposable d = timer;
-            if (d != null) {
-                d.dispose();
+            DebounceEmitter<T> currentEmitter = timer;
+            if (currentEmitter != null) {
+                currentEmitter.dispose();
             }
 
-            DebounceEmitter<T> de = new DebounceEmitter<>(t, idx, this);
-            timer = de;
-            d = worker.schedule(de, timeout, unit);
-            de.setResource(d);
+            if (onDropped != null && currentEmitter != null) {
+                try {
+                    onDropped.accept(timer.value);
+                } catch (Throwable ex) {
+                    Exceptions.throwIfFatal(ex);
+                    upstream.dispose();
+                    downstream.onError(ex);
+                    done = true;
+                }
+            }
+
+            DebounceEmitter<T> newEmitter = new DebounceEmitter<>(t, idx, this);
+            timer = newEmitter;
+            newEmitter.setResource(worker.schedule(newEmitter, timeout, unit));
         }
 
         @Override
@@ -113,15 +128,13 @@ public final class ObservableDebounceTimed<T> extends AbstractObservableWithUpst
             }
             done = true;
 
-            Disposable d = timer;
+            DebounceEmitter<T> d = timer;
             if (d != null) {
                 d.dispose();
             }
 
-            @SuppressWarnings("unchecked")
-            DebounceEmitter<T> de = (DebounceEmitter<T>)d;
-            if (de != null) {
-                de.run();
+            if (d != null) {
+                d.run();
             }
             downstream.onComplete();
             worker.dispose();
