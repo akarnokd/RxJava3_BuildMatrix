@@ -16,7 +16,7 @@ jobs:
       matrix:
         config:
           # JDK 17
-          - { idx: "01", jdk: "19-Loom", rt: "18", target: "18" }
+          - { idx: "01", jdk: "19", rt: "19", target: "19" }
 
     runs-on: ubuntu-latest
 
@@ -39,9 +39,9 @@ jobs:
     #- name: "Override JDK for Loom"
     #  run: ./use_loom.sh
     - name: Grant execute permission for usejdk20.sh
-      run: chmod +x usejdk20.sh
+      run: chmod +x usejdk22.sh
     - name: "Override JDK for Loom"
-      run: ./usejdk20.sh
+      run: ./usejdk22.sh
     - name: "Disable daemon"
       run: mkdir -p ~/.gradle && echo "org.gradle.daemon=false" >> ~/.gradle/gradle.properties
     - name: Build with Gradle

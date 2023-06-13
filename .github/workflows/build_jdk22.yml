@@ -43,7 +43,7 @@ jobs:
       run: chmod +x usejdk22.sh
     - name: "[Optionally] Override JDK for 22"
       if: matrix.config.jdk == '22'
-      run: ./usejdk21.sh
+      run: ./usejdk22.sh
     - name: "Disable daemon"
       run: mkdir -p ~/.gradle && echo "org.gradle.daemon=false" >> ~/.gradle/gradle.properties
     - name: Build with Gradle
