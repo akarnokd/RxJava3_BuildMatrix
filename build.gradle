@@ -7,7 +7,8 @@ plugins {
     // Does not work with Gradle 7
     id("com.github.hierynomus.license") version "0.16.1"
     id("biz.aQute.bnd.builder") version "6.3.1"
-    id("com.vanniktech.maven.publish") version "0.25.3"
+    // needs newer JDK
+    //id("com.vanniktech.maven.publish") version "0.25.3"
 }
 
 ext {
@@ -241,7 +242,7 @@ if (rootProject.hasProperty("releaseMode")) {
     }
 
     if ("full".equals(rootProject.releaseMode)) {
-
+/*
         signing {
             if (project.hasProperty("SIGNING_PRIVATE_KEY") && project.hasProperty("SIGNING_PASSWORD")) {
                 useInMemoryPgpKeys(project.getProperty("SIGNING_PRIVATE_KEY"), project.getProperty("SIGNING_PASSWORD"))
@@ -252,5 +253,6 @@ if (rootProject.hasProperty("releaseMode")) {
                 stagingProfile = "io.reactivex"
             }
         }
+*/
     }
 }
