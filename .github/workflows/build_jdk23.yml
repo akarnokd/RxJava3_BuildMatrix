@@ -1,0 +1,77 @@
+# This workflow will build a Java project with Gradle
+# For more information see: https://help.github.com/actions/language-and-framework-guides/building-and-testing-java-with-gradle
+
+name: Build_JDK23
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        config:
+          # JDK 23
+          - { idx: "07", jdk: "22", rt: "20", target: "18" }
+          - { idx: "08", jdk: "22", rt: "20", target: "19" }
+          - { idx: "09", jdk: "22", rt: "20", target: "20" }
+          - { idx: "10", jdk: "22", rt: "20", target: "21" }
+          - { idx: "11", jdk: "22", rt: "20", target: "22" }
+          - { idx: "11", jdk: "23", rt: "20", target: "23" }
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up JDK ${{ matrix.config.jdk }} target ${{ matrix.config.target }}
+      uses: actions/setup-java@v1
+      with:
+        java-version: ${{ matrix.config.rt }}
+    - name: Cache Gradle packages
+      uses: actions/cache@v2
+      with:
+        path: ~/.gradle/caches
+        key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle') }}
+        restore-keys: ${{ runner.os }}-gradle
+    - name: Grant execute permission for gradlew
+      run: chmod +x gradlew
+    - name: Grant execute permission for usejdk23.sh
+      run: chmod +x usejdk23.sh
+    - name: "[Optionally] Override JDK for 23"
+      if: matrix.config.jdk == '23'
+      run: ./usejdk23.sh
+    - name: "Disable daemon"
+      run: mkdir -p ~/.gradle && echo "org.gradle.daemon=false" >> ~/.gradle/gradle.properties
+    - name: Build with Gradle
+      run: ./gradlew build --stacktrace
+      env:
+        RXJAVA_TARGET:  ${{ matrix.config.target }}
+    - name: Upload to Codecov  
+      uses: codecov/codecov-action@v1
+    - name: Upload Unit Test Results
+      if: always()
+      uses: actions/upload-artifact@v2
+      with:
+        name: Unit Test Results (${{ matrix.config.jdk }} target ${{ matrix.config.target }})
+        path: build/reports/tests/*
+
+  publish-test-results:
+    name: "Publish Unit Tests Results"
+    needs: build
+    runs-on: ubuntu-latest
+    if: always()
+
+    steps:
+      - name: Download Artifacts
+        uses: actions/download-artifact@v2
+        with:
+          path: artifacts
+
+      - name: Publish Unit Test Results
+        uses: EnricoMi/publish-unit-test-result-action@v1
+        with:
+          files: artifacts/**/*.xml
