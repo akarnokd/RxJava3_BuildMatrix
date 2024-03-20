@@ -63,7 +63,7 @@ jobs:
     name: "Publish Unit Tests Results"
     needs: build
     runs-on: ubuntu-latest
-    if: always()
+    if: never()
 
     steps:
       - name: Download Artifacts
