@@ -57,21 +57,4 @@ jobs:
       uses: actions/upload-artifact@v2
       with:
         name: Unit Test Results (${{ matrix.config.jdk }} target ${{ matrix.config.target }})
-        path: build/reports/tests/*
-
-  publish-test-results:
-    name: "Publish Unit Tests Results"
-    needs: build
-    runs-on: ubuntu-latest
-    if: never()
-
-    steps:
-      - name: Download Artifacts
-        uses: actions/download-artifact@v2
-        with:
-          path: artifacts
-
-      - name: Publish Unit Test Results
-        uses: EnricoMi/publish-unit-test-result-action@v1
-        with:
-          files: artifacts/**/*.xml
+        path: build/reports/tests/* 
