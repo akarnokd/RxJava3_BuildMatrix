@@ -4,7 +4,7 @@
 
 |  JDK | Status                                                                                                                                                                                               |
 |-----:|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-|   23 | <a href='https://github.com/akarnokd/RxJava3_BuildMatrix/actions?query=workflow%3A%22Build_JDK22%23'><img src='https://github.com/akarnokd/RxJava3_BuildMatrix/workflows/Build_JDK23/badge.svg'></a> |
+|   23 | <a href='https://github.com/akarnokd/RxJava3_BuildMatrix/actions?query=workflow%3A%22Build_JDK23%22'><img src='https://github.com/akarnokd/RxJava3_BuildMatrix/workflows/Build_JDK23/badge.svg'></a> |
 |   22 | <a href='https://github.com/akarnokd/RxJava3_BuildMatrix/actions?query=workflow%3A%22Build_JDK22%22'><img src='https://github.com/akarnokd/RxJava3_BuildMatrix/workflows/Build_JDK22/badge.svg'></a> |
 |   21 | <a href='https://github.com/akarnokd/RxJava3_BuildMatrix/actions?query=workflow%3A%22Build_JDK21%22'><img src='https://github.com/akarnokd/RxJava3_BuildMatrix/workflows/Build_JDK21/badge.svg'></a> |
 |   20 | <a href='https://github.com/akarnokd/RxJava3_BuildMatrix/actions?query=workflow%3A%22Build_JDK20%22'><img src='https://github.com/akarnokd/RxJava3_BuildMatrix/workflows/Build_JDK20/badge.svg'></a> |
