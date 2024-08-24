@@ -290,7 +290,7 @@ public class CompositeDisposableTest extends RxJavaTest {
         cd.remove(cd1);
         cd.add(cd2);
 
-        cd.remove(cd1); // try removing agian
+        cd.remove(cd1); // try removing again
     }
 
     @Test(expected = NullPointerException.class)

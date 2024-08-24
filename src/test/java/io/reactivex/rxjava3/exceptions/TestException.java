@@ -14,7 +14,7 @@
 package io.reactivex.rxjava3.exceptions;
 
 /**
- * Exception for testing if unchecked expections propagate as-is without confusing with
+ * Exception for testing if unchecked exceptions propagate as-is without confusing with
  * other type of common exceptions.
  */
 public final class TestException extends RuntimeException {
