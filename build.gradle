@@ -66,11 +66,11 @@ def runJacoco = false
 
 // Jacoco doesn't fully support Java 23+ and prevents testing
 def jvmVer = System.getProperty("java.version");
-if (!jvmVer.startsWith("23") && !jvmVer.startsWith("24")) {
+if (!jvmVer.startsWith("23") && !jvmVer.startsWith("24") && !targetStr.startsWith("23") && !targetStr.startsWith("24")) {
     runJacoco = true;
-    logger.lifecycle("Jacoco enabled for runtime version " + jvmVer)
+    logger.lifecycle("Jacoco enabled for runtime version " + jvmVer + " and target " + targetStr)
 } else {
-    logger.lifecycle("Jacoco disabled for runtime version " + jvmVer)
+    logger.lifecycle("Jacoco disabled for runtime version " + jvmVer + " and target " + targetStr)
 }
 
 if (runJacoco) {
