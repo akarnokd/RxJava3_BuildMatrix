@@ -138,9 +138,12 @@ public final class BlockingFlowableIterable<T> implements Iterable<T> {
         @Override
         public void onNext(T t) {
             if (!queue.offer(t)) {
+                // Error must be set first before calling cancel to avoid race
+                // with hasNext(), which checks for cancel first before checking
+                // for error.
+                error = new QueueOverflowException();
                 SubscriptionHelper.cancel(this);
-
-                onError(new QueueOverflowException());
+                onComplete();
             } else {
                 signalConsumer();
             }
