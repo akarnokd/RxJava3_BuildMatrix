@@ -4,8 +4,8 @@
 # export JDK_NEXT=$(./install-jdk.sh --silent --emit-java-home -F 16 -L GPL)
 # echo JDK_NEXT: $JDK_NEXT
 
-wget -nv https://download.java.net/java/GA/jdk25/bd75d5f9689641da8e1daabeccb5528b/35/GPL/openjdk-25_linux-x64_bin.tar.gz
-tar -zxvf openjdk-25_linux-x64_bin.tar.gz
-export JDK_NEXT=$PWD/jdk-25
+wget -nv https://download.java.net/java/early_access/jdk26/10/GPL/openjdk-26-ea+10_linux-x64_bin.tar.gz
+tar -zxvf openjdk-26-ea+10_linux-x64_bin.tar.gz
+export JDK_NEXT=$PWD/jdk-26
 eval "$JDK_NEXT/bin/java -version"
 echo "JDK_NEXT=$JDK_NEXT" >> $GITHUB_ENV
