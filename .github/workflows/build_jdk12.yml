@@ -20,7 +20,7 @@ jobs:
           #- { idx: "31", jdk: "12", rt: "12", target: "9" }
           #- { idx: "32", jdk: "12", rt: "12", target: "10" }
           #- { idx: "33", jdk: "12", rt: "12", target: "11" }
-          - { idx: "34", jdk: "12", rt: "12", target: "12" }
+          - { idx: "34", jdk: "24", rt: "12", target: "12" }
 
     runs-on: ubuntu-latest
 
