@@ -3,12 +3,12 @@ plugins {
     id("checkstyle")
     id("eclipse")
     id("maven-publish")
-    id("me.champeau.gradle.jmh") version "0.5.3"
+    id("me.champeau.jmh") version "0.7.3"
     // Does not work with Gradle 7
     id("com.github.hierynomus.license") version "0.16.1"
-    id("biz.aQute.bnd.builder") version "6.3.1"
+    id("biz.aQute.bnd.builder") version "7.1.0"
     // needs newer JDK
-    //id("com.vanniktech.maven.publish") version "0.25.3"
+    //id("com.vanniktech.maven.publish") version "0.32.0"
 }
 
 ext {
@@ -23,7 +23,7 @@ ext {
 }
 String targetStr = System.getenv("RXJAVA_TARGET")
 if (targetStr == null || targetStr.isEmpty()) {
-    targetStr = '8'
+    targetStr = '9'
     logger.lifecycle("RXJAVA_TARGET env not found, using default " + targetStr)
 } else {
     logger.lifecycle("Source compatibility: " + targetStr)
@@ -43,9 +43,10 @@ group = "io.reactivex.rxjava3"
 version = project.properties["VERSION_NAME"]
 description = "RxJava: Reactive Extensions for the JVM – a library for composing asynchronous and event-based programs using observable sequences for the Java VM."
 
-
-sourceCompatibility = targetStr
-targetCompatibility = targetStr
+java {
+    sourceCompatibility = targetStr
+    targetCompatibility = targetStr
+}
 
 // workaround for newer JDKs as Gradle tend not to work with them
 def jdkNextdir = System.getenv("JDK_NEXT")
@@ -66,7 +67,7 @@ def runJacoco = false
 
 // Jacoco doesn't fully support Java 23+ and prevents testing
 def jvmVer = System.getProperty("java.version");
-if (!jvmVer.startsWith("23") && !jvmVer.startsWith("24") && !targetStr.startsWith("23") && !targetStr.startsWith("24")) {
+if (!jvmVer.startsWith("23") && !jvmVer.startsWith("24") && !targetStr.startsWith("25") && !targetStr.startsWith("26")) {
     runJacoco = true;
     logger.lifecycle("Jacoco enabled for runtime version " + jvmVer + " and target " + targetStr)
 } else {
@@ -118,8 +119,9 @@ javadoc {
     )
 }
 
+/*
 jar {
-    bnd(
+    bundle(
             "Bundle-Name": "rxjava",
             "Bundle-Vendor": "RxJava Contributors",
             "Bundle-Description": "Reactive Extensions for the JVM – a library for composing asynchronous and event-based programs using observable sequences for the Java VM.",
@@ -130,6 +132,7 @@ jar {
             "Export-Package": "!io.reactivex.rxjava3.internal.*, io.reactivex.rxjava3.*"
     )
 }
+*/
 
 
 license {
@@ -148,8 +151,8 @@ jmh {
     jvmArgsAppend = ["-Djmh.separateClasspathJAR=true"]
 
     if (project.hasProperty("jmh")) {
-        include = [".*" + project.jmh + ".*"]
-        logger.info("JMH: {}", include)
+        includes = [".*" + project.jmh + ".*"]
+        logger.info("JMH: {}", includes)
     }
 }
 
