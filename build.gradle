@@ -17,7 +17,7 @@ ext {
     testNgVersion = "7.5"
     mockitoVersion = "4.6.0"
     jmhLibVersion = "1.25"
-    guavaVersion = "33.4.8-jre"
+    guavaVersion = "33.5.0-jre"
     jacocoVersion = "0.8.11"
     checkstyleVersion = "8.41"
 }
