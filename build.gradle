@@ -6,7 +6,7 @@ plugins {
     id("me.champeau.jmh") version "0.7.3"
     // Does not work with Gradle 7
     id("com.github.hierynomus.license") version "0.16.1"
-    id("biz.aQute.bnd.builder") version "7.1.0"
+    id("biz.aQute.bnd.builder") version "7.2.1"
     // needs newer JDK
     //id("com.vanniktech.maven.publish") version "0.32.0"
 }
