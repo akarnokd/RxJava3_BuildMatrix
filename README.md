@@ -1,9 +1,10 @@
-# RxJava 3 built with JDK 9 through 26
+# RxJava 3 built with JDK 9 through 27
 
 [![codecov.io](http://codecov.io/github/akarnokd/RxJava3_BuildMatrix/coverage.svg?branch=master)](https://codecov.io/gh/akarnokd/RxJava3_BuildMatrix/branch/master)
 
 |  JDK | Status                                                                                                                                                                                               |
 |-----:|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+|   27 | <a href='https://github.com/akarnokd/RxJava3_BuildMatrix/actions?query=workflow%3A%22Build_JDK27%22'><img src='https://github.com/akarnokd/RxJava3_BuildMatrix/workflows/Build_JDK27/badge.svg'></a> |
 |   26 | <a href='https://github.com/akarnokd/RxJava3_BuildMatrix/actions?query=workflow%3A%22Build_JDK26%22'><img src='https://github.com/akarnokd/RxJava3_BuildMatrix/workflows/Build_JDK26/badge.svg'></a> |
 |   25 | <a href='https://github.com/akarnokd/RxJava3_BuildMatrix/actions?query=workflow%3A%22Build_JDK25%22'><img src='https://github.com/akarnokd/RxJava3_BuildMatrix/workflows/Build_JDK25/badge.svg'></a> |
 |   24 | <a href='https://github.com/akarnokd/RxJava3_BuildMatrix/actions?query=workflow%3A%22Build_JDK24%22'><img src='https://github.com/akarnokd/RxJava3_BuildMatrix/workflows/Build_JDK24/badge.svg'></a> |
@@ -27,7 +28,7 @@
 
 (GitHub actions do not have a means to display the individual matrix results in a workflow.)
 
-This repository is used for building [RxJava 3](https://github.com/ReactiveX/RxJava) with JDK 9 through 26 in a CI environment. 
+This repository is used for building [RxJava 3](https://github.com/ReactiveX/RxJava) with JDK 9 through 27 in a CI environment. 
 
 It **does not use the JDK 9 `Flow` API** nor does this repository create maven jars.
 
@@ -50,6 +51,7 @@ With the newest JDKs, certain older compile targets are no longer supported:
 - JDK 23 dropped target 17 support
 - JDK 24 dropped target 18 support
 - JDK 25 dropped target 19 support
-- JDK 25 dropped target 20 support
+- JDK 26 dropped target 20 support
+- JDK 27 dropped target 21 support
 
 Note also that RxJava 3 is now a Java 8 library and thus the Java 6 build targets have been removed.
