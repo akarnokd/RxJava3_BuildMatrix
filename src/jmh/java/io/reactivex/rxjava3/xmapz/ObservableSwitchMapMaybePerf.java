@@ -45,23 +45,23 @@ public class ObservableSwitchMapMaybePerf {
 
         Observable<Integer> source = Observable.fromArray(sourceArray);
 
-        observablePlain = source.switchMap(new Function<Integer, Observable<? extends Integer>>() {
+        observablePlain = source.switchMap(new Function<Integer, Observable<Integer>>() {
             @Override
-            public Observable<? extends Integer> apply(Integer v) {
+            public Observable<Integer> apply(Integer v) {
                 return Observable.just(v);
             }
         });
 
-        observableConvert = source.switchMap(new Function<Integer, Observable<? extends Integer>>() {
+        observableConvert = source.switchMap(new Function<Integer, Observable<Integer>>() {
             @Override
-            public Observable<? extends Integer> apply(Integer v) {
+            public Observable<Integer> apply(Integer v) {
                 return Maybe.just(v).toObservable();
             }
         });
 
-        observableDedicated = source.switchMapMaybe(new Function<Integer, Maybe<? extends Integer>>() {
+        observableDedicated = source.switchMapMaybe(new Function<Integer, Maybe<Integer>>() {
             @Override
-            public Maybe<? extends Integer> apply(Integer v) {
+            public Maybe<Integer> apply(Integer v) {
                 return Maybe.just(v);
             }
         });

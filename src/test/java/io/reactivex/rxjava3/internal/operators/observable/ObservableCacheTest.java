@@ -16,10 +16,15 @@ package io.reactivex.rxjava3.internal.operators.observable;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
+import java.lang.management.ManagementFactory;
+import java.lang.management.MemoryMXBean;
+import java.lang.management.MemoryUsage;
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
 
+import io.reactivex.rxjava3.observables.ConnectableObservable;
 import org.junit.Test;
 
 import io.reactivex.rxjava3.core.*;
@@ -353,6 +358,54 @@ public class ObservableCacheTest extends RxJavaTest {
                     () -> to.dispose(),
                     () -> o.test()
             );
+        }
+    }
+
+    @Test
+    public void valuesAreReclaimable() throws Exception {
+        ConnectableObservable<byte[]> source =
+                Observable.range(0, 200)
+                        .map($ -> new byte[1024 * 1024])
+                        .publish();
+
+        System.out.println("Bounded Replay Leak check: Wait before GC");
+        Thread.sleep(1000);
+
+        System.out.println("Bounded Replay Leak check: GC");
+        System.gc();
+
+        Thread.sleep(500);
+
+        final MemoryMXBean memoryMXBean = ManagementFactory.getMemoryMXBean();
+        MemoryUsage memHeap = memoryMXBean.getHeapMemoryUsage();
+        long initial = memHeap.getUsed();
+
+        System.out.printf("Bounded Replay Leak check: Starting: %.3f MB%n", initial / 1024.0 / 1024.0);
+
+        final AtomicLong after = new AtomicLong();
+
+        source.cache().lastElement().subscribe(new Consumer<byte[]>() {
+            @Override
+            public void accept(byte[] v) throws Exception {
+                System.out.println("Bounded Replay Leak check: Wait before GC 2");
+                Thread.sleep(1000);
+
+                System.out.println("Bounded Replay Leak check:  GC 2");
+                System.gc();
+
+                Thread.sleep(500);
+
+                after.set(memoryMXBean.getHeapMemoryUsage().getUsed());
+            }
+        });
+
+        source.connect();
+
+        System.out.printf("Bounded Replay Leak check: After: %.3f MB%n", after.get() / 1024.0 / 1024.0);
+
+        if (initial + 100 * 1024 * 1024 < after.get()) {
+            fail("Bounded Replay Leak check: Memory leak detected: " + (initial / 1024.0 / 1024.0)
+                    + " -> " + after.get() / 1024.0 / 1024.0);
         }
     }
 }
